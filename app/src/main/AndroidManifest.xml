@@ -11,13 +11,16 @@
         <activity android:name=".ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".ui.SettingsActivity"
-            android:label="@string/settings"
+            android:label="@string/settings_label"
+            android:parentActivityName=".ui.MainActivity" />
+        <activity
+            android:name=".ui.DetailActivity"
+            android:label="@string/detail_movie_label"
             android:parentActivityName=".ui.MainActivity" />
     </application>
 

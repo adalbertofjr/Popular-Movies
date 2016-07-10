@@ -12,9 +12,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.Toast;
 
 import br.com.adalbertofjr.popularmovies.R;
+import br.com.adalbertofjr.popularmovies.ui.DetailActivity;
 import br.com.adalbertofjr.popularmovies.ui.SettingsActivity;
 import br.com.adalbertofjr.popularmovies.ui.adapters.MoviesImageAdapter;
 
@@ -48,7 +48,7 @@ public class MoviesFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapter, View v, int position, long id) {
-                Toast.makeText(getActivity(), "Posição: " + position, Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(getActivity(), DetailActivity.class));
             }
         });
 

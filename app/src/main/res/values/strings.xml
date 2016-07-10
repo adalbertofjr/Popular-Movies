@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">Popular Movies</string>
-    <string name="settings">Settings</string>
+    <string name="settings_label">Settings</string>
+    <string name="detail_movie_label">Detail Movie</string>
+
+    <!--Preference-->
     <string name="pref_sort_options_key">sort_options</string>
     <string name="pref_sort_option_label">Sort Options</string>
     <string name="pref_sort_option_default">most popular</string>
