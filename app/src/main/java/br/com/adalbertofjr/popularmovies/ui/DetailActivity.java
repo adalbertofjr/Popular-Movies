@@ -1,10 +1,12 @@
 package br.com.adalbertofjr.popularmovies.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
 import br.com.adalbertofjr.popularmovies.R;
+import br.com.adalbertofjr.popularmovies.ui.fragments.DetailMovieFragment;
 
 /**
  * Popular Movies
@@ -20,5 +22,16 @@ public class DetailActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+
+        Intent intent = getIntent();
+
+        if (intent != null) {
+            String movieExtra = intent.getStringExtra(Intent.EXTRA_TEXT);
+            DetailMovieFragment dmf = DetailMovieFragment.newInstance(movieExtra);
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fl_detail_container, dmf, null)
+            .commit();
+        }
     }
 }
