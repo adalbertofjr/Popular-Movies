@@ -1,11 +1,13 @@
 package br.com.adalbertofjr.popularmovies.ui.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -13,12 +15,13 @@ import android.widget.GridView;
 import android.widget.Toast;
 
 import br.com.adalbertofjr.popularmovies.R;
+import br.com.adalbertofjr.popularmovies.ui.SettingsActivity;
 import br.com.adalbertofjr.popularmovies.ui.adapters.MoviesImageAdapter;
 
 /**
  * Popular Movies
  * MoviesFragment
- * <p/>
+ * <p>
  * Created by Adalberto Fernandes Júnior on 10/07/2016.
  * Copyright © 2016 - Adalberto Fernandes Júnior. All rights reserved.
  */
@@ -56,5 +59,17 @@ public class MoviesFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_movies_fragment, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_settings) {
+            startActivity(new Intent(getActivity(), SettingsActivity.class));
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
