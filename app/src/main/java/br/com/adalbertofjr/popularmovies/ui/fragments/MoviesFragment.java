@@ -46,6 +46,8 @@ import br.com.adalbertofjr.popularmovies.util.Constants;
 
 public class MoviesFragment extends Fragment {
 
+    private MoviesImageAdapter mMoviesAdapter;
+
     public MoviesFragment() {
     }
 
@@ -61,7 +63,9 @@ public class MoviesFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_movies, container, false);
 
         GridView gridView = (GridView) rootView.findViewById(R.id.gv_movies_fragment);
-        gridView.setAdapter(new MoviesImageAdapter(getActivity()));
+
+        mMoviesAdapter = new MoviesImageAdapter(getActivity(), new ArrayList<Movies>());
+        gridView.setAdapter(mMoviesAdapter);
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -71,6 +75,9 @@ public class MoviesFragment extends Fragment {
                 startActivity(intent);
             }
         });
+
+        FetchMoviesTask moviesTask = new FetchMoviesTask();
+        moviesTask.execute();
 
         return rootView;
     }
@@ -171,8 +178,16 @@ public class MoviesFragment extends Fragment {
                     }
                 }
             }
-
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(List<Movies> movies) {
+            super.onPostExecute(movies);
+            if (movies != null) {
+                mMoviesAdapter.clear();
+                mMoviesAdapter.addAll(movies);
+            }
         }
     }
 
@@ -219,7 +234,6 @@ public class MoviesFragment extends Fragment {
                     overview);
 
             movies.add(movie);
-            Log.i("Movie", movie.toString());
         }
 
         return movies;

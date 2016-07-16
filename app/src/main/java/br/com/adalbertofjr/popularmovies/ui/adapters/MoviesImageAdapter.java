@@ -3,11 +3,14 @@ package br.com.adalbertofjr.popularmovies.ui.adapters;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
+import java.util.List;
+
 import br.com.adalbertofjr.popularmovies.R;
+import br.com.adalbertofjr.popularmovies.model.Movies;
 
 /**
  * Popular Movies
@@ -17,26 +20,9 @@ import br.com.adalbertofjr.popularmovies.R;
  * Copyright © 2016 - Adalberto Fernandes Júnior. All rights reserved.
  */
 
-public class MoviesImageAdapter extends BaseAdapter {
-    private final Context mContext;
-
-    public MoviesImageAdapter(Context context) {
-        mContext = context;
-    }
-
-    @Override
-    public int getCount() {
-        return mThumbIds.length;
-    }
-
-    @Override
-    public Object getItem(int i) {
-        return null;
-    }
-
-    @Override
-    public long getItemId(int i) {
-        return 0;
+public class MoviesImageAdapter extends ArrayAdapter<Movies> {
+    public MoviesImageAdapter(Context context, List<Movies> movies) {
+        super(context, 0, movies);
     }
 
     @Override
@@ -44,7 +30,7 @@ public class MoviesImageAdapter extends BaseAdapter {
         ImageView imageView;
 
         if (convertView == null) {
-            imageView = new ImageView(mContext);
+            imageView = new ImageView(getContext());
             imageView.setLayoutParams(new GridView.LayoutParams(200, 360));
             imageView.setScaleType(ImageView.ScaleType.FIT_XY);
             //imageView.setPadding(8, 8, 8, 8);
@@ -52,7 +38,7 @@ public class MoviesImageAdapter extends BaseAdapter {
             imageView = (ImageView) convertView;
         }
 
-        imageView.setImageResource(mThumbIds[position]);
+        imageView.setImageResource(mThumbIds[0]);
 
         return imageView;
     }
