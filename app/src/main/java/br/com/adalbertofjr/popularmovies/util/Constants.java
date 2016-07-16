@@ -1,4 +1,4 @@
-package br.com.adalbertofjr.popularmovies.ui.util;
+package br.com.adalbertofjr.popularmovies.util;
 
 import br.com.adalbertofjr.popularmovies.BuildConfig;
 

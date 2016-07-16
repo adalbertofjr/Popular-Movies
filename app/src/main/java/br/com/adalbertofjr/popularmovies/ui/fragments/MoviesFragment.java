@@ -26,17 +26,20 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import br.com.adalbertofjr.popularmovies.R;
+import br.com.adalbertofjr.popularmovies.model.Movies;
 import br.com.adalbertofjr.popularmovies.ui.DetailActivity;
 import br.com.adalbertofjr.popularmovies.ui.SettingsActivity;
 import br.com.adalbertofjr.popularmovies.ui.adapters.MoviesImageAdapter;
-import br.com.adalbertofjr.popularmovies.ui.util.Constants;
+import br.com.adalbertofjr.popularmovies.util.Constants;
 
 /**
  * Popular Movies
  * MoviesFragment
- * <p/>
+ * <p>
  * Created by Adalberto Fernandes Júnior on 10/07/2016.
  * Copyright © 2016 - Adalberto Fernandes Júnior. All rights reserved.
  */
@@ -96,12 +99,12 @@ public class MoviesFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    private class FetchMoviesTask extends AsyncTask<Void, Void, String[]> {
+    private class FetchMoviesTask extends AsyncTask<Void, Void, List<Movies>> {
 
         private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
 
         @Override
-        protected String[] doInBackground(Void... voids) {
+        protected List<Movies> doInBackground(Void... voids) {
 
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
@@ -144,7 +147,7 @@ public class MoviesFragment extends Fragment {
                 }
 
                 moviesJsonString = buffer.toString();
-                Log.v(LOG_TAG, "Movie JSON String: " + moviesJsonString);
+                //Log.v(LOG_TAG, "Movie JSON String: " + moviesJsonString);
 
                 try {
                     return getMoviesDataFromJson(moviesJsonString);
@@ -174,7 +177,7 @@ public class MoviesFragment extends Fragment {
     }
 
 
-    private String[] getMoviesDataFromJson(String moviesJsonString)
+    private List<Movies> getMoviesDataFromJson(String moviesJsonString)
             throws JSONException {
 
         //Json objects names
@@ -189,7 +192,36 @@ public class MoviesFragment extends Fragment {
         JSONObject moviesJson = new JSONObject(moviesJsonString);
         JSONArray moviesArray = moviesJson.getJSONArray(OWM_LIST);
 
+        List<Movies> movies = new ArrayList<>();
 
-        return new String[0];
+        for (int i = 0; i < moviesArray.length(); i++) {
+            String backdrop_path;
+            String poster_path;
+            String vote_average;
+            String original_title;
+            String release_date;
+            String overview;
+
+            JSONObject movieData = moviesArray.getJSONObject(i);
+
+            backdrop_path = movieData.getString(OWN_BACKGROUND);
+            poster_path = movieData.getString(OWN_POSTER);
+            vote_average = movieData.getString(OWN_VOTE_AVERAGE);
+            original_title = movieData.getString(OWN_TITLE);
+            release_date = movieData.getString(OWN_RELEASE_DATE);
+            overview = movieData.getString(OWN_OVERVIEW);
+
+            Movies movie = new Movies(backdrop_path,
+                    poster_path,
+                    vote_average,
+                    original_title,
+                    release_date,
+                    overview);
+
+            movies.add(movie);
+            Log.i("Movie", movie.toString());
+        }
+
+        return movies;
     }
 }
