@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
 import br.com.adalbertofjr.popularmovies.R;
+import br.com.adalbertofjr.popularmovies.model.Movies;
 import br.com.adalbertofjr.popularmovies.ui.fragments.DetailMovieFragment;
 
 /**
@@ -26,8 +27,9 @@ public class DetailActivity extends AppCompatActivity {
         Intent intent = getIntent();
 
         if (intent != null) {
-            String movieExtra = intent.getStringExtra(Intent.EXTRA_TEXT);
-            DetailMovieFragment dmf = DetailMovieFragment.newInstance(movieExtra);
+            Movies movie = intent.getParcelableExtra("movie");
+
+            DetailMovieFragment dmf = DetailMovieFragment.newInstance(movie.getOriginal_title());
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.fl_detail_container, dmf, null)

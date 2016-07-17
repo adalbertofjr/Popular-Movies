@@ -1,5 +1,8 @@
 package br.com.adalbertofjr.popularmovies.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Popular Movies
  * Movies
@@ -8,7 +11,7 @@ package br.com.adalbertofjr.popularmovies.model;
  * Copyright © 2016 - Adalberto Fernandes Júnior. All rights reserved.
  */
 
-public class Movies {
+public class Movies implements Parcelable {
     private String backdrop_path;
     private String poster_path;
     private String vote_average;
@@ -27,6 +30,27 @@ public class Movies {
         this.release_date = release_date;
         this.overview = overview;
     }
+
+    protected Movies(Parcel in) {
+        backdrop_path = in.readString();
+        poster_path = in.readString();
+        vote_average = in.readString();
+        original_title = in.readString();
+        release_date = in.readString();
+        overview = in.readString();
+    }
+
+    public static final Creator<Movies> CREATOR = new Creator<Movies>() {
+        @Override
+        public Movies createFromParcel(Parcel in) {
+            return new Movies(in);
+        }
+
+        @Override
+        public Movies[] newArray(int size) {
+            return new Movies[size];
+        }
+    };
 
     public String getBackdrop_path() {
         return backdrop_path;
@@ -79,5 +103,20 @@ public class Movies {
     @Override
     public String toString() {
         return this.original_title;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(backdrop_path);
+        parcel.writeString(poster_path);
+        parcel.writeString(vote_average);
+        parcel.writeString(original_title);
+        parcel.writeString(release_date);
+        parcel.writeString(overview);
     }
 }

@@ -70,8 +70,10 @@ public class MoviesFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapter, View v, int position, long id) {
+                Movies movie = (Movies) adapter.getItemAtPosition(position);
                 Intent intent = new Intent(getActivity(), DetailActivity.class);
-                intent.putExtra(Intent.EXTRA_TEXT, "Position: " + position);
+                //intent.putExtra(Intent.EXTRA_TEXT, "Movie: " + movie.getOriginal_title());
+                intent.putExtra("movie", movie);
                 startActivity(intent);
             }
         });
