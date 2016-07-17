@@ -3,10 +3,13 @@ package br.com.adalbertofjr.popularmovies.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import br.com.adalbertofjr.popularmovies.util.Constants;
+import br.com.adalbertofjr.popularmovies.util.Util;
+
 /**
  * Popular Movies
  * Movies
- * <p>
+ * <p/>
  * Created by Adalberto Fernandes Júnior on 16/07/2016.
  * Copyright © 2016 - Adalberto Fernandes Júnior. All rights reserved.
  */
@@ -99,6 +102,15 @@ public class Movies implements Parcelable {
     public void setOverview(String overview) {
         this.overview = overview;
     }
+
+    public String getPosterUrlPath() {
+        return Util.buildImageUrl(Constants.MOVIE_POSTER_PATH_URL + this.getPoster_path());
+    }
+
+    public String getBackDropUrlPath() {
+        return Util.buildImageUrl(Constants.MOVIE_BACKDROP_PATH_URL + this.getBackdrop_path());
+    }
+
 
     @Override
     public String toString() {

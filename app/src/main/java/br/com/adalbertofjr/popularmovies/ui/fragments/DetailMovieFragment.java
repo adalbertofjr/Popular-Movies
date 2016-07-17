@@ -1,6 +1,5 @@
 package br.com.adalbertofjr.popularmovies.ui.fragments;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,6 +14,7 @@ import com.squareup.picasso.Picasso;
 
 import br.com.adalbertofjr.popularmovies.R;
 import br.com.adalbertofjr.popularmovies.model.Movies;
+import br.com.adalbertofjr.popularmovies.util.Constants;
 
 /**
  * Popular Movies
@@ -33,7 +33,7 @@ public class DetailMovieFragment extends Fragment {
     public static DetailMovieFragment newInstance(Movies movie) {
         DetailMovieFragment dmf = new DetailMovieFragment();
         Bundle bundle = new Bundle();
-        bundle.putParcelable("movie", movie);
+        bundle.putParcelable(Constants.MOVIE_DETAIL_EXTRA, movie);
         dmf.setArguments(bundle);
 
         return dmf;
@@ -42,7 +42,7 @@ public class DetailMovieFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mMovie = (Movies) getArguments().getParcelable("movie");
+        mMovie = getArguments().getParcelable(Constants.MOVIE_DETAIL_EXTRA);
     }
 
     @Nullable
@@ -50,26 +50,12 @@ public class DetailMovieFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_detail_movie, container, false);
 
-        String MOVIE_BACKDROP_URL = "http://image.tmdb.org/t/p/w500/";
-        Uri.Builder uriBackdrop = Uri.parse(MOVIE_BACKDROP_URL)
-                .buildUpon()
-                .appendEncodedPath(mMovie.getBackdrop_path());
-
-        String urlBackDrop = uriBackdrop.build().toString();
-
-        String MOVIE_POSTER_URL = "http://image.tmdb.org/t/p/w185";
-        Uri.Builder uriPoster = Uri.parse(MOVIE_POSTER_URL)
-                .buildUpon()
-                .appendEncodedPath(mMovie.getPoster_path());
-
-        final String urlPoster = uriPoster.build().toString();
-
         Picasso.with(getContext())
-                .load(urlBackDrop)
+                .load(mMovie.getBackDropUrlPath())
                 .into((ImageView) rootView.findViewById(R.id.iv_detail_backgrouns), new Callback() {
                     @Override
                     public void onSuccess() {
-                        Picasso.with(getContext()).load(urlPoster).into((ImageView) rootView.findViewById(R.id.iv_detail_poster));
+                        Picasso.with(getContext()).load(mMovie.getPosterUrlPath()).into((ImageView) rootView.findViewById(R.id.iv_detail_poster));
                         ((TextView) rootView.findViewById(R.id.tv_detail_title)).setText(mMovie.getOriginal_title());
                         ((TextView) rootView.findViewById(R.id.tv_detail_title)).setText(mMovie.getOriginal_title());
                         ((TextView) rootView.findViewById(R.id.tv_detail_dt_release)).setText(mMovie.getRelease_date());
@@ -82,8 +68,6 @@ public class DetailMovieFragment extends Fragment {
 
                     }
                 });
-
-
         return rootView;
     }
 }
