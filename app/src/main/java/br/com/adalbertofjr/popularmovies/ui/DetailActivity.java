@@ -29,7 +29,7 @@ public class DetailActivity extends AppCompatActivity {
         if (intent != null) {
             Movies movie = intent.getParcelableExtra("movie");
 
-            DetailMovieFragment dmf = DetailMovieFragment.newInstance(movie.getOriginal_title());
+            DetailMovieFragment dmf = DetailMovieFragment.newInstance(movie);
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.fl_detail_container, dmf, null)
