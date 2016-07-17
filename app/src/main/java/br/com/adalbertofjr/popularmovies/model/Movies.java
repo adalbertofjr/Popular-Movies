@@ -4,7 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import br.com.adalbertofjr.popularmovies.util.Constants;
-import br.com.adalbertofjr.popularmovies.util.Util;
 
 /**
  * Popular Movies
@@ -104,13 +103,12 @@ public class Movies implements Parcelable {
     }
 
     public String getPosterUrlPath() {
-        return Util.buildImageUrl(Constants.MOVIE_IMAGE_POSTER_PATH_URL + this.getPoster_path());
+        return Constants.MOVIE_IMAGE_POSTER_URL + this.getPoster_path();
     }
 
     public String getBackDropUrlPath() {
-        return Util.buildImageUrl(Constants.MOVIE_IMAGE_BACKDROP_PATH_URL + this.getBackdrop_path());
+        return Constants.MOVIE_IMAGE_BACKDROP_URL + this.getBackdrop_path();
     }
-
 
     @Override
     public String toString() {

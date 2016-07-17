@@ -17,7 +17,7 @@ public class Util {
      * @param path
      * @return
      */
-    public static String buildImageUrl(String path) {
+    public static String buildUrl(String path) {
         Uri.Builder uriBackdrop = Uri.parse(path)
                 .buildUpon();
         return uriBackdrop.build().toString();

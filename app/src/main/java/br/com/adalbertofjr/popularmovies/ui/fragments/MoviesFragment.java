@@ -1,7 +1,6 @@
 package br.com.adalbertofjr.popularmovies.ui.fragments;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -39,7 +38,7 @@ import br.com.adalbertofjr.popularmovies.util.Constants;
 /**
  * Popular Movies
  * MoviesFragment
- * <p>
+ * <p/>
  * Created by Adalberto Fernandes Júnior on 10/07/2016.
  * Copyright © 2016 - Adalberto Fernandes Júnior. All rights reserved.
  */
@@ -70,18 +69,28 @@ public class MoviesFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapter, View v, int position, long id) {
-                Movies movie = (Movies) adapter.getItemAtPosition(position);
-                Intent intent = new Intent(getActivity(), DetailActivity.class);
-                //intent.putExtra(Intent.EXTRA_TEXT, "Movie: " + movie.getOriginal_title());
-                intent.putExtra("movie", movie);
-                startActivity(intent);
+                startDetailMovie((Movies) adapter.getItemAtPosition(position));
             }
         });
 
+        return rootView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        startFetchMoviesTask();
+    }
+
+    private void startFetchMoviesTask() {
         FetchMoviesTask moviesTask = new FetchMoviesTask();
         moviesTask.execute();
+    }
 
-        return rootView;
+    private void startDetailMovie(Movies movie) {
+        Intent intent = new Intent(getActivity(), DetailActivity.class);
+        intent.putExtra(Constants.MOVIE_DETAIL_EXTRA, movie);
+        startActivity(intent);
     }
 
     @Override
@@ -100,8 +109,7 @@ public class MoviesFragment extends Fragment {
         }
 
         if (id == R.id.action_refresh) {
-            FetchMoviesTask fetchMoviesTask = new FetchMoviesTask();
-            fetchMoviesTask.execute();
+            startFetchMoviesTask();
             return true;
         }
 
@@ -109,7 +117,6 @@ public class MoviesFragment extends Fragment {
     }
 
     private class FetchMoviesTask extends AsyncTask<Void, Void, List<Movies>> {
-
         private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
 
         @Override
@@ -121,12 +128,7 @@ public class MoviesFragment extends Fragment {
             String moviesJsonString = null;
 
             try {
-                String apiKey = Constants.THE_MOVIE_DB_API_KEY;
-                Uri.Builder uri =
-                        Uri.parse("http://api.themoviedb.org/3/movie/popular?api_key=" + apiKey)
-                                .buildUpon();
-
-                URL url = new URL(uri.build().toString());
+                URL url = new URL(Constants.MOVIES_POPULAR_URL);
 
                 // Create the request to OpenWeatherMap, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
@@ -156,7 +158,6 @@ public class MoviesFragment extends Fragment {
                 }
 
                 moviesJsonString = buffer.toString();
-                //Log.v(LOG_TAG, "Movie JSON String: " + moviesJsonString);
 
                 try {
                     return getMoviesDataFromJson(moviesJsonString);
@@ -197,17 +198,8 @@ public class MoviesFragment extends Fragment {
     private List<Movies> getMoviesDataFromJson(String moviesJsonString)
             throws JSONException {
 
-        //Json objects names
-        final String OWM_LIST = "results";
-        final String OWN_BACKGROUND = "backdrop_path";
-        final String OWN_POSTER = "poster_path";
-        final String OWN_VOTE_AVERAGE = "vote_average";
-        final String OWN_TITLE = "original_title";
-        final String OWN_RELEASE_DATE = "release_date";
-        final String OWN_OVERVIEW = "overview";
-
         JSONObject moviesJson = new JSONObject(moviesJsonString);
-        JSONArray moviesArray = moviesJson.getJSONArray(OWM_LIST);
+        JSONArray moviesArray = moviesJson.getJSONArray(Constants.MOVIES_LIST_KEY);
 
         List<Movies> movies = new ArrayList<>();
 
@@ -221,12 +213,12 @@ public class MoviesFragment extends Fragment {
 
             JSONObject movieData = moviesArray.getJSONObject(i);
 
-            backdrop_path = movieData.getString(OWN_BACKGROUND);
-            poster_path = movieData.getString(OWN_POSTER);
-            vote_average = movieData.getString(OWN_VOTE_AVERAGE);
-            original_title = movieData.getString(OWN_TITLE);
-            release_date = movieData.getString(OWN_RELEASE_DATE);
-            overview = movieData.getString(OWN_OVERVIEW);
+            backdrop_path = movieData.getString(Constants.MOVIES_BACKGROUND_KEY);
+            poster_path = movieData.getString(Constants.MOVIES_POSTER_KEY);
+            vote_average = movieData.getString(Constants.MOVIES_VOTE_AVERAGE_KEY);
+            original_title = movieData.getString(Constants.MOVIES_TITLE_KEY);
+            release_date = movieData.getString(Constants.MOVIES_RELEASE_DATE_KEY);
+            overview = movieData.getString(Constants.MOVIES_OVERVIEW_KEY);
 
             Movies movie = new Movies(backdrop_path,
                     poster_path,
