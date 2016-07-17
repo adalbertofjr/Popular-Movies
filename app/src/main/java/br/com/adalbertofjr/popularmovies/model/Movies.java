@@ -104,11 +104,11 @@ public class Movies implements Parcelable {
     }
 
     public String getPosterUrlPath() {
-        return Util.buildImageUrl(Constants.MOVIE_POSTER_PATH_URL + this.getPoster_path());
+        return Util.buildImageUrl(Constants.MOVIE_IMAGE_POSTER_PATH_URL + this.getPoster_path());
     }
 
     public String getBackDropUrlPath() {
-        return Util.buildImageUrl(Constants.MOVIE_BACKDROP_PATH_URL + this.getBackdrop_path());
+        return Util.buildImageUrl(Constants.MOVIE_IMAGE_BACKDROP_PATH_URL + this.getBackdrop_path());
     }
 
 
