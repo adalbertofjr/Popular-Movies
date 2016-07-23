@@ -1,10 +1,8 @@
 package br.com.adalbertofjr.popularmovies.ui.fragments;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -36,6 +34,7 @@ import br.com.adalbertofjr.popularmovies.ui.DetailActivity;
 import br.com.adalbertofjr.popularmovies.ui.SettingsActivity;
 import br.com.adalbertofjr.popularmovies.ui.adapters.MoviesImageAdapter;
 import br.com.adalbertofjr.popularmovies.util.Constants;
+import br.com.adalbertofjr.popularmovies.util.Util;
 
 /**
  * Popular Movies
@@ -127,10 +126,10 @@ public class MoviesFragment extends Fragment {
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
 
-            String moviesJsonString = null;
+            String moviesJsonString;
 
             try {
-                String optionSortFetchMovies = getOptionSortPreference();
+                String optionSortFetchMovies = Util.getOptionSortFetchMovies(getActivity());
                 URL url = new URL(optionSortFetchMovies);
 
                 // Create the request to OpenWeatherMap, and open the connection
@@ -140,7 +139,7 @@ public class MoviesFragment extends Fragment {
 
                 // Read the input stream into a String
                 InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
+                StringBuilder buffer = new StringBuilder();
                 if (inputStream == null) {
                     // Nothing to do.
                     return null;
@@ -152,7 +151,7 @@ public class MoviesFragment extends Fragment {
                     // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
                     // But it does make debugging a *lot* easier if you print out the completed
                     // buffer for debugging.
-                    buffer.append(line + "\n");
+                    buffer.append(line).append("\n");
                 }
 
                 if (buffer.length() == 0) {
@@ -235,15 +234,4 @@ public class MoviesFragment extends Fragment {
         return movies;
     }
 
-    private String getOptionSortPreference() {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String option = sharedPref.getString(getString(R.string.pref_sort_options_key),
-                getString(R.string.pref_sort_option_default));
-
-        if (option.equals(Constants.MOVIES_POPULAR_PATH)) {
-            return Constants.MOVIES_POPULAR_URL;
-        }
-
-        return Constants.MOVIES_TOP_RATED_URL;
-    }
 }
