@@ -1,8 +1,10 @@
 package br.com.adalbertofjr.popularmovies.ui.fragments;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -128,7 +130,8 @@ public class MoviesFragment extends Fragment {
             String moviesJsonString = null;
 
             try {
-                URL url = new URL(Constants.MOVIES_POPULAR_URL);
+                String optionSortFetchMovies = getOptionSortPreference();
+                URL url = new URL(optionSortFetchMovies);
 
                 // Create the request to OpenWeatherMap, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
@@ -194,7 +197,6 @@ public class MoviesFragment extends Fragment {
         }
     }
 
-
     private List<Movies> getMoviesDataFromJson(String moviesJsonString)
             throws JSONException {
 
@@ -231,5 +233,17 @@ public class MoviesFragment extends Fragment {
         }
 
         return movies;
+    }
+
+    private String getOptionSortPreference() {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String option = sharedPref.getString(getString(R.string.pref_sort_options_key),
+                getString(R.string.pref_sort_option_default));
+
+        if (option.equals(Constants.MOVIES_POPULAR_PATH)) {
+            return Constants.MOVIES_POPULAR_URL;
+        }
+
+        return Constants.MOVIES_TOP_RATED_URL;
     }
 }
