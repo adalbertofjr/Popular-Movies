@@ -109,11 +109,6 @@ public class MoviesFragment extends Fragment {
             return true;
         }
 
-        if (id == R.id.action_refresh) {
-            startFetchMoviesTask();
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
