@@ -34,6 +34,7 @@ import br.com.adalbertofjr.popularmovies.ui.DetailActivity;
 import br.com.adalbertofjr.popularmovies.ui.SettingsActivity;
 import br.com.adalbertofjr.popularmovies.ui.adapters.MoviesImageAdapter;
 import br.com.adalbertofjr.popularmovies.util.Constants;
+import br.com.adalbertofjr.popularmovies.util.Util;
 
 /**
  * Popular Movies
@@ -108,11 +109,6 @@ public class MoviesFragment extends Fragment {
             return true;
         }
 
-        if (id == R.id.action_refresh) {
-            startFetchMoviesTask();
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -125,10 +121,11 @@ public class MoviesFragment extends Fragment {
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
 
-            String moviesJsonString = null;
+            String moviesJsonString;
 
             try {
-                URL url = new URL(Constants.MOVIES_POPULAR_URL);
+                String optionSortFetchMovies = Util.getOptionSortFetchMovies(getActivity());
+                URL url = new URL(optionSortFetchMovies);
 
                 // Create the request to OpenWeatherMap, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
@@ -137,7 +134,7 @@ public class MoviesFragment extends Fragment {
 
                 // Read the input stream into a String
                 InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
+                StringBuilder buffer = new StringBuilder();
                 if (inputStream == null) {
                     // Nothing to do.
                     return null;
@@ -149,7 +146,7 @@ public class MoviesFragment extends Fragment {
                     // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
                     // But it does make debugging a *lot* easier if you print out the completed
                     // buffer for debugging.
-                    buffer.append(line + "\n");
+                    buffer.append(line).append("\n");
                 }
 
                 if (buffer.length() == 0) {
@@ -194,7 +191,6 @@ public class MoviesFragment extends Fragment {
         }
     }
 
-
     private List<Movies> getMoviesDataFromJson(String moviesJsonString)
             throws JSONException {
 
@@ -232,4 +228,5 @@ public class MoviesFragment extends Fragment {
 
         return movies;
     }
+
 }
