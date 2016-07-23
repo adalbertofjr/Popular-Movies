@@ -21,6 +21,7 @@ public class Util {
 
     /**
      * Recupera o tipo de busca por filmes (Most Popular/Top Rated)
+     *
      * @param context
      * @return url com o tipo de busca por filmes
      */
@@ -42,6 +43,7 @@ public class Util {
 
     /**
      * Monta o caminho da imagem
+     *
      * @param path
      * @return string url
      */
