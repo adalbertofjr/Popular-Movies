@@ -26,7 +26,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 
 import br.com.adalbertofjr.popularmovies.R;
 import br.com.adalbertofjr.popularmovies.model.Movies;
@@ -46,7 +45,9 @@ import br.com.adalbertofjr.popularmovies.util.Util;
 
 public class MoviesFragment extends Fragment {
 
+    private static final String MOVIES_INSTANCE_STATE = "movies";
     private MoviesImageAdapter mMoviesAdapter;
+    private ArrayList<Movies> mMovies;
 
     public MoviesFragment() {
     }
@@ -55,6 +56,9 @@ public class MoviesFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        if (savedInstanceState != null && savedInstanceState.containsKey(MOVIES_INSTANCE_STATE)) {
+            mMovies = savedInstanceState.getParcelableArrayList(MOVIES_INSTANCE_STATE);
+        }
     }
 
     @Nullable
@@ -80,12 +84,22 @@ public class MoviesFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        startFetchMoviesTask();
+        if (mMovies == null) {
+            startFetchMoviesTask();
+        } else {
+            updateMoviesAdapter(mMovies);
+        }
     }
 
     private void startFetchMoviesTask() {
         FetchMoviesTask moviesTask = new FetchMoviesTask();
         moviesTask.execute();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(MOVIES_INSTANCE_STATE, mMovies);
     }
 
     private void startDetailMovie(Movies movie) {
@@ -112,11 +126,11 @@ public class MoviesFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    private class FetchMoviesTask extends AsyncTask<Void, Void, List<Movies>> {
+    private class FetchMoviesTask extends AsyncTask<Void, Void, ArrayList<Movies>> {
         private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
 
         @Override
-        protected List<Movies> doInBackground(Void... voids) {
+        protected ArrayList<Movies> doInBackground(Void... voids) {
 
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
@@ -182,22 +196,27 @@ public class MoviesFragment extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(List<Movies> movies) {
+        protected void onPostExecute(ArrayList<Movies> movies) {
             super.onPostExecute(movies);
-            if (movies != null) {
-                mMoviesAdapter.clear();
-                mMoviesAdapter.addAll(movies);
-            }
+            updateMoviesAdapter(movies);
         }
     }
 
-    private List<Movies> getMoviesDataFromJson(String moviesJsonString)
+    private void updateMoviesAdapter(ArrayList<Movies> movies) {
+        if (movies != null) {
+            if (mMovies == null) mMovies = movies;
+            mMoviesAdapter.clear();
+            mMoviesAdapter.addAll(movies);
+        }
+    }
+
+    private ArrayList<Movies> getMoviesDataFromJson(String moviesJsonString)
             throws JSONException {
 
         JSONObject moviesJson = new JSONObject(moviesJsonString);
         JSONArray moviesArray = moviesJson.getJSONArray(Constants.MOVIES_LIST_KEY);
 
-        List<Movies> movies = new ArrayList<>();
+        ArrayList<Movies> movies = new ArrayList<>();
 
         for (int i = 0; i < moviesArray.length(); i++) {
             String backdrop_path;
