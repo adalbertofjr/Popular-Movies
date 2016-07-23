@@ -13,6 +13,7 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import br.com.adalbertofjr.popularmovies.model.Movies;
+import br.com.adalbertofjr.popularmovies.util.Constants;
 
 /**
  * Popular Movies
@@ -40,8 +41,7 @@ public class MoviesImageAdapter extends ArrayAdapter<Movies> {
             imageView = (ImageView) convertView;
         }
 
-        String MOVIE_IMAGE_URL = "http://image.tmdb.org/t/p/w185";
-        Uri.Builder uriImage = Uri.parse(MOVIE_IMAGE_URL)
+        Uri.Builder uriImage = Uri.parse(Constants.MOVIE_IMAGE_POSTER_URL)
                 .buildUpon()
                 .appendEncodedPath(movie.getPoster_path());
         String urlPoster = uriImage.build().toString();
