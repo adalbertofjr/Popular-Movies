@@ -50,24 +50,27 @@ public class DetailMovieFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_detail_movie, container, false);
 
-        Picasso.with(getContext())
-                .load(mMovie.getBackDropUrlPath())
-                .into((ImageView) rootView.findViewById(R.id.iv_detail_backgrouns), new Callback() {
-                    @Override
-                    public void onSuccess() {
-                        Picasso.with(getContext()).load(mMovie.getPosterUrlPath()).into((ImageView) rootView.findViewById(R.id.iv_detail_poster));
-                        ((TextView) rootView.findViewById(R.id.tv_detail_title)).setText(mMovie.getOriginal_title());
-                        ((TextView) rootView.findViewById(R.id.tv_detail_title)).setText(mMovie.getOriginal_title());
-                        ((TextView) rootView.findViewById(R.id.tv_detail_dt_release)).setText(mMovie.getRelease_date());
-                        ((TextView) rootView.findViewById(R.id.tv_detail_vote_average)).setText(mMovie.getVote_average());
-                        ((TextView) rootView.findViewById(R.id.tv_detail_overview)).setText(mMovie.getOverview());
-                    }
+        if (mMovie != null) {
+            Picasso.with(getContext())
+                    .load(mMovie.getBackDropUrlPath())
+                    .into((ImageView) rootView.findViewById(R.id.iv_detail_backgrouns), new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            Picasso.with(getContext()).load(mMovie.getPosterUrlPath()).into((ImageView) rootView.findViewById(R.id.iv_detail_poster));
+                            ((TextView) rootView.findViewById(R.id.tv_detail_title)).setText(mMovie.getOriginal_title());
+                            ((TextView) rootView.findViewById(R.id.tv_detail_title)).setText(mMovie.getOriginal_title());
+                            ((TextView) rootView.findViewById(R.id.tv_detail_dt_release)).setText(mMovie.getRelease_date());
+                            ((TextView) rootView.findViewById(R.id.tv_detail_vote_average)).setText(mMovie.getVote_average());
+                            ((TextView) rootView.findViewById(R.id.tv_detail_overview)).setText(mMovie.getOverview());
+                        }
 
-                    @Override
-                    public void onError() {
+                        @Override
+                        public void onError() {
 
-                    }
-                });
+                        }
+                    });
+        }
+
         return rootView;
     }
 }
