@@ -83,20 +83,20 @@ public class MoviesFragment extends Fragment {
     public void onStart() {
         super.onStart();
         if (mMovies == null) {
-            if (Util.isConnected(getActivity())) {
-                startFetchMoviesTask();
-            } else {
-                hideProgressBar();
-                mGridMovies.setEmptyView(mErrorMessage);
-            }
+            startFetchMoviesTask();
         } else {
             updateMoviesAdapter(mMovies);
         }
     }
 
     private void startFetchMoviesTask() {
-        FetchMoviesTask moviesTask = new FetchMoviesTask();
-        moviesTask.execute();
+        if (Util.isConnected(getActivity())) {
+            FetchMoviesTask moviesTask = new FetchMoviesTask();
+            moviesTask.execute();
+        } else {
+            hideProgressBar();
+            mGridMovies.setEmptyView(mErrorMessage);
+        }
     }
 
     @Override
@@ -114,6 +114,16 @@ public class MoviesFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+
+        if (id == R.id.action_refresh) {
+            if (Util.isConnected(getActivity())) {
+                startFetchMoviesTask();
+            } else {
+                hideProgressBar();
+                mGridMovies.setEmptyView(mErrorMessage);
+            }
+            return true;
+        }
 
         if (id == R.id.action_settings) {
             startActivity(new Intent(getActivity(), SettingsActivity.class));
