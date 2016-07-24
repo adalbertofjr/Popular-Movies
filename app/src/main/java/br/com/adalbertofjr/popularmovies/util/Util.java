@@ -2,6 +2,8 @@ package br.com.adalbertofjr.popularmovies.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -51,5 +53,13 @@ public class Util {
         Uri.Builder uriBackdrop = Uri.parse(path)
                 .buildUpon();
         return uriBackdrop.build().toString();
+    }
+
+    //Thank's to http://stackoverflow.com/a/4009133
+    public static boolean isConnected(Context context) {
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnectedOrConnecting();
     }
 }

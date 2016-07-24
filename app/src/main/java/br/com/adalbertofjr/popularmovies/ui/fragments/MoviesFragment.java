@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,6 +51,8 @@ public class MoviesFragment extends Fragment {
     private MoviesImageAdapter mMoviesAdapter;
     private ArrayList<Movies> mMovies;
     private ProgressBar mMoviesProgressBar;
+    private GridView mGridMovies;
+    private TextView mErrorMessage;
 
     public MoviesFragment() {
     }
@@ -68,13 +71,14 @@ public class MoviesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_movies, container, false);
 
-        GridView gridView = (GridView) rootView.findViewById(R.id.gv_movies_fragment);
+        mGridMovies = (GridView) rootView.findViewById(R.id.gv_movies_fragment);
         mMoviesProgressBar = (ProgressBar) rootView.findViewById(R.id.pb_movies_progress);
+        mErrorMessage = (TextView) rootView.findViewById(R.id.tv_movies_error_message);
 
         mMoviesAdapter = new MoviesImageAdapter(getActivity(), new ArrayList<Movies>());
-        gridView.setAdapter(mMoviesAdapter);
+        mGridMovies.setAdapter(mMoviesAdapter);
 
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mGridMovies.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapter, View v, int position, long id) {
                 startDetailMovie((Movies) adapter.getItemAtPosition(position));
@@ -88,7 +92,12 @@ public class MoviesFragment extends Fragment {
     public void onStart() {
         super.onStart();
         if (mMovies == null) {
-            startFetchMoviesTask();
+            if (Util.isConnected(getActivity())) {
+                startFetchMoviesTask();
+            } else {
+                hideProgressBar();
+                mGridMovies.setEmptyView(mErrorMessage);
+            }
         } else {
             updateMoviesAdapter(mMovies);
         }
@@ -207,14 +216,18 @@ public class MoviesFragment extends Fragment {
 
     private void updateMoviesAdapter(ArrayList<Movies> movies) {
         if (movies != null) {
-            if (mMoviesProgressBar.getVisibility() == View.VISIBLE) {
-                mMoviesProgressBar.setVisibility(View.GONE);
-            }
+            hideProgressBar();
 
             if (mMovies == null) mMovies = movies;
 
             mMoviesAdapter.clear();
             mMoviesAdapter.addAll(movies);
+        }
+    }
+
+    private void hideProgressBar() {
+        if (mMoviesProgressBar.getVisibility() == View.VISIBLE) {
+            mMoviesProgressBar.setVisibility(View.GONE);
         }
     }
 
