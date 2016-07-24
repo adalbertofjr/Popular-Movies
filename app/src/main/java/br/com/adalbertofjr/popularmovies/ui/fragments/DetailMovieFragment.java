@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Callback;
@@ -15,6 +16,7 @@ import com.squareup.picasso.Picasso;
 import br.com.adalbertofjr.popularmovies.R;
 import br.com.adalbertofjr.popularmovies.model.Movies;
 import br.com.adalbertofjr.popularmovies.util.Constants;
+import br.com.adalbertofjr.popularmovies.util.Util;
 
 /**
  * Popular Movies
@@ -26,6 +28,7 @@ import br.com.adalbertofjr.popularmovies.util.Constants;
 
 public class DetailMovieFragment extends Fragment {
     private Movies mMovie;
+    private ProgressBar mProgressBar;
 
     public DetailMovieFragment() {
     }
@@ -49,29 +52,42 @@ public class DetailMovieFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_detail_movie, container, false);
+        mProgressBar = (ProgressBar) rootView.findViewById(R.id.pb_detail_progress);
+        TextView errorMessage = (TextView) rootView.findViewById(R.id.tv_detail_error_message);
 
         if (mMovie != null) {
-            Picasso.with(getContext())
-                    .load(mMovie.getBackDropUrlPath())
-                    .into((ImageView) rootView.findViewById(R.id.iv_detail_background), new Callback() {
-                        @Override
-                        public void onSuccess() {
-                            rootView.findViewById(R.id.pb_detail_progress).setVisibility(View.GONE);
-                            Picasso.with(getContext()).load(mMovie.getPosterUrlPath()).into((ImageView) rootView.findViewById(R.id.iv_detail_poster));
-                            ((TextView) rootView.findViewById(R.id.tv_detail_title)).setText(mMovie.getOriginal_title());
-                            ((TextView) rootView.findViewById(R.id.tv_detail_title)).setText(mMovie.getOriginal_title());
-                            ((TextView) rootView.findViewById(R.id.tv_detail_dt_release)).setText(mMovie.getRelease_date());
-                            ((TextView) rootView.findViewById(R.id.tv_detail_vote_average)).setText(mMovie.getVote_average());
-                            ((TextView) rootView.findViewById(R.id.tv_detail_overview)).setText(mMovie.getOverview());
-                        }
+            if (Util.isConnected(getActivity())) {
+                Picasso.with(getContext())
+                        .load(mMovie.getBackDropUrlPath())
+                        .into((ImageView) rootView.findViewById(R.id.iv_detail_background), new Callback() {
+                            @Override
+                            public void onSuccess() {
+                                hideProgressBar();
+                                Picasso.with(getContext()).load(mMovie.getPosterUrlPath()).into((ImageView) rootView.findViewById(R.id.iv_detail_poster));
+                                ((TextView) rootView.findViewById(R.id.tv_detail_title)).setText(mMovie.getOriginal_title());
+                                ((TextView) rootView.findViewById(R.id.tv_detail_title)).setText(mMovie.getOriginal_title());
+                                ((TextView) rootView.findViewById(R.id.tv_detail_dt_release)).setText(mMovie.getRelease_date());
+                                ((TextView) rootView.findViewById(R.id.tv_detail_vote_average)).setText(mMovie.getVote_average());
+                                ((TextView) rootView.findViewById(R.id.tv_detail_overview)).setText(mMovie.getOverview());
+                            }
 
-                        @Override
-                        public void onError() {
+                            @Override
+                            public void onError() {
 
-                        }
-                    });
+                            }
+                        });
+            } else {
+                hideProgressBar();
+                errorMessage.setVisibility(View.VISIBLE);
+            }
         }
 
         return rootView;
+    }
+
+    private void hideProgressBar() {
+        if (mProgressBar != null && mProgressBar.getVisibility() == View.VISIBLE) {
+            mProgressBar.setVisibility(View.GONE);
+        }
     }
 }
