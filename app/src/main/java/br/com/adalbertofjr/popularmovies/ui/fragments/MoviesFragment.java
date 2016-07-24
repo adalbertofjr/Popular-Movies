@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ProgressBar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -48,6 +49,7 @@ public class MoviesFragment extends Fragment {
     private static final String MOVIES_INSTANCE_STATE = "movies";
     private MoviesImageAdapter mMoviesAdapter;
     private ArrayList<Movies> mMovies;
+    private ProgressBar mMoviesProgressBar;
 
     public MoviesFragment() {
     }
@@ -67,6 +69,7 @@ public class MoviesFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_movies, container, false);
 
         GridView gridView = (GridView) rootView.findViewById(R.id.gv_movies_fragment);
+        mMoviesProgressBar = (ProgressBar) rootView.findViewById(R.id.pb_movies_progress);
 
         mMoviesAdapter = new MoviesImageAdapter(getActivity(), new ArrayList<Movies>());
         gridView.setAdapter(mMoviesAdapter);
@@ -204,7 +207,12 @@ public class MoviesFragment extends Fragment {
 
     private void updateMoviesAdapter(ArrayList<Movies> movies) {
         if (movies != null) {
+            if (mMoviesProgressBar.getVisibility() == View.VISIBLE) {
+                mMoviesProgressBar.setVisibility(View.GONE);
+            }
+
             if (mMovies == null) mMovies = movies;
+
             mMoviesAdapter.clear();
             mMoviesAdapter.addAll(movies);
         }

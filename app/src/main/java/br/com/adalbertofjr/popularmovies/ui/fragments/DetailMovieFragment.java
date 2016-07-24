@@ -53,9 +53,10 @@ public class DetailMovieFragment extends Fragment {
         if (mMovie != null) {
             Picasso.with(getContext())
                     .load(mMovie.getBackDropUrlPath())
-                    .into((ImageView) rootView.findViewById(R.id.iv_detail_backgrouns), new Callback() {
+                    .into((ImageView) rootView.findViewById(R.id.iv_detail_background), new Callback() {
                         @Override
                         public void onSuccess() {
+                            rootView.findViewById(R.id.pb_detail_progress).setVisibility(View.GONE);
                             Picasso.with(getContext()).load(mMovie.getPosterUrlPath()).into((ImageView) rootView.findViewById(R.id.iv_detail_poster));
                             ((TextView) rootView.findViewById(R.id.tv_detail_title)).setText(mMovie.getOriginal_title());
                             ((TextView) rootView.findViewById(R.id.tv_detail_title)).setText(mMovie.getOriginal_title());
