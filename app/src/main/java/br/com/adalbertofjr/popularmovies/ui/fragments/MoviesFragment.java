@@ -12,7 +12,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -31,7 +30,6 @@ import java.util.ArrayList;
 
 import br.com.adalbertofjr.popularmovies.R;
 import br.com.adalbertofjr.popularmovies.model.Movies;
-import br.com.adalbertofjr.popularmovies.ui.DetailActivity;
 import br.com.adalbertofjr.popularmovies.ui.SettingsActivity;
 import br.com.adalbertofjr.popularmovies.ui.adapters.MoviesImageAdapter;
 import br.com.adalbertofjr.popularmovies.util.Constants;
@@ -78,13 +76,6 @@ public class MoviesFragment extends Fragment {
         mMoviesAdapter = new MoviesImageAdapter(getActivity(), new ArrayList<Movies>());
         mGridMovies.setAdapter(mMoviesAdapter);
 
-        mGridMovies.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapter, View v, int position, long id) {
-                startDetailMovie((Movies) adapter.getItemAtPosition(position));
-            }
-        });
-
         return rootView;
     }
 
@@ -92,32 +83,26 @@ public class MoviesFragment extends Fragment {
     public void onStart() {
         super.onStart();
         if (mMovies == null) {
-            if (Util.isConnected(getActivity())) {
-                startFetchMoviesTask();
-            } else {
-                hideProgressBar();
-                mGridMovies.setEmptyView(mErrorMessage);
-            }
+            startFetchMoviesTask();
         } else {
             updateMoviesAdapter(mMovies);
         }
     }
 
     private void startFetchMoviesTask() {
-        FetchMoviesTask moviesTask = new FetchMoviesTask();
-        moviesTask.execute();
+        if (Util.isConnected(getActivity())) {
+            FetchMoviesTask moviesTask = new FetchMoviesTask();
+            moviesTask.execute();
+        } else {
+            hideProgressBar();
+            mGridMovies.setEmptyView(mErrorMessage);
+        }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList(MOVIES_INSTANCE_STATE, mMovies);
-    }
-
-    private void startDetailMovie(Movies movie) {
-        Intent intent = new Intent(getActivity(), DetailActivity.class);
-        intent.putExtra(Constants.MOVIE_DETAIL_EXTRA, movie);
-        startActivity(intent);
     }
 
     @Override
@@ -129,6 +114,16 @@ public class MoviesFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+
+        if (id == R.id.action_refresh) {
+            if (Util.isConnected(getActivity())) {
+                startFetchMoviesTask();
+            } else {
+                hideProgressBar();
+                mGridMovies.setEmptyView(mErrorMessage);
+            }
+            return true;
+        }
 
         if (id == R.id.action_settings) {
             startActivity(new Intent(getActivity(), SettingsActivity.class));
