@@ -15,6 +15,9 @@ import android.widget.TextView;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
 import br.com.adalbertofjr.popularmovies.R;
 import br.com.adalbertofjr.popularmovies.model.Movies;
 import br.com.adalbertofjr.popularmovies.util.Constants;
@@ -23,7 +26,7 @@ import br.com.adalbertofjr.popularmovies.util.Util;
 /**
  * Popular Movies
  * DetailFragment
- * <p/>
+ * <p>
  * Created by Adalberto Fernandes Júnior on 10/07/2016.
  * Copyright © 2016 - Adalberto Fernandes Júnior. All rights reserved.
  */
@@ -64,6 +67,7 @@ public class DetailMovieFragment extends Fragment {
                 supportActionBar.setTitle(mMovie.getOriginal_title());
             }
 
+
             if (Util.isConnected(getActivity())) {
                 Picasso.with(getContext())
                         .load(mMovie.getPosterUrlPath())
@@ -71,9 +75,11 @@ public class DetailMovieFragment extends Fragment {
                             @Override
                             public void onSuccess() {
                                 hideProgressBar();
+
+                                String dtRelease = formatDate(mMovie.getRelease_date());
+
                                 ((TextView) rootView.findViewById(R.id.tv_detail_title)).setText(mMovie.getOriginal_title());
-                                ((TextView) rootView.findViewById(R.id.tv_detail_title)).setText(mMovie.getOriginal_title());
-                                ((TextView) rootView.findViewById(R.id.tv_detail_dt_release)).setText(mMovie.getRelease_date());
+                                ((TextView) rootView.findViewById(R.id.tv_detail_dt_release)).setText(dtRelease);
                                 ((TextView) rootView.findViewById(R.id.tv_detail_vote_average)).setText(mMovie.getVote_average());
                                 ((TextView) rootView.findViewById(R.id.tv_detail_overview)).setText(mMovie.getOverview());
                             }
@@ -90,6 +96,19 @@ public class DetailMovieFragment extends Fragment {
         }
 
         return rootView;
+    }
+
+    private String formatDate(String date) {
+        SimpleDateFormat formatFromApi = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat formatToApp = new SimpleDateFormat("MMMM yyyy");
+        String reformattedStr = "";
+        try {
+            reformattedStr = formatToApp.format(formatFromApi.parse(date));
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return date;
+        }
+        return reformattedStr;
     }
 
     private void hideProgressBar() {
