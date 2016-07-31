@@ -3,6 +3,8 @@ package br.com.adalbertofjr.popularmovies.ui.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,14 +58,19 @@ public class DetailMovieFragment extends Fragment {
         TextView errorMessage = (TextView) rootView.findViewById(R.id.tv_detail_error_message);
 
         if (mMovie != null) {
+            ActionBar supportActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+
+            if (supportActionBar != null) {
+                supportActionBar.setTitle(mMovie.getOriginal_title());
+            }
+
             if (Util.isConnected(getActivity())) {
                 Picasso.with(getContext())
-                        .load(mMovie.getBackDropUrlPath())
-                        .into((ImageView) rootView.findViewById(R.id.iv_detail_background), new Callback() {
+                        .load(mMovie.getPosterUrlPath())
+                        .into((ImageView) rootView.findViewById(R.id.iv_detail_poster), new Callback() {
                             @Override
                             public void onSuccess() {
                                 hideProgressBar();
-                                Picasso.with(getContext()).load(mMovie.getPosterUrlPath()).into((ImageView) rootView.findViewById(R.id.iv_detail_poster));
                                 ((TextView) rootView.findViewById(R.id.tv_detail_title)).setText(mMovie.getOriginal_title());
                                 ((TextView) rootView.findViewById(R.id.tv_detail_title)).setText(mMovie.getOriginal_title());
                                 ((TextView) rootView.findViewById(R.id.tv_detail_dt_release)).setText(mMovie.getRelease_date());
