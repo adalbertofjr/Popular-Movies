@@ -5,6 +5,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -38,7 +40,7 @@ import br.com.adalbertofjr.popularmovies.util.Util;
 /**
  * Popular Movies
  * MoviesFragment
- * <p/>
+ * <p>
  * Created by Adalberto Fernandes Júnior on 10/07/2016.
  * Copyright © 2016 - Adalberto Fernandes Júnior. All rights reserved.
  */
@@ -69,6 +71,12 @@ public class MoviesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_movies, container, false);
 
+        ActionBar mToolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+
+        if (mToolbar != null) {
+            mToolbar.setTitle(getTitleToolbar());
+        }
+
         mGridMovies = (GridView) rootView.findViewById(R.id.gv_movies_fragment);
         mMoviesProgressBar = (ProgressBar) rootView.findViewById(R.id.pb_movies_progress);
         mErrorMessage = (TextView) rootView.findViewById(R.id.tv_movies_error_message);
@@ -77,6 +85,15 @@ public class MoviesFragment extends Fragment {
         mGridMovies.setAdapter(mMoviesAdapter);
 
         return rootView;
+    }
+
+    private String getTitleToolbar() {
+        String sortOptionPreference = Util.getSortOptionPreference(getActivity());
+        if (sortOptionPreference.equals(Constants.MOVIES_POPULAR_PATH)) {
+            return getResources().getStringArray(R.array.pref_sort_options)[0];
+        }
+
+        return getResources().getStringArray(R.array.pref_sort_options)[1];
     }
 
     @Override

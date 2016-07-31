@@ -15,20 +15,20 @@ public class Constants {
     public static final String MOVIE_DETAIL_EXTRA = "movie";
 
     //Key for api The Movie Db
-    public static String THE_MOVIE_DB_API_KEY = BuildConfig.THE_MOVIE_DB_KEY;
+    private static final String THE_MOVIE_DB_API_KEY = BuildConfig.THE_MOVIE_DB_KEY;
 
     //The Movie DB paths
-    public static final String MOVIES_BASE_URL = "http://api.themoviedb.org/3/movie/";
+    private static final String MOVIES_BASE_URL = "http://api.themoviedb.org/3/movie/";
     public static final String MOVIES_POPULAR_PATH = "popular";
-    public static final String MOVIES_TOP_RATED_PATH = "top_rated";
-    public static final String MOVIES_API_KEY_PARAMETER = "?api_key=" + THE_MOVIE_DB_API_KEY;
+    private static final String MOVIES_TOP_RATED_PATH = "top_rated";
+    private static final String MOVIES_API_KEY_PARAMETER = "?api_key=" + THE_MOVIE_DB_API_KEY;
     public static final String MOVIES_POPULAR_URL = MOVIES_BASE_URL + MOVIES_POPULAR_PATH + MOVIES_API_KEY_PARAMETER;
     public static final String MOVIES_TOP_RATED_URL = MOVIES_BASE_URL + MOVIES_TOP_RATED_PATH + MOVIES_API_KEY_PARAMETER;
 
     //Image The Movie DB paths
-    public static final String MOVIE_IMAGE_BASE_URL = "http://image.tmdb.org/t/p/";
-    public static final String MOVIE_IMAGE_W500 = "w500/";
-    public static final String MOVIE_IMAGE_W185 = "w185/";
+    private static final String MOVIE_IMAGE_BASE_URL = "http://image.tmdb.org/t/p/";
+    private static final String MOVIE_IMAGE_W500 = "w500/";
+    private static final String MOVIE_IMAGE_W185 = "w185/";
     public static final String MOVIE_IMAGE_BACKDROP_URL = Constants.MOVIE_IMAGE_BASE_URL + Constants.MOVIE_IMAGE_W500;
     public static final String MOVIE_IMAGE_POSTER_URL = Constants.MOVIE_IMAGE_BASE_URL + Constants.MOVIE_IMAGE_W185;
 

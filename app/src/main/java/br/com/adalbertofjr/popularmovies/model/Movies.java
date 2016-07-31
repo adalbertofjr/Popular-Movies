@@ -33,7 +33,7 @@ public class Movies implements Parcelable {
         this.overview = overview;
     }
 
-    protected Movies(Parcel in) {
+    private Movies(Parcel in) {
         backdrop_path = in.readString();
         poster_path = in.readString();
         vote_average = in.readString();
@@ -54,7 +54,7 @@ public class Movies implements Parcelable {
         }
     };
 
-    public String getBackdrop_path() {
+    private String getBackdrop_path() {
         return backdrop_path;
     }
 
