@@ -71,7 +71,6 @@
                 android:layout_marginLeft="@dimen/activity_vertical_margin"
                 android:layout_toRightOf="@id/iv_detail_poster"
                 android:scaleType="fitXY"
-                android:src="@drawable/ic_star"
                 android:contentDescription="@string/star_rating_description"/>
 
             <TextView
