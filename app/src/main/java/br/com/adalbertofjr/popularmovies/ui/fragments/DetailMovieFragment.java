@@ -101,14 +101,14 @@ public class DetailMovieFragment extends Fragment {
     private String formatDate(String date) {
         SimpleDateFormat formatFromApi = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat formatToApp = new SimpleDateFormat("MMMM yyyy");
-        String reformattedStr = "";
+        String formatDate;
         try {
-            reformattedStr = formatToApp.format(formatFromApi.parse(date));
+            formatDate = formatToApp.format(formatFromApi.parse(date));
+            return formatDate;
         } catch (ParseException e) {
             e.printStackTrace();
             return date;
         }
-        return reformattedStr;
     }
 
     private void hideProgressBar() {
