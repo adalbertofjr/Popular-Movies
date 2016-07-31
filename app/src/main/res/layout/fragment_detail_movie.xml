@@ -32,8 +32,8 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:layout_margin="@dimen/activity_vertical_margin"
-            android:scaleType="fitXY"
-            android:contentDescription="@string/movie_poster_description" />
+            android:contentDescription="@string/movie_poster_description"
+            android:scaleType="fitXY" />
 
         <TextView
             android:id="@+id/tv_detail_title"
@@ -45,7 +45,7 @@
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:layout_toRightOf="@+id/iv_detail_poster"
             android:textColor="@color/colorPrimaryText"
-            android:textSize="18sp" />
+            android:textSize="@dimen/title_size" />
 
         <TextView
             android:id="@+id/tv_detail_dt_release"
@@ -57,13 +57,27 @@
             android:layout_toRightOf="@+id/iv_detail_poster"
             android:textSize="14sp" />
 
+        <ImageView
+            android:id="@+id/iv_detail_star"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_below="@id/tv_detail_dt_release"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_toRightOf="@id/iv_detail_poster"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_star" />
+
         <TextView
             android:id="@+id/tv_detail_vote_average"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/tv_detail_dt_release"
-            android:layout_margin="@dimen/activity_vertical_margin"
-            android:layout_toRightOf="@+id/iv_detail_poster" />
+            android:layout_alignBottom="@id/iv_detail_star"
+            android:layout_alignTop="@id/iv_detail_star"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_toRightOf="@+id/iv_detail_star"
+            android:gravity="left|center_vertical|"
+            android:textSize="@dimen/title_size" />
 
         <TextView
             android:id="@+id/tv_detail_overview"
@@ -72,7 +86,7 @@
             android:layout_below="@+id/iv_detail_poster"
             android:layout_margin="@dimen/activity_vertical_margin"
             android:textColor="@color/colorPrimaryText"
-            android:textSize="16sp" />
+            android:textSize="@dimen/text_secondary_size" />
 
     </RelativeLayout>
 
