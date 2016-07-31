@@ -65,7 +65,8 @@
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_toRightOf="@id/iv_detail_poster"
             android:scaleType="fitXY"
-            android:src="@drawable/ic_star" />
+            android:src="@drawable/ic_star"
+            android:contentDescription="@string/star_rating_description"/>
 
         <TextView
             android:id="@+id/tv_detail_vote_average"
