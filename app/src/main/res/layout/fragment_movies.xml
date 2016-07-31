@@ -16,7 +16,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:drawableTop="@mipmap/ic_launcher"
+        android:drawableTop="@drawable/ic_wifi_off"
         android:text="@string/msg_no_network_connection"
         android:visibility="gone" />
 

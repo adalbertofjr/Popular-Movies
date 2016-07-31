@@ -31,7 +31,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:layout_gravity="center"
-                android:drawableTop="@mipmap/ic_launcher"
+                android:drawableTop="@drawable/ic_wifi_off"
                 android:text="@string/msg_no_network_connection"
                 android:visibility="gone" />
 
@@ -71,7 +71,6 @@
                 android:layout_marginLeft="@dimen/activity_vertical_margin"
                 android:layout_toRightOf="@id/iv_detail_poster"
                 android:scaleType="fitXY"
-                android:src="@drawable/ic_star"
                 android:contentDescription="@string/star_rating_description"/>
 
             <TextView

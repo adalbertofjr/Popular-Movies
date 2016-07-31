@@ -78,6 +78,7 @@ public class DetailMovieFragment extends Fragment {
                                 String dtRelease = formatDate(mMovie.getRelease_date());
                                 ((TextView) rootView.findViewById(R.id.tv_detail_title)).setText(mMovie.getOriginal_title());
                                 ((TextView) rootView.findViewById(R.id.tv_detail_dt_release)).setText(dtRelease);
+                                ((ImageView) rootView.findViewById(R.id.iv_detail_star)).setImageResource(R.drawable.ic_star);
                                 ((TextView) rootView.findViewById(R.id.tv_detail_vote_average)).setText(mMovie.getVote_average());
                                 ((TextView) rootView.findViewById(R.id.tv_detail_overview)).setText(mMovie.getOverview());
                             }
