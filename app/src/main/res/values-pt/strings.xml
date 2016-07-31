@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Filmes Populares</string>
+    <string name="action_refresh">Atualizar</string>
+    <string name="detail_movie_label">Detalhes do Filme</string>
+    <string name="movie_poster_description">Poster do Filme</string>
+    <string name="msg_no_network_connection">Não há conexão de rede diponível</string>
+    <string name="pref_sort_option_label">Opções de Organização</string>
+    <string name="settings_label">Configurações</string>
+    <string name="star_rating_description">Estrela de classificação</string>
+    <string name="title_most_popular">Filmes Populares</string>
+    <string name="title_top_rated">Melhor Avaliados</string>
+</resources>

@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="pref_sort_options">
-        <item>Most Popular</item>
-        <item>Top Rated</item>
+        <item>@string/title_most_popular</item>
+        <item>@string/title_top_rated</item>
     </string-array>
     <string-array name="pref_sort_options_values">
         <item>popular</item>
         <item>top_rated</item>
     </string-array>
+    <string name="title_top_rated">Top Rated</string>
+    <string name="title_most_popular">Most Popular</string>
 </resources>
