@@ -1,10 +1,10 @@
 package br.com.adalbertofjr.popularmovies.ui.fragments;
 
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -14,8 +14,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -32,7 +35,6 @@ import java.util.ArrayList;
 
 import br.com.adalbertofjr.popularmovies.R;
 import br.com.adalbertofjr.popularmovies.model.Movies;
-import br.com.adalbertofjr.popularmovies.ui.SettingsActivity;
 import br.com.adalbertofjr.popularmovies.ui.adapters.MoviesImageAdapter;
 import br.com.adalbertofjr.popularmovies.util.Constants;
 import br.com.adalbertofjr.popularmovies.util.Util;
@@ -40,7 +42,7 @@ import br.com.adalbertofjr.popularmovies.util.Util;
 /**
  * Popular Movies
  * MoviesFragment
- * <p>
+ * <p/>
  * Created by Adalberto Fernandes Júnior on 10/07/2016.
  * Copyright © 2016 - Adalberto Fernandes Júnior. All rights reserved.
  */
@@ -53,6 +55,8 @@ public class MoviesFragment extends Fragment {
     private ProgressBar mMoviesProgressBar;
     private GridView mGridMovies;
     private TextView mErrorMessage;
+    private ActionBar mToolbar;
+    private String mFetchOption;
 
     public MoviesFragment() {
     }
@@ -71,10 +75,10 @@ public class MoviesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_movies, container, false);
 
-        ActionBar mToolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        mToolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
 
         if (mToolbar != null) {
-            mToolbar.setTitle(getTitleToolbar());
+            mToolbar.setTitle(null);
         }
 
         mGridMovies = (GridView) rootView.findViewById(R.id.gv_movies_fragment);
@@ -126,6 +130,37 @@ public class MoviesFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_movies_fragment, menu);
+
+        MenuItem item = menu.findItem(R.id.action_fetch);
+        Spinner spnFetchMovies = (Spinner) MenuItemCompat.getActionView(item);
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(mToolbar.getThemedContext(),
+                R.array.pref_sort_options, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        spnFetchMovies.setAdapter(adapter);
+
+        spnFetchMovies.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long position) {
+                String option = getResources().getStringArray(R.array.pref_sort_options_values)[(int) position];
+
+                if (option.equals(Constants.MOVIES_POPULAR_PATH)) {
+                    mFetchOption = Constants.MOVIES_POPULAR_URL;
+                } else {
+                    mFetchOption = Constants.MOVIES_TOP_RATED_URL;
+                }
+
+                startFetchMoviesTask();
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
     }
 
     @Override
@@ -133,21 +168,21 @@ public class MoviesFragment extends Fragment {
         int id = item.getItemId();
 
         if (id == R.id.action_refresh) {
-            if (Util.isConnected(getActivity())) {
-                startFetchMoviesTask();
-            } else {
-                hideProgressBar();
-                mGridMovies.setEmptyView(mErrorMessage);
-            }
-            return true;
-        }
-
-        if (id == R.id.action_settings) {
-            startActivity(new Intent(getActivity(), SettingsActivity.class));
+            refreshFetchMovies();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void refreshFetchMovies() {
+        if (Util.isConnected(getActivity())) {
+            startFetchMoviesTask();
+        } else {
+            hideProgressBar();
+            mMoviesAdapter.clear();
+            mGridMovies.setEmptyView(mErrorMessage);
+        }
     }
 
     private class FetchMoviesTask extends AsyncTask<Void, Void, ArrayList<Movies>> {
@@ -162,8 +197,11 @@ public class MoviesFragment extends Fragment {
             String moviesJsonString;
 
             try {
-                String optionSortFetchMovies = Util.getOptionSortFetchMovies(getActivity());
-                URL url = new URL(optionSortFetchMovies);
+
+                if (mFetchOption == null)
+                    mFetchOption = Util.getOptionSortFetchMovies(getActivity());
+
+                URL url = new URL(mFetchOption);
 
                 // Create the request to OpenWeatherMap, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();

@@ -3,14 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_refresh"
-        android:title="@string/settings_label"
-        android:icon="@drawable/ic_action_refresh"
+        android:id="@+id/action_fetch"
+        android:title="Buscar Filmes"
+        app:actionViewClass="android.widget.Spinner"
         app:showAsAction="always" />
 
+
     <item
+        android:id="@+id/action_refresh"
+        android:icon="@drawable/ic_action_refresh"
+        android:title="@string/settings_label"
+        app:showAsAction="always" />
+
+    <!--<item
         android:id="@+id/action_settings"
         android:title="@string/settings_label"
-        app:showAsAction="never" />
+        app:showAsAction="never" />-->
 
 </menu>
