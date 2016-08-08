@@ -75,11 +75,7 @@ public class MoviesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_movies, container, false);
 
-        mToolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-
-        if (mToolbar != null) {
-            mToolbar.setTitle(null);
-        }
+        initToolbar();
 
         mGridMovies = (GridView) rootView.findViewById(R.id.gv_movies_fragment);
         mMoviesProgressBar = (ProgressBar) rootView.findViewById(R.id.pb_movies_progress);
@@ -89,6 +85,14 @@ public class MoviesFragment extends Fragment {
         mGridMovies.setAdapter(mMoviesAdapter);
 
         return rootView;
+    }
+
+    private void initToolbar() {
+        mToolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        mToolbar.setDisplayShowTitleEnabled(false);
+        mToolbar.setLogo(R.mipmap.ic_pm_logo);
+        mToolbar.setDisplayUseLogoEnabled(true);
+        mToolbar.setDisplayShowHomeEnabled(true);
     }
 
     private String getTitleToolbar() {
