@@ -10,7 +10,7 @@
         <item>top_rated</item>
     </string-array>
 
-    <!-- Todo - remover estas strings -->
     <string name="title_top_rated">Top Rated</string>
     <string name="title_most_popular">Most Popular</string>
+
 </resources>
