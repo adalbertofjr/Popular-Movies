@@ -2,6 +2,22 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+
     <dimen name="title_size">18sp</dimen>
     <dimen name="text_secondary_size">16sp</dimen>
+
+    <!-- CardView -->
+    <dimen name="card_elevation">4dp</dimen>
+
+    <!-- Item movies dimensions poster -->
+    <dimen name="poster_width">140dp</dimen>
+    <dimen name="poster_height">200dp</dimen>
+    <dimen name="poster_padding">4dp</dimen>
+    <dimen name="poster_card_margin">10dp</dimen>
+    <dimen name="poster_card_corner_radius">3dp</dimen>
+    <dimen name="poster_detail_width">120dp</dimen>
+    <dimen name="poster_detail_height">160dp</dimen>
+    <dimen name="star_detail_length">48dp</dimen>
+    <dimen name="margin_between_widgets">8dp</dimen>
+
 </resources>

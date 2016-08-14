@@ -37,8 +37,8 @@
 
             <ImageView
                 android:id="@+id/iv_detail_poster"
-                android:layout_width="120dp"
-                android:layout_height="160dp"
+                android:layout_width="@dimen/poster_detail_width"
+                android:layout_height="@dimen/poster_detail_height"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
                 android:contentDescription="@string/movie_poster_description"
@@ -65,8 +65,8 @@
 
             <ImageView
                 android:id="@+id/iv_detail_star"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="@dimen/star_detail_length"
+                android:layout_height="@dimen/star_detail_length"
                 android:layout_below="@id/tv_detail_dt_release"
                 android:layout_marginLeft="@dimen/activity_vertical_margin"
                 android:layout_toRightOf="@id/iv_detail_poster"
@@ -79,7 +79,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@id/iv_detail_star"
                 android:layout_alignTop="@id/iv_detail_star"
-                android:layout_marginLeft="8dp"
+                android:layout_marginLeft="@dimen/margin_between_widgets"
                 android:layout_toRightOf="@+id/iv_detail_star"
                 android:gravity="left|center_vertical|"
                 android:textSize="@dimen/title_size" />
