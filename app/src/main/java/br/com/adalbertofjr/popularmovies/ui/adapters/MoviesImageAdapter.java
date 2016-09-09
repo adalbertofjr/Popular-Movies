@@ -3,15 +3,15 @@ package br.com.adalbertofjr.popularmovies.ui.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import br.com.adalbertofjr.popularmovies.R;
 import br.com.adalbertofjr.popularmovies.model.Movies;
@@ -26,38 +26,60 @@ import br.com.adalbertofjr.popularmovies.util.Constants;
  * Copyright © 2016 - Adalberto Fernandes Júnior. All rights reserved.
  */
 
-public class MoviesImageAdapter extends ArrayAdapter<Movies> {
-    public MoviesImageAdapter(Context context, List<Movies> movies) {
-        super(context, 0, movies);
+public class MoviesImageAdapter extends RecyclerView.Adapter<MoviesImageAdapter.ViewHolder> {
+    private final Context mContext;
+    private final ArrayList<Movies> mMovies;
+
+    public MoviesImageAdapter(Context mContext, ArrayList<Movies> mMovies) {
+        this.mContext = mContext;
+        this.mMovies = mMovies;
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        final Movies movie = getItem(position);
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(mContext).inflate(R.layout.movies_item, parent, false);
 
-        View rootView = LayoutInflater.from(getContext()).inflate(R.layout.movies_item, parent, false);
-        rootView.setClickable(false);
 
-        ImageView imageView = (ImageView) rootView.findViewById(R.id.iv_movies_item_poster);
+        return new ViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        final Movies movie = mMovies.get(position);
+
         Uri.Builder uriImage = Uri.parse(Constants.MOVIE_IMAGE_POSTER_URL)
                 .buildUpon()
                 .appendEncodedPath(movie.getPoster_path());
-        String urlPoster = uriImage.build().toString();
-        Picasso.with(getContext()).load(urlPoster).into(imageView);
 
-        imageView.setOnClickListener(new View.OnClickListener() {
+        String urlPoster = uriImage.build().toString();
+
+        Picasso.with(mContext).load(urlPoster).into(holder.posterImageView);
+
+        holder.posterImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startDetailMovie(movie);
             }
         });
-
-        return rootView;
     }
 
     private void startDetailMovie(Movies movie) {
-        Intent intent = new Intent(getContext(), DetailActivity.class);
+        Intent intent = new Intent(mContext, DetailActivity.class);
         intent.putExtra(Constants.MOVIE_DETAIL_EXTRA, movie);
-        getContext().startActivity(intent);
+        mContext.startActivity(intent);
+    }
+
+    @Override
+    public int getItemCount() {
+        return mMovies.size();
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        private final ImageView posterImageView;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            posterImageView = (ImageView) itemView.findViewById(R.id.iv_movies_item_poster);
+        }
     }
 }

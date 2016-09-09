@@ -1,5 +1,6 @@
 package br.com.adalbertofjr.popularmovies.ui.fragments;
 
+import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -7,6 +8,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,7 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -53,10 +55,10 @@ public class MoviesFragment extends Fragment {
     private MoviesImageAdapter mMoviesAdapter;
     private ArrayList<Movies> mMovies;
     private ProgressBar mMoviesProgressBar;
-    private GridView mGridMovies;
     private TextView mErrorMessage;
     private ActionBar mToolbar;
     private String mFetchOption;
+    private RecyclerView mGridMoviesRecyclerView;
 
     public MoviesFragment() {
     }
@@ -77,12 +79,19 @@ public class MoviesFragment extends Fragment {
 
         initToolbar();
 
-        mGridMovies = (GridView) rootView.findViewById(R.id.gv_movies_fragment);
+        mGridMoviesRecyclerView = (RecyclerView) rootView.findViewById(R.id.rv_movies_fragment);
         mMoviesProgressBar = (ProgressBar) rootView.findViewById(R.id.pb_movies_progress);
         mErrorMessage = (TextView) rootView.findViewById(R.id.tv_movies_error_message);
 
-        mMoviesAdapter = new MoviesImageAdapter(getActivity(), new ArrayList<Movies>());
-        mGridMovies.setAdapter(mMoviesAdapter);
+        RecyclerView.LayoutManager gridLayout;
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            gridLayout = new GridLayoutManager(getActivity(), 2);
+        } else {
+            gridLayout = new GridLayoutManager(getActivity(), 4);
+        }
+
+        mGridMoviesRecyclerView.setLayoutManager(gridLayout);
+        mGridMoviesRecyclerView.setHasFixedSize(true);
 
         return rootView;
     }
@@ -120,7 +129,8 @@ public class MoviesFragment extends Fragment {
             moviesTask.execute();
         } else {
             hideProgressBar();
-            mGridMovies.setEmptyView(mErrorMessage);
+            // Todo - Corrigir mensagens de erro de conexão.
+            //mGridMoviesRecyclerView.setEmptyView(mErrorMessage);
         }
     }
 
@@ -156,7 +166,6 @@ public class MoviesFragment extends Fragment {
                 }
 
                 startFetchMoviesTask();
-
             }
 
             @Override
@@ -184,8 +193,9 @@ public class MoviesFragment extends Fragment {
             startFetchMoviesTask();
         } else {
             hideProgressBar();
-            mMoviesAdapter.clear();
-            mGridMovies.setEmptyView(mErrorMessage);
+            // Todo - Corrigir mensagens de erro de conexão.
+            //mMoviesAdapter.clear();
+            //mGridMovies.setEmptyView(mErrorMessage);
         }
     }
 
@@ -274,8 +284,8 @@ public class MoviesFragment extends Fragment {
 
             if (mMovies == null) mMovies = movies;
 
-            mMoviesAdapter.clear();
-            mMoviesAdapter.addAll(movies);
+            mMoviesAdapter = new MoviesImageAdapter(getActivity(), movies);
+            mGridMoviesRecyclerView.setAdapter(mMoviesAdapter);
         }
     }
 
@@ -324,5 +334,4 @@ public class MoviesFragment extends Fragment {
 
         return movies;
     }
-
 }
