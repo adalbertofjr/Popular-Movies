@@ -6,6 +6,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +37,7 @@ import br.com.adalbertofjr.popularmovies.R;
 import br.com.adalbertofjr.popularmovies.model.Movies;
 import br.com.adalbertofjr.popularmovies.model.Reviews;
 import br.com.adalbertofjr.popularmovies.model.Trailers;
+import br.com.adalbertofjr.popularmovies.ui.adapters.TrailersAdapter;
 import br.com.adalbertofjr.popularmovies.util.Constants;
 import br.com.adalbertofjr.popularmovies.util.Util;
 
@@ -49,6 +52,7 @@ import br.com.adalbertofjr.popularmovies.util.Util;
 public class DetailMovieFragment extends Fragment {
     private Movies mMovie;
     private ProgressBar mProgressBar;
+    private RecyclerView mTrailersListRecyclerView;
 
     public DetailMovieFragment() {
     }
@@ -72,7 +76,14 @@ public class DetailMovieFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_detail_movie, container, false);
+
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.pb_detail_progress);
+
+        mTrailersListRecyclerView = (RecyclerView) rootView.findViewById(R.id.rv_detail_trailers);
+
+        mTrailersListRecyclerView.setHasFixedSize(true);
+        mTrailersListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+
         TextView errorMessage = (TextView) rootView.findViewById(R.id.tv_detail_error_message);
 
         if (mMovie != null) {
@@ -211,8 +222,13 @@ public class DetailMovieFragment extends Fragment {
             for (Trailers t : trailers) {
                 Log.i("Trailer", t.getTrailerUrlPath());
             }
-            //updateMoviesAdapter(movies);
+            updateTrailersAdapter(trailers);
         }
+    }
+
+    private void updateTrailersAdapter(ArrayList<Trailers> trailers) {
+        TrailersAdapter trailersAdapter = new TrailersAdapter(getActivity(), trailers);
+        mTrailersListRecyclerView.setAdapter(trailersAdapter);
     }
 
     private ArrayList<Trailers> getMoviesDataFromJson(String trailersJsonString)
