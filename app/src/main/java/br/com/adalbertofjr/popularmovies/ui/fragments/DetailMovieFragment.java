@@ -33,6 +33,7 @@ import java.util.ArrayList;
 
 import br.com.adalbertofjr.popularmovies.R;
 import br.com.adalbertofjr.popularmovies.model.Movies;
+import br.com.adalbertofjr.popularmovies.model.Reviews;
 import br.com.adalbertofjr.popularmovies.model.Trailers;
 import br.com.adalbertofjr.popularmovies.util.Constants;
 import br.com.adalbertofjr.popularmovies.util.Util;
@@ -97,6 +98,7 @@ public class DetailMovieFragment extends Fragment {
                                 ((TextView) rootView.findViewById(R.id.tv_detail_overview)).setText(mMovie.getOverview());
 
                                 new FetchTrailersTask().execute();
+                                new FetchReviewsTask().execute();
                             }
 
                             @Override
@@ -242,5 +244,114 @@ public class DetailMovieFragment extends Fragment {
         }
 
         return trailers;
+    }
+
+    private class FetchReviewsTask extends AsyncTask<Void, Void, ArrayList<Reviews>> {
+        private final String LOG_TAG = FetchReviewsTask.class.getSimpleName();
+
+        @Override
+        protected ArrayList<Reviews> doInBackground(Void... voids) {
+
+            HttpURLConnection urlConnection = null;
+            BufferedReader reader = null;
+
+            String reviewsJsonString;
+
+            try {
+
+                if (mMovie == null)
+                    return null;
+
+                String pathReview = String.format(Constants.MOVIE_REVIEWS_URL, mMovie.getId());
+
+                URL url = new URL(pathReview);
+
+                // Create the request to OpenWeatherMap, and open the connection
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+
+                // Read the input stream into a String
+                InputStream inputStream = urlConnection.getInputStream();
+                StringBuilder buffer = new StringBuilder();
+                if (inputStream == null) {
+                    // Nothing to do.
+                    return null;
+                }
+                reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    buffer.append(line).append("\n");
+                }
+
+                if (buffer.length() == 0) {
+                    return null;
+                }
+
+                reviewsJsonString = buffer.toString();
+
+                try {
+                    return getReviewsDataFromJson(reviewsJsonString);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } catch (IOException e) {
+                Log.e(LOG_TAG, "Error ", e);
+                // If the code didn't successfully get the weather data, there's no point in attemping
+                // to parse it.
+                return null;
+            } finally {
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (final IOException e) {
+                        Log.e(LOG_TAG, "Error closing stream", e);
+                    }
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Reviews> reviews) {
+            super.onPostExecute(reviews);
+
+            for (Reviews t : reviews) {
+                Log.i("Trailer", t.getAuthor());
+            }
+            //updateMoviesAdapter(movies);
+        }
+    }
+
+    private ArrayList<Reviews> getReviewsDataFromJson(String reviewsJsonString)
+            throws JSONException {
+
+        JSONObject reviewsJson = new JSONObject(reviewsJsonString);
+        JSONArray reviewsArray = reviewsJson.getJSONArray(Constants.REVIEWS_VIDEOS_LIST_KEY);
+
+        ArrayList<Reviews> reviews = new ArrayList<>();
+
+        for (int i = 0; i < reviewsArray.length(); i++) {
+            String name;
+            String content;
+
+            JSONObject reviewData = reviewsArray.getJSONObject(i);
+
+            name = reviewData.getString(Constants.REVIEWS_VIDEOS_AUTHOR);
+            content = reviewData.getString(Constants.REVIEWS_VIDEOS_CONTENT);
+
+            Reviews review = new Reviews(
+                    name,
+                    content
+            );
+
+            reviews.add(review);
+        }
+
+        return reviews;
     }
 }

@@ -30,10 +30,12 @@ public class Constants {
     private static final String MOVIE_IMAGE_W500_PATH = "w500/";
     private static final String MOVIE_IMAGE_W185_PATH = "w185/";
     private static final String MOVIE_VIDEO_PATH = "%s/videos";
+    private static final String MOVIE_REVIEWS_PATH = "%s/reviews";
 
     public static final String MOVIE_IMAGE_BACKDROP_URL = Constants.MOVIE_IMAGE_BASE_URL + Constants.MOVIE_IMAGE_W500_PATH;
     public static final String MOVIE_IMAGE_POSTER_URL = Constants.MOVIE_IMAGE_BASE_URL + Constants.MOVIE_IMAGE_W185_PATH;
     public static final String MOVIE_TRAILERS_URL = Constants.MOVIES_BASE_URL + MOVIE_VIDEO_PATH + MOVIES_API_KEY_PARAMETER;
+    public static final String MOVIE_REVIEWS_URL = Constants.MOVIES_BASE_URL + MOVIE_REVIEWS_PATH + MOVIES_API_KEY_PARAMETER;
 
     //Youtube paths
     public static final String YOUTUBE_BASE_URL = "https://www.youtube.com/watch?v=";
@@ -47,10 +49,15 @@ public class Constants {
     public static final String MOVIES_RELEASE_DATE_KEY = "release_date";
 
     public static final String MOVIES_OVERVIEW_KEY = "overview";
+
     //Json trailers objects names
     public static final String TRAILERS_VIDEOS_LIST_KEY = "results";
     public static final String TRAILERS_VIDEO_KEY = "key";
     public static final String TRAILERS_VIDEO_NAME = "name";
-
     public static final String TRAILERS_VIDEO_SITE = "site";
+
+    //Json reviews objects names
+    public static final String REVIEWS_VIDEOS_LIST_KEY = "results";
+    public static final String REVIEWS_VIDEOS_AUTHOR = "author";
+    public static final String REVIEWS_VIDEOS_CONTENT = "content";
 }
