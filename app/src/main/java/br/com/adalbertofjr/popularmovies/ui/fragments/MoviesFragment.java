@@ -294,6 +294,7 @@ public class MoviesFragment extends Fragment {
         ArrayList<Movies> movies = new ArrayList<>();
 
         for (int i = 0; i < moviesArray.length(); i++) {
+            String id;
             String backdrop_path;
             String poster_path;
             String vote_average;
@@ -303,6 +304,7 @@ public class MoviesFragment extends Fragment {
 
             JSONObject movieData = moviesArray.getJSONObject(i);
 
+            id = movieData.getString(Constants.MOVIES_ID);
             backdrop_path = movieData.getString(Constants.MOVIES_BACKGROUND_KEY);
             poster_path = movieData.getString(Constants.MOVIES_POSTER_KEY);
             vote_average = movieData.getString(Constants.MOVIES_VOTE_AVERAGE_KEY);
@@ -310,7 +312,7 @@ public class MoviesFragment extends Fragment {
             release_date = movieData.getString(Constants.MOVIES_RELEASE_DATE_KEY);
             overview = movieData.getString(Constants.MOVIES_OVERVIEW_KEY);
 
-            Movies movie = new Movies(backdrop_path,
+            Movies movie = new Movies(id, backdrop_path,
                     poster_path,
                     vote_average,
                     original_title,

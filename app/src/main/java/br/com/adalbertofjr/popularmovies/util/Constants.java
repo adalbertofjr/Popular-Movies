@@ -33,6 +33,7 @@ public class Constants {
     public static final String MOVIE_IMAGE_POSTER_URL = Constants.MOVIE_IMAGE_BASE_URL + Constants.MOVIE_IMAGE_W185;
 
     //Json objects names
+    public static final String MOVIES_ID = "id";
     public static final String MOVIES_LIST_KEY = "results";
     public static final String MOVIES_BACKGROUND_KEY = "backdrop_path";
     public static final String MOVIES_POSTER_KEY = "poster_path";
