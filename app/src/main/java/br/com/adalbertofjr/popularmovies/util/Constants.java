@@ -18,7 +18,7 @@ public class Constants {
     private static final String THE_MOVIE_DB_API_KEY = BuildConfig.THE_MOVIE_DB_KEY;
 
     //The Movie DB paths
-    private static final String MOVIES_BASE_URL = "http://api.themoviedb.org/3/movie/";
+    public static final String MOVIES_BASE_URL = "http://api.themoviedb.org/3/movie/";
     public static final String MOVIES_POPULAR_PATH = "popular";
     private static final String MOVIES_TOP_RATED_PATH = "top_rated";
     private static final String MOVIES_API_KEY_PARAMETER = "?api_key=" + THE_MOVIE_DB_API_KEY;
@@ -27,12 +27,17 @@ public class Constants {
 
     //Image The Movie DB paths
     private static final String MOVIE_IMAGE_BASE_URL = "http://image.tmdb.org/t/p/";
-    private static final String MOVIE_IMAGE_W500 = "w500/";
-    private static final String MOVIE_IMAGE_W185 = "w185/";
-    public static final String MOVIE_IMAGE_BACKDROP_URL = Constants.MOVIE_IMAGE_BASE_URL + Constants.MOVIE_IMAGE_W500;
-    public static final String MOVIE_IMAGE_POSTER_URL = Constants.MOVIE_IMAGE_BASE_URL + Constants.MOVIE_IMAGE_W185;
+    private static final String MOVIE_IMAGE_W500_PATH = "w500/";
+    private static final String MOVIE_IMAGE_W185_PATH = "w185/";
+    private static final String MOVIE_VIDEO_PATH = "%s/videos";
 
-    //Json objects names
+    public static final String MOVIE_IMAGE_BACKDROP_URL = Constants.MOVIE_IMAGE_BASE_URL + Constants.MOVIE_IMAGE_W500_PATH;
+    public static final String MOVIE_IMAGE_POSTER_URL = Constants.MOVIE_IMAGE_BASE_URL + Constants.MOVIE_IMAGE_W185_PATH;
+    public static final String MOVIE_TRAILERS_URL = Constants.MOVIES_BASE_URL + MOVIE_VIDEO_PATH + MOVIES_API_KEY_PARAMETER;
+
+    //Youtube paths
+    public static final String YOUTUBE_BASE_URL = "https://www.youtube.com/watch?v=";
+    //Json movies objects names
     public static final String MOVIES_ID = "id";
     public static final String MOVIES_LIST_KEY = "results";
     public static final String MOVIES_BACKGROUND_KEY = "backdrop_path";
@@ -40,5 +45,12 @@ public class Constants {
     public static final String MOVIES_VOTE_AVERAGE_KEY = "vote_average";
     public static final String MOVIES_TITLE_KEY = "original_title";
     public static final String MOVIES_RELEASE_DATE_KEY = "release_date";
+
     public static final String MOVIES_OVERVIEW_KEY = "overview";
+    //Json trailers objects names
+    public static final String TRAILERS_VIDEOS_LIST_KEY = "results";
+    public static final String TRAILERS_VIDEO_KEY = "key";
+    public static final String TRAILERS_VIDEO_NAME = "name";
+
+    public static final String TRAILERS_VIDEO_SITE = "site";
 }
