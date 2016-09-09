@@ -88,6 +88,39 @@
             android:textColor="@color/colorPrimaryText"
             android:textSize="@dimen/text_secondary_size" />
 
+        <TextView
+            android:id="@+id/tv_detail_trailers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_detail_overview"
+            android:layout_margin="@dimen/activity_vertical_margin"
+            android:text="Trailers:"
+            android:textAppearance="?android:textAppearanceLarge"/>
+
+        <ListView
+            android:id="@+id/lv_detail_trailers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_detail_trailers"/>
+
+        <TextView
+            android:id="@+id/tv_detail_reviews"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/lv_detail_trailers"
+            android:layout_margin="@dimen/activity_vertical_margin"
+            android:text="Reviews:"
+            android:textAppearance="?android:textAppearanceLarge"/>
+
+        <ListView
+            android:id="@+id/lv_detail_reviews"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_detail_reviews"/>
+
+
+
+
     </RelativeLayout>
 
 </ScrollView>
