@@ -119,8 +119,8 @@
                 android:text="Reviews:"
                 android:textAppearance="?android:textAppearanceLarge" />
 
-            <ListView
-                android:id="@+id/lv_detail_reviews"
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_detail_reviews"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tv_detail_reviews"

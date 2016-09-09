@@ -32,11 +32,13 @@ import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 import br.com.adalbertofjr.popularmovies.R;
 import br.com.adalbertofjr.popularmovies.model.Movies;
 import br.com.adalbertofjr.popularmovies.model.Reviews;
 import br.com.adalbertofjr.popularmovies.model.Trailers;
+import br.com.adalbertofjr.popularmovies.ui.adapters.ReviewsAdapter;
 import br.com.adalbertofjr.popularmovies.ui.adapters.TrailersAdapter;
 import br.com.adalbertofjr.popularmovies.util.Constants;
 import br.com.adalbertofjr.popularmovies.util.Util;
@@ -53,6 +55,7 @@ public class DetailMovieFragment extends Fragment {
     private Movies mMovie;
     private ProgressBar mProgressBar;
     private RecyclerView mTrailersListRecyclerView;
+    private RecyclerView mReviewsListRecyclerView;
 
     public DetailMovieFragment() {
     }
@@ -80,9 +83,13 @@ public class DetailMovieFragment extends Fragment {
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.pb_detail_progress);
 
         mTrailersListRecyclerView = (RecyclerView) rootView.findViewById(R.id.rv_detail_trailers);
+        mReviewsListRecyclerView = (RecyclerView) rootView.findViewById(R.id.rv_detail_reviews);
 
         mTrailersListRecyclerView.setHasFixedSize(true);
         mTrailersListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+
+        mReviewsListRecyclerView.setHasFixedSize(true);
+        mReviewsListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
 
         TextView errorMessage = (TextView) rootView.findViewById(R.id.tv_detail_error_message);
 
@@ -339,8 +346,13 @@ public class DetailMovieFragment extends Fragment {
             for (Reviews t : reviews) {
                 Log.i("Trailer", t.getAuthor());
             }
-            //updateMoviesAdapter(movies);
+            updateReviewsAdapter(reviews);
         }
+    }
+
+    private void updateReviewsAdapter(List<Reviews> reviews) {
+        ReviewsAdapter reviewsAdapter = new ReviewsAdapter(getActivity(), reviews);
+        mReviewsListRecyclerView.setAdapter(reviewsAdapter);
     }
 
     private ArrayList<Reviews> getReviewsDataFromJson(String reviewsJsonString)

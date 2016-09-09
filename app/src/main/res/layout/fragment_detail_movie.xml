@@ -64,8 +64,8 @@
             android:layout_below="@id/tv_detail_dt_release"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_toRightOf="@id/iv_detail_poster"
-            android:scaleType="fitXY"
-            android:contentDescription="@string/star_rating_description"/>
+            android:contentDescription="@string/star_rating_description"
+            android:scaleType="fitXY" />
 
         <TextView
             android:id="@+id/tv_detail_vote_average"
@@ -95,16 +95,16 @@
             android:layout_below="@id/tv_detail_overview"
             android:layout_margin="@dimen/activity_vertical_margin"
             android:text="Trailers:"
-            android:textAppearance="?android:textAppearanceLarge"/>
+            android:textAppearance="?android:textAppearanceLarge" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_detail_trailers"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_detail_trailers"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_marginRight="@dimen/activity_horizontal_margin"
-            android:layout_below="@+id/tv_detail_trailers"
-            android:scrollbars="horizontal"/>
+            android:scrollbars="horizontal" />
 
         <TextView
             android:id="@+id/tv_detail_reviews"
@@ -113,16 +113,16 @@
             android:layout_below="@id/rv_detail_trailers"
             android:layout_margin="@dimen/activity_vertical_margin"
             android:text="Reviews:"
-            android:textAppearance="?android:textAppearanceLarge"/>
+            android:textAppearance="?android:textAppearanceLarge" />
 
-        <ListView
-            android:id="@+id/lv_detail_reviews"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_detail_reviews"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/tv_detail_reviews"/>
-
-
-
+            android:layout_marginLeft="@dimen/activity_vertical_margin"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_below="@+id/tv_detail_reviews" />
 
     </RelativeLayout>
 
