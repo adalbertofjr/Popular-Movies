@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -38,7 +39,6 @@ import br.com.adalbertofjr.popularmovies.R;
 import br.com.adalbertofjr.popularmovies.model.Movies;
 import br.com.adalbertofjr.popularmovies.model.Reviews;
 import br.com.adalbertofjr.popularmovies.model.Trailers;
-import br.com.adalbertofjr.popularmovies.ui.adapters.ReviewsAdapter;
 import br.com.adalbertofjr.popularmovies.ui.adapters.TrailersAdapter;
 import br.com.adalbertofjr.popularmovies.util.Constants;
 import br.com.adalbertofjr.popularmovies.util.Util;
@@ -55,7 +55,12 @@ public class DetailMovieFragment extends Fragment {
     private Movies mMovie;
     private ProgressBar mProgressBar;
     private RecyclerView mTrailersListRecyclerView;
-    private RecyclerView mReviewsListRecyclerView;
+    private TextView mContextReviewOne;
+    private TextView mAuthorReviewOne;
+    private TextView mAuthorReviewTwo;
+    private TextView mContextReviewTwo;
+    private TextView mReadMoreView;
+    private View mContainerReview;
 
     public DetailMovieFragment() {
     }
@@ -81,15 +86,18 @@ public class DetailMovieFragment extends Fragment {
         final View rootView = inflater.inflate(R.layout.fragment_detail_movie, container, false);
 
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.pb_detail_progress);
+        mAuthorReviewOne = (TextView) rootView.findViewById(R.id.tv_detail_reviews_author_one);
+        mContextReviewOne = (TextView) rootView.findViewById(R.id.tv_detail_reviews_content_one);
+        mAuthorReviewTwo = (TextView) rootView.findViewById(R.id.tv_detail_reviews_author_two);
+        mContextReviewTwo = (TextView) rootView.findViewById(R.id.tv_detail_reviews_content_two);
+        mReadMoreView = (TextView) rootView.findViewById(R.id.tv_detail_reviews_more);
+
+        mContainerReview = rootView.findViewById(R.id.ll_detail_reviews);
 
         mTrailersListRecyclerView = (RecyclerView) rootView.findViewById(R.id.rv_detail_trailers);
-        mReviewsListRecyclerView = (RecyclerView) rootView.findViewById(R.id.rv_detail_reviews);
 
         mTrailersListRecyclerView.setHasFixedSize(true);
         mTrailersListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-
-        mReviewsListRecyclerView.setHasFixedSize(true);
-        mReviewsListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
 
         TextView errorMessage = (TextView) rootView.findViewById(R.id.tv_detail_error_message);
 
@@ -351,8 +359,33 @@ public class DetailMovieFragment extends Fragment {
     }
 
     private void updateReviewsAdapter(List<Reviews> reviews) {
-        ReviewsAdapter reviewsAdapter = new ReviewsAdapter(getActivity(), reviews);
-        mReviewsListRecyclerView.setAdapter(reviewsAdapter);
+        if (reviews == null || reviews.size() == 0) {
+            return;
+        }
+
+        if (reviews.size() > 0) {
+            mAuthorReviewOne.setVisibility(View.VISIBLE);
+            mContextReviewOne.setVisibility(View.VISIBLE);
+            mAuthorReviewOne.setText(reviews.get(0).getAuthor());
+            mContextReviewOne.setText(reviews.get(0).getContent());
+        }
+
+        if (reviews.size() > 1) {
+            mAuthorReviewTwo.setVisibility(View.VISIBLE);
+            mContextReviewTwo.setVisibility(View.VISIBLE);
+            mAuthorReviewTwo.setText(reviews.get(1).getAuthor());
+            mContextReviewTwo.setText(reviews.get(1).getContent());
+        }
+
+        mContainerReview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getActivity(), "Abrir dialog com reviews", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+        mReadMoreView.setVisibility(View.VISIBLE);
     }
 
     private ArrayList<Reviews> getReviewsDataFromJson(String reviewsJsonString)
