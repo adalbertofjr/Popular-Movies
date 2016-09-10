@@ -1,7 +1,10 @@
 package br.com.adalbertofjr.popularmovies.ui.adapters;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +23,7 @@ import br.com.adalbertofjr.popularmovies.model.Trailers;
  */
 
 public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.ViewHolder> {
+    private static final String LOG_TAG = TrailersAdapter.class.getSimpleName();
     private Context mContext;
     private List<Trailers> mTrailer;
 
@@ -31,13 +35,30 @@ public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.ViewHo
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.trailer_item, parent, false);
-
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Trailers trailer = mTrailer.get(position);
+        final Trailers trailer = mTrailer.get(position);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                playTrailer(trailer);
+            }
+        });
+    }
+
+    private void playTrailer(Trailers trailer) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setPackage("com.google.android.youtube");
+        intent.setData(Uri.parse(trailer.getTrailerUrlPath()));
+
+        if (intent.resolveActivity(mContext.getPackageManager()) != null) {
+            mContext.startActivity(intent);
+        } else {
+            Log.d(LOG_TAG, "Couldn't call " + trailer.getTrailerUrlPath() + ", no receiving apps installed!");
+        }
     }
 
     @Override
