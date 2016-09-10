@@ -5,7 +5,7 @@ import br.com.adalbertofjr.popularmovies.BuildConfig;
 /**
  * Popular Movies
  * Constants
- * <p/>
+ * <p>
  * Created by Adalberto Fernandes Júnior on 10/07/2016.
  * Copyright © 2016 - Adalberto Fernandes Júnior. All rights reserved.
  */
@@ -13,6 +13,7 @@ import br.com.adalbertofjr.popularmovies.BuildConfig;
 public class Constants {
     //EXTRA
     public static final String MOVIE_DETAIL_EXTRA = "movie";
+    public static final String EXTRA_REVIEWS = "reviews";
 
     //Key for api The Movie Db
     private static final String THE_MOVIE_DB_API_KEY = BuildConfig.THE_MOVIE_DB_KEY;
@@ -60,4 +61,6 @@ public class Constants {
     public static final String REVIEWS_VIDEOS_LIST_KEY = "results";
     public static final String REVIEWS_VIDEOS_AUTHOR = "author";
     public static final String REVIEWS_VIDEOS_CONTENT = "content";
+
+
 }

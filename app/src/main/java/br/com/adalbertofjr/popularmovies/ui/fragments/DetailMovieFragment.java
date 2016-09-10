@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -46,7 +45,7 @@ import br.com.adalbertofjr.popularmovies.util.Util;
 /**
  * Popular Movies
  * DetailFragment
- * <p/>
+ * <p>
  * Created by Adalberto Fernandes Júnior on 10/07/2016.
  * Copyright © 2016 - Adalberto Fernandes Júnior. All rights reserved.
  */
@@ -358,7 +357,7 @@ public class DetailMovieFragment extends Fragment {
         }
     }
 
-    private void updateReviewsAdapter(List<Reviews> reviews) {
+    private void updateReviewsAdapter(final List<Reviews> reviews) {
         if (reviews == null || reviews.size() == 0) {
             return;
         }
@@ -380,10 +379,10 @@ public class DetailMovieFragment extends Fragment {
         mContainerReview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(), "Abrir dialog com reviews", Toast.LENGTH_SHORT).show();
+                ReviewsDialogFragment reviewsDialog = ReviewsDialogFragment.novaInstancia(reviews);
+                reviewsDialog.abrir(getActivity().getFragmentManager());
             }
         });
-
 
         mReadMoreView.setVisibility(View.VISIBLE);
     }

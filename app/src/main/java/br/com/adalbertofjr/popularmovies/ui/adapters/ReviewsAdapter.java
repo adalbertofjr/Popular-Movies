@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ import br.com.adalbertofjr.popularmovies.model.Reviews;
 /**
  * Popular Movies
  * ReviewsAdapter
- * <p/>
+ * <p>
  * Created by Adalberto Fernandes Júnior on 09/09/2016.
  * Copyright © 2016 - Adalberto Fernandes Júnior. All rights reserved.
  */
@@ -36,7 +37,14 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        Reviews reviews = mReviews.get(position);
 
+        if (position > 0) {
+            holder.mDivider.setVisibility(View.VISIBLE);
+        }
+
+        holder.mAuthorView.setText(reviews.getAuthor());
+        holder.mContentView.setText(reviews.getContent());
     }
 
     @Override
@@ -46,8 +54,15 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ViewHold
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
+        private final TextView mAuthorView;
+        private final TextView mContentView;
+        private final View mDivider;
+
         public ViewHolder(View itemView) {
             super(itemView);
+            mAuthorView = (TextView) itemView.findViewById(R.id.tv_review_item_author);
+            mContentView = (TextView) itemView.findViewById(R.id.tv_review_item_content);
+            mDivider = itemView.findViewById(R.id.vw_review_item_divider);
         }
     }
 }
