@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import br.com.adalbertofjr.popularmovies.R;
+import br.com.adalbertofjr.popularmovies.ui.fragments.DetailMovieFragment;
+import br.com.adalbertofjr.popularmovies.ui.fragments.MoviesFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -11,5 +13,23 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        boolean mTwoPane = findViewById(R.id.main_detail_container) != null ? true : false;
+
+        MoviesFragment moviesFragment = new MoviesFragment();
+        moviesFragment.setUseLayout(mTwoPane);
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.main_movies_fragment,
+                        moviesFragment, MoviesFragment.MOVIE_FRAGMENT_TAG)
+                .commit();
+
+        if (mTwoPane) {
+            if (savedInstanceState == null) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main_detail_container, new DetailMovieFragment(), DetailMovieFragment.DETAIL_MOVIE_FRAGMENT_TAG)
+                        .commit();
+            }
+        }
     }
 }

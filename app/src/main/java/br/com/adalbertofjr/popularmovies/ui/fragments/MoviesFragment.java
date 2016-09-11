@@ -44,14 +44,14 @@ import br.com.adalbertofjr.popularmovies.util.Util;
 /**
  * Popular Movies
  * MoviesFragment
- * <p/>
+ * <p>
  * Created by Adalberto Fernandes Júnior on 10/07/2016.
  * Copyright © 2016 - Adalberto Fernandes Júnior. All rights reserved.
  */
 
 public class MoviesFragment extends Fragment {
-
     private static final String MOVIES_INSTANCE_STATE = "movies";
+    public static final String MOVIE_FRAGMENT_TAG = "MFTAG";
     private MoviesImageAdapter mMoviesAdapter;
     private ArrayList<Movies> mMovies;
     private ProgressBar mMoviesProgressBar;
@@ -59,6 +59,7 @@ public class MoviesFragment extends Fragment {
     private ActionBar mToolbar;
     private String mFetchOption;
     private RecyclerView mGridMoviesRecyclerView;
+    private boolean mTwoPane;
 
     public MoviesFragment() {
     }
@@ -87,7 +88,11 @@ public class MoviesFragment extends Fragment {
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             gridLayout = new GridLayoutManager(getActivity(), 2);
         } else {
-            gridLayout = new GridLayoutManager(getActivity(), 4);
+            if (mTwoPane) {
+                gridLayout = new GridLayoutManager(getActivity(), 2);
+            } else {
+                gridLayout = new GridLayoutManager(getActivity(), 4);
+            }
         }
 
         mGridMoviesRecyclerView.setLayoutManager(gridLayout);
@@ -197,6 +202,10 @@ public class MoviesFragment extends Fragment {
             //mMoviesAdapter.clear();
             //mGridMovies.setEmptyView(mErrorMessage);
         }
+    }
+
+    public void setUseLayout(boolean mTwoPane) {
+        this.mTwoPane = mTwoPane;
     }
 
     private class FetchMoviesTask extends AsyncTask<Void, Void, ArrayList<Movies>> {

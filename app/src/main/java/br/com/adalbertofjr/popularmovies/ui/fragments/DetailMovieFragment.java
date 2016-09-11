@@ -51,6 +51,7 @@ import br.com.adalbertofjr.popularmovies.util.Util;
  */
 
 public class DetailMovieFragment extends Fragment {
+    public static final String DETAIL_MOVIE_FRAGMENT_TAG = "DMFTAG";
     private Movies mMovie;
     private ProgressBar mProgressBar;
     private RecyclerView mTrailersListRecyclerView;
@@ -76,7 +77,11 @@ public class DetailMovieFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mMovie = getArguments().getParcelable(Constants.MOVIE_DETAIL_EXTRA);
+        Bundle arguments = getArguments();
+
+        if (arguments != null) {
+            mMovie = arguments.getParcelable(Constants.MOVIE_DETAIL_EXTRA);
+        }
     }
 
     @Nullable
