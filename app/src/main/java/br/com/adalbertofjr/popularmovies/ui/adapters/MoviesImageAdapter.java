@@ -1,9 +1,9 @@
 package br.com.adalbertofjr.popularmovies.ui.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,24 +15,26 @@ import java.util.ArrayList;
 
 import br.com.adalbertofjr.popularmovies.R;
 import br.com.adalbertofjr.popularmovies.model.Movies;
-import br.com.adalbertofjr.popularmovies.ui.DetailActivity;
 import br.com.adalbertofjr.popularmovies.util.Constants;
 
 /**
  * Popular Movies
  * MoviesImageAdapter
- * <p/>
+ * <p>
  * Created by Adalberto Fernandes Júnior on 10/07/2016.
  * Copyright © 2016 - Adalberto Fernandes Júnior. All rights reserved.
  */
 
 public class MoviesImageAdapter extends RecyclerView.Adapter<MoviesImageAdapter.ViewHolder> {
+    private static final String LOG_TAG = MoviesImageAdapter.class.getSimpleName();
     private final Context mContext;
     private final ArrayList<Movies> mMovies;
+    private final OnMovieSelectedListener mListener;
 
-    public MoviesImageAdapter(Context mContext, ArrayList<Movies> mMovies) {
+    public MoviesImageAdapter(Context mContext, ArrayList<Movies> mMovies, OnMovieSelectedListener mListener) {
         this.mContext = mContext;
         this.mMovies = mMovies;
+        this.mListener = mListener;
     }
 
     @Override
@@ -47,6 +49,14 @@ public class MoviesImageAdapter extends RecyclerView.Adapter<MoviesImageAdapter.
     public void onBindViewHolder(ViewHolder holder, int position) {
         final Movies movie = mMovies.get(position);
 
+        boolean mTwoPanel = mContext.getResources().getBoolean(R.bool.has_two_panes);
+
+        if(mTwoPanel){
+            if(mListener!=null){
+                mListener.onMovieSelected(mMovies.get(0));
+            }
+        }
+
         Uri.Builder uriImage = Uri.parse(Constants.MOVIE_IMAGE_POSTER_URL)
                 .buildUpon()
                 .appendEncodedPath(movie.getPoster_path());
@@ -58,20 +68,22 @@ public class MoviesImageAdapter extends RecyclerView.Adapter<MoviesImageAdapter.
         holder.posterImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startDetailMovie(movie);
+                if (mListener != null) {
+                    mListener.onMovieSelected(movie);
+                } else {
+                    Log.d(LOG_TAG, "You need MoviesFragment.OnMovieSelectedListener callback.");
+                }
             }
         });
-    }
-
-    private void startDetailMovie(Movies movie) {
-        Intent intent = new Intent(mContext, DetailActivity.class);
-        intent.putExtra(Constants.MOVIE_DETAIL_EXTRA, movie);
-        mContext.startActivity(intent);
     }
 
     @Override
     public int getItemCount() {
         return mMovies.size();
+    }
+
+    public interface OnMovieSelectedListener {
+        void onMovieSelected(Movies movie);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

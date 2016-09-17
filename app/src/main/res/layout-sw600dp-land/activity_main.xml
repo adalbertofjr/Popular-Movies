@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="horizontal">
 
-    <FrameLayout
+    <fragment
         android:id="@+id/main_movies_fragment"
         android:name="br.com.adalbertofjr.popularmovies.ui.fragments.MoviesFragment"
         android:layout_width="0dp"

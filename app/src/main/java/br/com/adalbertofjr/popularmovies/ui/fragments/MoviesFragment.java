@@ -49,7 +49,8 @@ import br.com.adalbertofjr.popularmovies.util.Util;
  * Copyright © 2016 - Adalberto Fernandes Júnior. All rights reserved.
  */
 
-public class MoviesFragment extends Fragment {
+public class MoviesFragment extends Fragment
+        implements MoviesImageAdapter.OnMovieSelectedListener {
     private static final String MOVIES_INSTANCE_STATE = "movies";
     public static final String MOVIE_FRAGMENT_TAG = "MFTAG";
     private MoviesImageAdapter mMoviesAdapter;
@@ -211,6 +212,12 @@ public class MoviesFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onMovieSelected(Movies movie) {
+        ((MoviesImageAdapter.OnMovieSelectedListener) getActivity())
+                .onMovieSelected(movie);
+    }
+
     private class FetchMoviesTask extends AsyncTask<Void, Void, ArrayList<Movies>> {
         private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
 
@@ -296,7 +303,7 @@ public class MoviesFragment extends Fragment {
 
             if (mMovies == null) mMovies = movies;
 
-            mMoviesAdapter = new MoviesImageAdapter(getActivity(), movies);
+            mMoviesAdapter = new MoviesImageAdapter(getActivity(), movies, this);
             mGridMoviesRecyclerView.setAdapter(mMoviesAdapter);
         }
     }
