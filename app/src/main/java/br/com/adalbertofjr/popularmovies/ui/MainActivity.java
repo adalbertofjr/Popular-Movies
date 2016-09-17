@@ -14,11 +14,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        boolean mTwoPane = findViewById(R.id.main_detail_container) != null ? true : false;
+        boolean mTwoPane = getResources().getBoolean(R.bool.has_two_panes);
 
         MoviesFragment moviesFragment = new MoviesFragment();
-        moviesFragment.setUseLayout(mTwoPane);
-
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.main_movies_fragment,
                         moviesFragment, MoviesFragment.MOVIE_FRAGMENT_TAG)

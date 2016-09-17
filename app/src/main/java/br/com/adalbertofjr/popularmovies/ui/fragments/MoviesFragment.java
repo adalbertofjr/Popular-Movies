@@ -59,7 +59,6 @@ public class MoviesFragment extends Fragment {
     private ActionBar mToolbar;
     private String mFetchOption;
     private RecyclerView mGridMoviesRecyclerView;
-    private boolean mTwoPane;
 
     public MoviesFragment() {
     }
@@ -85,8 +84,16 @@ public class MoviesFragment extends Fragment {
         mErrorMessage = (TextView) rootView.findViewById(R.id.tv_movies_error_message);
 
         RecyclerView.LayoutManager gridLayout;
+
+        boolean isTablet = getActivity().getResources().getBoolean(R.bool.isTablet);
+        boolean mTwoPane = getActivity().getResources().getBoolean(R.bool.has_two_panes);
+
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            gridLayout = new GridLayoutManager(getActivity(), 2);
+            if (!isTablet) {
+                gridLayout = new GridLayoutManager(getActivity(), 2);
+            } else {
+                gridLayout = new GridLayoutManager(getActivity(), 4);
+            }
         } else {
             if (mTwoPane) {
                 gridLayout = new GridLayoutManager(getActivity(), 2);
@@ -202,10 +209,6 @@ public class MoviesFragment extends Fragment {
             //mMoviesAdapter.clear();
             //mGridMovies.setEmptyView(mErrorMessage);
         }
-    }
-
-    public void setUseLayout(boolean mTwoPane) {
-        this.mTwoPane = mTwoPane;
     }
 
     private class FetchMoviesTask extends AsyncTask<Void, Void, ArrayList<Movies>> {
