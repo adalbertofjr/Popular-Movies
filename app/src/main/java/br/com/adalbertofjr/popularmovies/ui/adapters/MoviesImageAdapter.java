@@ -20,7 +20,7 @@ import br.com.adalbertofjr.popularmovies.util.Constants;
 /**
  * Popular Movies
  * MoviesImageAdapter
- * <p>
+ * <p/>
  * Created by Adalberto Fernandes Júnior on 10/07/2016.
  * Copyright © 2016 - Adalberto Fernandes Júnior. All rights reserved.
  */
@@ -48,14 +48,6 @@ public class MoviesImageAdapter extends RecyclerView.Adapter<MoviesImageAdapter.
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         final Movies movie = mMovies.get(position);
-
-        boolean mTwoPanel = mContext.getResources().getBoolean(R.bool.has_two_panes);
-
-        if(mTwoPanel){
-            if(mListener!=null){
-                mListener.onMovieSelected(mMovies.get(0));
-            }
-        }
 
         Uri.Builder uriImage = Uri.parse(Constants.MOVIE_IMAGE_POSTER_URL)
                 .buildUpon()

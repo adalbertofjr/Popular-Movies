@@ -60,6 +60,7 @@ public class MoviesFragment extends Fragment
     private ActionBar mToolbar;
     private String mFetchOption;
     private RecyclerView mGridMoviesRecyclerView;
+    private boolean mTwoPane;
 
     public MoviesFragment() {
     }
@@ -87,13 +88,13 @@ public class MoviesFragment extends Fragment
         RecyclerView.LayoutManager gridLayout;
 
         boolean isTablet = getActivity().getResources().getBoolean(R.bool.isTablet);
-        boolean mTwoPane = getActivity().getResources().getBoolean(R.bool.has_two_panes);
+        mTwoPane = getActivity().getResources().getBoolean(R.bool.has_two_panes);
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             if (!isTablet) {
                 gridLayout = new GridLayoutManager(getActivity(), 2);
             } else {
-                gridLayout = new GridLayoutManager(getActivity(), 4);
+                gridLayout = new GridLayoutManager(getActivity(), 3);
             }
         } else {
             if (mTwoPane) {
@@ -301,10 +302,14 @@ public class MoviesFragment extends Fragment
         if (movies != null) {
             hideProgressBar();
 
-            if (mMovies == null) mMovies = movies;
+            mMovies = movies;
 
-            mMoviesAdapter = new MoviesImageAdapter(getActivity(), movies, this);
+            mMoviesAdapter = new MoviesImageAdapter(getActivity(), mMovies, this);
             mGridMoviesRecyclerView.setAdapter(mMoviesAdapter);
+
+            if(mTwoPane){
+                onMovieSelected(mMovies.get(0));
+            }
         }
     }
 
