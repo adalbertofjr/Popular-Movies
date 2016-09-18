@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -64,8 +64,8 @@
             android:layout_below="@id/tv_detail_dt_release"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_toRightOf="@id/iv_detail_poster"
-            android:scaleType="fitXY"
-            android:contentDescription="@string/star_rating_description"/>
+            android:contentDescription="@string/star_rating_description"
+            android:scaleType="fitXY" />
 
         <TextView
             android:id="@+id/tv_detail_vote_average"
@@ -85,8 +85,132 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/iv_detail_poster"
             android:layout_margin="@dimen/activity_vertical_margin"
+            android:fontFamily="sans-serif-light"
             android:textColor="@color/colorPrimaryText"
             android:textSize="@dimen/text_secondary_size" />
+
+        <View
+            android:id="@+id/vw_divider_overview"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/tv_detail_overview"
+            android:layout_margin="@dimen/activity_vertical_margin"
+            android:background="@color/colorDivider" />
+
+        <TextView
+            android:id="@+id/tv_detail_trailers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/vw_divider_overview"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginLeft="@dimen/activity_vertical_margin"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:fontFamily="sans-serif-condensed"
+            android:text="Trailers:"
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="@dimen/title_size" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_detail_trailers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_detail_trailers"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:scrollbars="horizontal" />
+
+        <View
+            android:id="@+id/vw_divider_trailer"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/rv_detail_trailers"
+            android:layout_margin="@dimen/activity_vertical_margin"
+            android:background="@color/colorDivider" />
+
+        <TextView
+            android:id="@+id/tv_detail_reviews"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/vw_divider_trailer"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginLeft="@dimen/activity_vertical_margin"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:fontFamily="sans-serif-condensed"
+            android:text="Reviews:"
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="@dimen/title_size" />
+
+        <LinearLayout
+            android:id="@+id/ll_detail_reviews"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_detail_reviews"
+            android:background="?android:selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_detail_reviews_author_one"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginRight="@dimen/activity_vertical_margin"
+                android:fontFamily="sans-serif-condensed"
+                android:textColor="@color/colorPrimaryText"
+                android:textSize="@dimen/title_size"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tv_detail_reviews_content_one"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginRight="@dimen/activity_vertical_margin"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-light"
+                android:maxLines="5"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tv_detail_reviews_author_two"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginRight="@dimen/activity_vertical_margin"
+                android:fontFamily="sans-serif-condensed"
+                android:textColor="@color/colorPrimaryText"
+                android:textSize="@dimen/title_size"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tv_detail_reviews_content_two"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginRight="@dimen/activity_vertical_margin"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-light"
+                android:maxLines="5"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tv_detail_reviews_more"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginRight="@dimen/activity_vertical_margin"
+                android:background="@color/colorPrimary"
+                android:fontFamily="sans-serif-condensed"
+                android:gravity="center"
+                android:text="Ler reviews"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/title_size"
+                android:visibility="gone" />
+        </LinearLayout>
 
     </RelativeLayout>
 

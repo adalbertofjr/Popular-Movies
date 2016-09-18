@@ -1,10 +1,14 @@
 package br.com.adalbertofjr.popularmovies.ui.fragments;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,11 +19,26 @@ import android.widget.TextView;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import br.com.adalbertofjr.popularmovies.R;
 import br.com.adalbertofjr.popularmovies.model.Movies;
+import br.com.adalbertofjr.popularmovies.model.Reviews;
+import br.com.adalbertofjr.popularmovies.model.Trailers;
+import br.com.adalbertofjr.popularmovies.ui.adapters.TrailersAdapter;
 import br.com.adalbertofjr.popularmovies.util.Constants;
 import br.com.adalbertofjr.popularmovies.util.Util;
 
@@ -32,8 +51,16 @@ import br.com.adalbertofjr.popularmovies.util.Util;
  */
 
 public class DetailMovieFragment extends Fragment {
+    public static final String DETAIL_MOVIE_FRAGMENT_TAG = "DMFTAG";
     private Movies mMovie;
     private ProgressBar mProgressBar;
+    private RecyclerView mTrailersListRecyclerView;
+    private TextView mContextReviewOne;
+    private TextView mAuthorReviewOne;
+    private TextView mAuthorReviewTwo;
+    private TextView mContextReviewTwo;
+    private TextView mReadMoreView;
+    private View mContainerReview;
 
     public DetailMovieFragment() {
     }
@@ -50,14 +77,32 @@ public class DetailMovieFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mMovie = getArguments().getParcelable(Constants.MOVIE_DETAIL_EXTRA);
+        Bundle arguments = getArguments();
+
+        if (arguments != null) {
+            mMovie = arguments.getParcelable(Constants.MOVIE_DETAIL_EXTRA);
+        }
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_detail_movie, container, false);
+
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.pb_detail_progress);
+        mAuthorReviewOne = (TextView) rootView.findViewById(R.id.tv_detail_reviews_author_one);
+        mContextReviewOne = (TextView) rootView.findViewById(R.id.tv_detail_reviews_content_one);
+        mAuthorReviewTwo = (TextView) rootView.findViewById(R.id.tv_detail_reviews_author_two);
+        mContextReviewTwo = (TextView) rootView.findViewById(R.id.tv_detail_reviews_content_two);
+        mReadMoreView = (TextView) rootView.findViewById(R.id.tv_detail_reviews_more);
+
+        mContainerReview = rootView.findViewById(R.id.ll_detail_reviews);
+
+        mTrailersListRecyclerView = (RecyclerView) rootView.findViewById(R.id.rv_detail_trailers);
+
+        mTrailersListRecyclerView.setHasFixedSize(true);
+        mTrailersListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+
         TextView errorMessage = (TextView) rootView.findViewById(R.id.tv_detail_error_message);
 
         if (mMovie != null) {
@@ -81,6 +126,9 @@ public class DetailMovieFragment extends Fragment {
                                 ((ImageView) rootView.findViewById(R.id.iv_detail_star)).setImageResource(R.drawable.ic_star);
                                 ((TextView) rootView.findViewById(R.id.tv_detail_vote_average)).setText(mMovie.getVote_average());
                                 ((TextView) rootView.findViewById(R.id.tv_detail_overview)).setText(mMovie.getOverview());
+
+                                new FetchTrailersTask().execute();
+                                new FetchReviewsTask().execute();
                             }
 
                             @Override
@@ -114,5 +162,261 @@ public class DetailMovieFragment extends Fragment {
         if (mProgressBar != null && mProgressBar.getVisibility() == View.VISIBLE) {
             mProgressBar.setVisibility(View.GONE);
         }
+    }
+
+    private class FetchTrailersTask extends AsyncTask<Void, Void, ArrayList<Trailers>> {
+        private final String LOG_TAG = FetchTrailersTask.class.getSimpleName();
+
+        @Override
+        protected ArrayList<Trailers> doInBackground(Void... voids) {
+
+            HttpURLConnection urlConnection = null;
+            BufferedReader reader = null;
+
+            String trailersJsonString;
+
+            try {
+
+                if (mMovie == null)
+                    return null;
+
+                String pathTrailer = String.format(Constants.MOVIE_TRAILERS_URL, mMovie.getId());
+
+                URL url = new URL(pathTrailer);
+
+                // Create the request to OpenWeatherMap, and open the connection
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+
+                // Read the input stream into a String
+                InputStream inputStream = urlConnection.getInputStream();
+                StringBuilder buffer = new StringBuilder();
+                if (inputStream == null) {
+                    // Nothing to do.
+                    return null;
+                }
+                reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    buffer.append(line).append("\n");
+                }
+
+                if (buffer.length() == 0) {
+                    return null;
+                }
+
+                trailersJsonString = buffer.toString();
+
+                try {
+                    return getMoviesDataFromJson(trailersJsonString);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } catch (IOException e) {
+                Log.e(LOG_TAG, "Error ", e);
+                // If the code didn't successfully get the weather data, there's no point in attemping
+                // to parse it.
+                return null;
+            } finally {
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (final IOException e) {
+                        Log.e(LOG_TAG, "Error closing stream", e);
+                    }
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Trailers> trailers) {
+            super.onPostExecute(trailers);
+
+            for (Trailers t : trailers) {
+                Log.i("Trailer", t.getTrailerUrlPath());
+            }
+            updateTrailersAdapter(trailers);
+        }
+    }
+
+    private void updateTrailersAdapter(ArrayList<Trailers> trailers) {
+        TrailersAdapter trailersAdapter = new TrailersAdapter(getActivity(), trailers);
+        mTrailersListRecyclerView.setAdapter(trailersAdapter);
+    }
+
+    private ArrayList<Trailers> getMoviesDataFromJson(String trailersJsonString)
+            throws JSONException {
+
+        JSONObject trailersJson = new JSONObject(trailersJsonString);
+        JSONArray trailersArray = trailersJson.getJSONArray(Constants.TRAILERS_VIDEOS_LIST_KEY);
+
+        ArrayList<Trailers> trailers = new ArrayList<>();
+
+        for (int i = 0; i < trailersArray.length(); i++) {
+            String key;
+            String name;
+            String site;
+
+            JSONObject trailerData = trailersArray.getJSONObject(i);
+
+            key = trailerData.getString(Constants.TRAILERS_VIDEO_KEY);
+            name = trailerData.getString(Constants.TRAILERS_VIDEO_NAME);
+            site = trailerData.getString(Constants.TRAILERS_VIDEO_SITE);
+
+            Trailers trailer = new Trailers(
+                    key,
+                    name,
+                    site
+            );
+
+            trailers.add(trailer);
+        }
+
+        return trailers;
+    }
+
+    private class FetchReviewsTask extends AsyncTask<Void, Void, ArrayList<Reviews>> {
+        private final String LOG_TAG = FetchReviewsTask.class.getSimpleName();
+
+        @Override
+        protected ArrayList<Reviews> doInBackground(Void... voids) {
+
+            HttpURLConnection urlConnection = null;
+            BufferedReader reader = null;
+
+            String reviewsJsonString;
+
+            try {
+
+                if (mMovie == null)
+                    return null;
+
+                String pathReview = String.format(Constants.MOVIE_REVIEWS_URL, mMovie.getId());
+
+                URL url = new URL(pathReview);
+
+                // Create the request to OpenWeatherMap, and open the connection
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+
+                // Read the input stream into a String
+                InputStream inputStream = urlConnection.getInputStream();
+                StringBuilder buffer = new StringBuilder();
+                if (inputStream == null) {
+                    // Nothing to do.
+                    return null;
+                }
+                reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    buffer.append(line).append("\n");
+                }
+
+                if (buffer.length() == 0) {
+                    return null;
+                }
+
+                reviewsJsonString = buffer.toString();
+
+                try {
+                    return getReviewsDataFromJson(reviewsJsonString);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } catch (IOException e) {
+                Log.e(LOG_TAG, "Error ", e);
+                // If the code didn't successfully get the weather data, there's no point in attemping
+                // to parse it.
+                return null;
+            } finally {
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (final IOException e) {
+                        Log.e(LOG_TAG, "Error closing stream", e);
+                    }
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Reviews> reviews) {
+            super.onPostExecute(reviews);
+
+            for (Reviews t : reviews) {
+                Log.i("Trailer", t.getAuthor());
+            }
+            updateReviewsAdapter(reviews);
+        }
+    }
+
+    private void updateReviewsAdapter(final List<Reviews> reviews) {
+        if (reviews == null || reviews.size() == 0) {
+            return;
+        }
+
+        if (reviews.size() > 0) {
+            mAuthorReviewOne.setVisibility(View.VISIBLE);
+            mContextReviewOne.setVisibility(View.VISIBLE);
+            mAuthorReviewOne.setText(reviews.get(0).getAuthor());
+            mContextReviewOne.setText(reviews.get(0).getContent());
+        }
+
+        if (reviews.size() > 1) {
+            mAuthorReviewTwo.setVisibility(View.VISIBLE);
+            mContextReviewTwo.setVisibility(View.VISIBLE);
+            mAuthorReviewTwo.setText(reviews.get(1).getAuthor());
+            mContextReviewTwo.setText(reviews.get(1).getContent());
+        }
+
+        mContainerReview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ReviewsDialogFragment reviewsDialog = ReviewsDialogFragment.novaInstancia(reviews);
+                reviewsDialog.abrir(getActivity().getFragmentManager());
+            }
+        });
+
+        mReadMoreView.setVisibility(View.VISIBLE);
+    }
+
+    private ArrayList<Reviews> getReviewsDataFromJson(String reviewsJsonString)
+            throws JSONException {
+
+        JSONObject reviewsJson = new JSONObject(reviewsJsonString);
+        JSONArray reviewsArray = reviewsJson.getJSONArray(Constants.REVIEWS_VIDEOS_LIST_KEY);
+
+        ArrayList<Reviews> reviews = new ArrayList<>();
+
+        for (int i = 0; i < reviewsArray.length(); i++) {
+            String name;
+            String content;
+
+            JSONObject reviewData = reviewsArray.getJSONObject(i);
+
+            name = reviewData.getString(Constants.REVIEWS_VIDEOS_AUTHOR);
+            content = reviewData.getString(Constants.REVIEWS_VIDEOS_CONTENT);
+
+            Reviews review = new Reviews(
+                    name,
+                    content
+            );
+
+            reviews.add(review);
+        }
+
+        return reviews;
     }
 }

@@ -1,5 +1,6 @@
 package br.com.adalbertofjr.popularmovies.ui.fragments;
 
+import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -7,6 +8,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,7 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -42,21 +44,23 @@ import br.com.adalbertofjr.popularmovies.util.Util;
 /**
  * Popular Movies
  * MoviesFragment
- * <p/>
+ * <p>
  * Created by Adalberto Fernandes Júnior on 10/07/2016.
  * Copyright © 2016 - Adalberto Fernandes Júnior. All rights reserved.
  */
 
-public class MoviesFragment extends Fragment {
-
+public class MoviesFragment extends Fragment
+        implements MoviesImageAdapter.OnMovieSelectedListener {
     private static final String MOVIES_INSTANCE_STATE = "movies";
+    public static final String MOVIE_FRAGMENT_TAG = "MFTAG";
     private MoviesImageAdapter mMoviesAdapter;
     private ArrayList<Movies> mMovies;
     private ProgressBar mMoviesProgressBar;
-    private GridView mGridMovies;
     private TextView mErrorMessage;
     private ActionBar mToolbar;
     private String mFetchOption;
+    private RecyclerView mGridMoviesRecyclerView;
+    private boolean mTwoPane;
 
     public MoviesFragment() {
     }
@@ -77,12 +81,31 @@ public class MoviesFragment extends Fragment {
 
         initToolbar();
 
-        mGridMovies = (GridView) rootView.findViewById(R.id.gv_movies_fragment);
+        mGridMoviesRecyclerView = (RecyclerView) rootView.findViewById(R.id.rv_movies_fragment);
         mMoviesProgressBar = (ProgressBar) rootView.findViewById(R.id.pb_movies_progress);
         mErrorMessage = (TextView) rootView.findViewById(R.id.tv_movies_error_message);
 
-        mMoviesAdapter = new MoviesImageAdapter(getActivity(), new ArrayList<Movies>());
-        mGridMovies.setAdapter(mMoviesAdapter);
+        RecyclerView.LayoutManager gridLayout;
+
+        boolean isTablet = getActivity().getResources().getBoolean(R.bool.isTablet);
+        mTwoPane = getActivity().getResources().getBoolean(R.bool.has_two_panes);
+
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            if (!isTablet) {
+                gridLayout = new GridLayoutManager(getActivity(), 2);
+            } else {
+                gridLayout = new GridLayoutManager(getActivity(), 3);
+            }
+        } else {
+            if (mTwoPane) {
+                gridLayout = new GridLayoutManager(getActivity(), 2);
+            } else {
+                gridLayout = new GridLayoutManager(getActivity(), 4);
+            }
+        }
+
+        mGridMoviesRecyclerView.setLayoutManager(gridLayout);
+        mGridMoviesRecyclerView.setHasFixedSize(true);
 
         return rootView;
     }
@@ -120,7 +143,8 @@ public class MoviesFragment extends Fragment {
             moviesTask.execute();
         } else {
             hideProgressBar();
-            mGridMovies.setEmptyView(mErrorMessage);
+            // Todo - Corrigir mensagens de erro de conexão.
+            //mGridMoviesRecyclerView.setEmptyView(mErrorMessage);
         }
     }
 
@@ -156,7 +180,6 @@ public class MoviesFragment extends Fragment {
                 }
 
                 startFetchMoviesTask();
-
             }
 
             @Override
@@ -184,9 +207,16 @@ public class MoviesFragment extends Fragment {
             startFetchMoviesTask();
         } else {
             hideProgressBar();
-            mMoviesAdapter.clear();
-            mGridMovies.setEmptyView(mErrorMessage);
+            // Todo - Corrigir mensagens de erro de conexão.
+            //mMoviesAdapter.clear();
+            //mGridMovies.setEmptyView(mErrorMessage);
         }
+    }
+
+    @Override
+    public void onMovieSelected(Movies movie) {
+        ((MoviesImageAdapter.OnMovieSelectedListener) getActivity())
+                .onMovieSelected(movie);
     }
 
     private class FetchMoviesTask extends AsyncTask<Void, Void, ArrayList<Movies>> {
@@ -272,10 +302,14 @@ public class MoviesFragment extends Fragment {
         if (movies != null) {
             hideProgressBar();
 
-            if (mMovies == null) mMovies = movies;
+            mMovies = movies;
 
-            mMoviesAdapter.clear();
-            mMoviesAdapter.addAll(movies);
+            mMoviesAdapter = new MoviesImageAdapter(getActivity(), mMovies, this);
+            mGridMoviesRecyclerView.setAdapter(mMoviesAdapter);
+
+            if(mTwoPane){
+                onMovieSelected(mMovies.get(0));
+            }
         }
     }
 
@@ -294,6 +328,7 @@ public class MoviesFragment extends Fragment {
         ArrayList<Movies> movies = new ArrayList<>();
 
         for (int i = 0; i < moviesArray.length(); i++) {
+            String id;
             String backdrop_path;
             String poster_path;
             String vote_average;
@@ -303,6 +338,7 @@ public class MoviesFragment extends Fragment {
 
             JSONObject movieData = moviesArray.getJSONObject(i);
 
+            id = movieData.getString(Constants.MOVIES_ID);
             backdrop_path = movieData.getString(Constants.MOVIES_BACKGROUND_KEY);
             poster_path = movieData.getString(Constants.MOVIES_POSTER_KEY);
             vote_average = movieData.getString(Constants.MOVIES_VOTE_AVERAGE_KEY);
@@ -310,7 +346,7 @@ public class MoviesFragment extends Fragment {
             release_date = movieData.getString(Constants.MOVIES_RELEASE_DATE_KEY);
             overview = movieData.getString(Constants.MOVIES_OVERVIEW_KEY);
 
-            Movies movie = new Movies(backdrop_path,
+            Movies movie = new Movies(id, backdrop_path,
                     poster_path,
                     vote_average,
                     original_title,
@@ -322,5 +358,4 @@ public class MoviesFragment extends Fragment {
 
         return movies;
     }
-
 }

@@ -8,12 +8,13 @@ import br.com.adalbertofjr.popularmovies.util.Constants;
 /**
  * Popular Movies
  * Movies
- * <p/>
+ * <p>
  * Created by Adalberto Fernandes Júnior on 16/07/2016.
  * Copyright © 2016 - Adalberto Fernandes Júnior. All rights reserved.
  */
 
 public class Movies implements Parcelable {
+    private String id;
     private String backdrop_path;
     private String poster_path;
     private String vote_average;
@@ -24,7 +25,14 @@ public class Movies implements Parcelable {
     public Movies() {
     }
 
-    public Movies(String backdrop_path, String poster_path, String vote_average, String original_title, String release_date, String overview) {
+    public Movies(String id,
+                  String backdrop_path,
+                  String poster_path,
+                  String vote_average,
+                  String original_title,
+                  String release_date,
+                  String overview) {
+        this.id = id;
         this.backdrop_path = backdrop_path;
         this.poster_path = poster_path;
         this.vote_average = vote_average;
@@ -34,6 +42,7 @@ public class Movies implements Parcelable {
     }
 
     private Movies(Parcel in) {
+        id = in.readString();
         backdrop_path = in.readString();
         poster_path = in.readString();
         vote_average = in.readString();
@@ -53,6 +62,14 @@ public class Movies implements Parcelable {
             return new Movies[size];
         }
     };
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     private String getBackdrop_path() {
         return backdrop_path;
@@ -122,6 +139,7 @@ public class Movies implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(id);
         parcel.writeString(backdrop_path);
         parcel.writeString(poster_path);
         parcel.writeString(vote_average);
