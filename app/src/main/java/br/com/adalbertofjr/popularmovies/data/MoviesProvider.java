@@ -107,8 +107,27 @@ public class MoviesProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(Uri uri, String s, String[] strings) {
-        return 0;
+    public int delete(Uri uri, String selection, String[] selectionArgs) {
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+
+        final int match = sUriMatcher.match(uri);
+        int rowsDeleted;
+
+        if (null == selection) selection = "1";
+        switch (match) {
+            case POPULAR: {
+                rowsDeleted = db.delete(PopularEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            }
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+
+        if (rowsDeleted != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+
+        return rowsDeleted;
     }
 
     @Override

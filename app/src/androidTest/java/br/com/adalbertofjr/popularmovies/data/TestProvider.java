@@ -24,6 +24,34 @@ import br.com.adalbertofjr.popularmovies.data.MoviesContract.PopularEntry;
 public class TestProvider extends AndroidTestCase {
 
     /*
+       This helper function deletes all records from both database tables using the ContentProvider.
+       It also queries the ContentProvider to make sure that the database has been successfully
+       deleted, so it cannot be used until the Query and Delete functions have been written
+       in the ContentProvider.
+
+       Students: Replace the calls to deleteAllRecordsFromDB with this one after you have written
+       the delete functionality in the ContentProvider.
+     */
+    public void deleteAllRecordsFromProvider() {
+        mContext.getContentResolver().delete(
+                PopularEntry.CONTENT_URI,
+                null,
+                null
+        );
+
+
+        Cursor cursor = mContext.getContentResolver().query(
+                PopularEntry.CONTENT_URI,
+                null,
+                null,
+                null,
+                null
+        );
+        assertEquals("Error: Records not deleted from Popular table during delete", 0, cursor.getCount());
+        cursor.close();
+    }
+
+    /*
       This helper function deletes all records from both database tables using the database
       functions only.  This is designed to be used to reset the state of the database until the
       delete functionality is available in the ContentProvider.
@@ -162,4 +190,28 @@ public class TestProvider extends AndroidTestCase {
         TestUtilities.validateCursor("testInsertReadProvider. Error validating PopularEntry.",
                 cursor, testValues);
     }
+
+    // Make sure we can still delete after adding/updating stuff
+    //
+    // Student: Uncomment this test after you have completed writing the delete functionality
+    // in your provider.  It relies on insertions with testInsertReadProvider, so insert and
+    // query functionality must also be complete before this test can be used.
+    public void testDeleteRecords() {
+        testInsertReadProvider();
+
+        // Register a content observer for our popular movie delete.
+        TestUtilities.TestContentObserver popularMovieObserver = TestUtilities.getTestContentObserver();
+        mContext.getContentResolver().registerContentObserver(PopularEntry.CONTENT_URI, true, popularMovieObserver);
+
+        deleteAllRecordsFromProvider();
+
+        // Students: If either of these fail, you most-likely are not calling the
+        // getContext().getContentResolver().notifyChange(uri, null); in the ContentProvider
+        // delete.  (only if the insertReadProvider is succeeding)
+        popularMovieObserver.waitForNotificationOrFail();
+
+        mContext.getContentResolver().unregisterContentObserver(popularMovieObserver);
+    }
+
+
 }
