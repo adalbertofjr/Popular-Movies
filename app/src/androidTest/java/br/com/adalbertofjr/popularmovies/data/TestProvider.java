@@ -1,11 +1,13 @@
 package br.com.adalbertofjr.popularmovies.data;
 
 import android.content.ComponentName;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.test.AndroidTestCase;
 
 import br.com.adalbertofjr.popularmovies.data.MoviesContract.PopularEntry;
@@ -101,7 +103,8 @@ public class TestProvider extends AndroidTestCase {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         // Fantastic.  Now that we have add some movie!
-        ContentValues movieValues = TestUtilities.createCaptainAmericaPopularValues();;
+        ContentValues movieValues = TestUtilities.createCaptainAmericaPopularValues();
+        ;
 
         long weatherRowId = db.insert(PopularEntry.TABLE_NAME, null, movieValues);
         assertTrue("Unable to Insert PopularEntry into the Database", weatherRowId != -1);
@@ -119,5 +122,44 @@ public class TestProvider extends AndroidTestCase {
 
         // Make sure we get the correct cursor out of the database
         TestUtilities.validateCursor("testBasicPopularQuery", popularCursor, movieValues);
+    }
+
+    // Make sure we can still delete after adding/updating stuff
+    //
+    // Student: Uncomment this test after you have completed writing the insert functionality
+    // in your provider.  It relies on insertions with testInsertReadProvider, so insert and
+    // query functionality must also be complete before this test can be used.
+    public void testInsertReadProvider() {
+        ContentValues testValues = TestUtilities.createCaptainAmericaPopularValues();
+
+        // Register a content observer for our insert.  This time, directly with the content resolver
+        TestUtilities.TestContentObserver tco = TestUtilities.getTestContentObserver();
+        mContext.getContentResolver().registerContentObserver(PopularEntry.CONTENT_URI, true, tco);
+        Uri popularUri = mContext.getContentResolver().insert(PopularEntry.CONTENT_URI, testValues);
+
+        // Did our content observer get called?  Students:  If this fails, your insert popular
+        // isn't calling getContext().getContentResolver().notifyChange(uri, null);
+        tco.waitForNotificationOrFail();
+        mContext.getContentResolver().unregisterContentObserver(tco);
+
+        long locationRowId = ContentUris.parseId(popularUri);
+
+        // Verify we got a row back.
+        assertTrue(locationRowId != -1);
+
+        // Data's inserted.  IN THEORY.  Now pull some out to stare at it and verify it made
+        // the round trip.
+
+        // A cursor is your primary interface to the query results.
+        Cursor cursor = mContext.getContentResolver().query(
+                PopularEntry.CONTENT_URI,
+                null, // leaving "columns" null just returns all the columns.
+                null, // cols for "where" clause
+                null, // values for "where" clause
+                null  // sort order
+        );
+
+        TestUtilities.validateCursor("testInsertReadProvider. Error validating PopularEntry.",
+                cursor, testValues);
     }
 }

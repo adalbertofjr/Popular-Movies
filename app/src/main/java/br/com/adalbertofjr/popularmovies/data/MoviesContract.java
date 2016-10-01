@@ -1,6 +1,7 @@
 package br.com.adalbertofjr.popularmovies.data;
 
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
@@ -42,6 +43,10 @@ public class MoviesContract {
 
         public static Uri buildMoviesPopular(String testMoviesPopular) {
             return CONTENT_URI.buildUpon().appendPath(testMoviesPopular).build();
+        }
+
+        public static Uri buildPopularMovieUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
         }
     }
 }

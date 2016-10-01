@@ -4,9 +4,12 @@ import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.support.annotation.Nullable;
+
+import br.com.adalbertofjr.popularmovies.data.MoviesContract.PopularEntry;
 
 /**
  * PopularMovies
@@ -47,7 +50,7 @@ public class MoviesProvider extends ContentProvider {
         switch (match) {
             case POPULAR: {
                 retCursor = mOpenHelper.getWritableDatabase().query(
-                        MoviesContract.PopularEntry.TABLE_NAME,
+                        PopularEntry.TABLE_NAME,
                         projection,
                         selection,
                         selectionArgs,
@@ -73,7 +76,7 @@ public class MoviesProvider extends ContentProvider {
 
         switch (match) {
             case POPULAR: {
-                return MoviesContract.PopularEntry.CONTENT_TYPE;
+                return PopularEntry.CONTENT_TYPE;
             }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -82,8 +85,25 @@ public class MoviesProvider extends ContentProvider {
 
     @Nullable
     @Override
-    public Uri insert(Uri uri, ContentValues contentValues) {
-        return null;
+    public Uri insert(Uri uri, ContentValues values) {
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        final int match = sUriMatcher.match(uri);
+        Uri returnUri;
+
+        switch (match) {
+            case POPULAR: {
+                long _id = db.insert(PopularEntry.TABLE_NAME, null, values);
+                if (_id > 0)
+                    returnUri = PopularEntry.buildPopularMovieUri(_id);
+                else
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
+            }
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+        getContext().getContentResolver().notifyChange(uri, null);
+        return returnUri;
     }
 
     @Override
