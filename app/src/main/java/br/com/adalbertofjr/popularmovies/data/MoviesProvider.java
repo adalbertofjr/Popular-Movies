@@ -4,6 +4,7 @@ import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 
@@ -21,6 +22,7 @@ public class MoviesProvider extends ContentProvider {
     private static final UriMatcher sUriMatcher = buildUriMatcher();
 
     private static final int POPULAR = 100;
+    private SQLiteOpenHelper mOpenHelper;
 
     private static UriMatcher buildUriMatcher() {
         UriMatcher uriMatcherMatcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -33,13 +35,33 @@ public class MoviesProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
+        mOpenHelper = new MoviesDbHelper(getContext());
         return true;
     }
 
     @Nullable
     @Override
-    public Cursor query(Uri uri, String[] strings, String s, String[] strings1, String s1) {
-        return null;
+    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+        final int match = sUriMatcher.match(uri);
+        Cursor retCursor;
+        switch (match) {
+            case POPULAR: {
+                retCursor = mOpenHelper.getWritableDatabase().query(
+                        MoviesContract.PopularEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+        retCursor.setNotificationUri(getContext().getContentResolver(), uri);
+        return retCursor;
     }
 
     @Nullable
