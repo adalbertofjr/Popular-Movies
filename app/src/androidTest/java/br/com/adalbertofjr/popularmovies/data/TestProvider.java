@@ -5,6 +5,8 @@ import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.test.AndroidTestCase;
 
+import br.com.adalbertofjr.popularmovies.data.MoviesContract.PopularEntry;
+
 /**
  * PopularMovies
  * TestProvider
@@ -16,6 +18,10 @@ import android.test.AndroidTestCase;
 
 public class TestProvider extends AndroidTestCase {
 
+    /*
+        This test checks to make sure that the content provider is registered correctly.
+        Students: Uncomment this test to make sure you've correctly registered the WeatherProvider.
+     */
     public void testProviderRegistry() {
         PackageManager pm = mContext.getPackageManager();
 
@@ -37,5 +43,22 @@ public class TestProvider extends AndroidTestCase {
             assertTrue("Error: MoviesProvider not registered at " + mContext.getPackageName(),
                     false);
         }
+    }
+
+    /*
+           This test doesn't touch the database.  It verifies that the ContentProvider returns
+           the correct type for each type of URI that it can handle.
+           Students: Uncomment this test to verify that your implementation of GetType is
+           functioning correctly.
+        */
+    public void testGetType() {
+
+        // content://br.com.adalbertofjr.popularmovies/popular/
+        String type = mContext.getContentResolver().getType(PopularEntry.CONTENT_URI);
+        // vnd.android.cursor.dir/br.com.adalbertofjr.popularmovies/popular
+        assertEquals("Error: the PopularEntry CONTENT_URI should return PopularEntry.CONTENT_TYPE",
+                PopularEntry.CONTENT_TYPE, type);
+
+
     }
 }

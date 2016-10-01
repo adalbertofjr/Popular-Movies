@@ -1,5 +1,6 @@
 package br.com.adalbertofjr.popularmovies.data;
 
+import android.content.ContentResolver;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
@@ -27,6 +28,9 @@ public class MoviesContract {
                 .buildUpon()
                 .appendPath(PATH_POPULAR).build();
 
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_POPULAR;
+        ;
         // Popular table db
         public static final String TABLE_NAME = "popular";
         public static final String COLUMN_BACKDROP_PATH = "backdrop_path";

@@ -2,6 +2,7 @@ package br.com.adalbertofjr.popularmovies.data;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.Nullable;
@@ -15,6 +16,20 @@ import android.support.annotation.Nullable;
  */
 
 public class MoviesProvider extends ContentProvider {
+
+    // The URI Matcher used by this content provider.
+    private static final UriMatcher sUriMatcher = buildUriMatcher();
+
+    private static final int POPULAR = 100;
+
+    private static UriMatcher buildUriMatcher() {
+        UriMatcher uriMatcherMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+
+        String authority = MoviesContract.CONTENT_AUTHORITY;
+        uriMatcherMatcher.addURI(authority, MoviesContract.PATH_POPULAR, POPULAR);
+
+        return uriMatcherMatcher;
+    }
 
     @Override
     public boolean onCreate() {
@@ -30,7 +45,17 @@ public class MoviesProvider extends ContentProvider {
     @Nullable
     @Override
     public String getType(Uri uri) {
-        return null;
+
+        // Use the Uri Matcher to determine what kind of URI this is.
+        final int match = sUriMatcher.match(uri);
+
+        switch (match) {
+            case POPULAR: {
+                return MoviesContract.PopularEntry.CONTENT_TYPE;
+            }
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
     }
 
     @Nullable
