@@ -17,7 +17,7 @@ public class MoviesContract {
 
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
-    private static final String PATH_POPULAR = "popular";
+    public static final String PATH_POPULAR = "popular";
 
 
     public static final class PopularEntry implements BaseColumns {
