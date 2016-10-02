@@ -8,6 +8,7 @@ import android.test.AndroidTestCase;
 import java.util.HashSet;
 
 import br.com.adalbertofjr.popularmovies.data.MoviesContract.PopularEntry;
+import br.com.adalbertofjr.popularmovies.data.MoviesContract.TopRatedEntry;
 
 /**
  * Popular Movies
@@ -19,30 +20,26 @@ import br.com.adalbertofjr.popularmovies.data.MoviesContract.PopularEntry;
 
 public class TesteDb extends AndroidTestCase {
 
-    public void deleteAllRecordsFromDB() {
-        MoviesDbHelper dbHelper = new MoviesDbHelper(mContext);
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-
-        db.delete(PopularEntry.TABLE_NAME, null, null);
-        db.close();
+    // Since we want each test to start with a clean slate
+    void deleteTheDatabase() {
+        mContext.deleteDatabase(MoviesDbHelper.DATABASE_NAME);
     }
 
-    public void deleteAllRecords() {
-        deleteAllRecordsFromDB();
-    }
-
-    @Override
-    protected void setUp() {
-        deleteAllRecords();
+    /*
+        This function gets called before each test is executed to delete the database.  This makes
+        sure that we always have a clean test.
+     */
+    public void setUp() {
+        deleteTheDatabase();
     }
 
     public void testCreateDb() throws Throwable {
         // tabelas
         final HashSet<String> tableNameHashSet = new HashSet<>();
         tableNameHashSet.add(PopularEntry.TABLE_NAME);
+        tableNameHashSet.add(TopRatedEntry.TABLE_NAME);
 
-        // apagando tabela
-        mContext.deleteDatabase(PopularEntry.TABLE_NAME);
+        this.mContext.deleteDatabase(MoviesDbHelper.DATABASE_NAME);
 
         // instância do bd
         SQLiteDatabase db = new MoviesDbHelper(this.mContext).getWritableDatabase();
@@ -61,13 +58,22 @@ public class TesteDb extends AndroidTestCase {
             tableNameHashSet.remove(c.getString(0));
         } while (c.moveToNext());
 
-        // if this fails, it means that your database doesn't contain both the location entry
-        // and weather entry tables
-        assertTrue("Error: Your database was created without both the location entry and weather entry tables",
+        // if this fails, it means that your database doesn't contain the tables entry´s
+        assertTrue("Error: Your database was created without popular or top rated entry tables",
                 tableNameHashSet.isEmpty());
 
+        db.close();
+    }
+
+    public void testPopularColumns() {
+        // instância do bd
+        SQLiteDatabase db = new MoviesDbHelper(this.mContext).getWritableDatabase();
+
+        // verificando se conexão com banco está abertos
+        assertEquals(true, db.isOpen());
+
         // now, do our tables contain the correct columns?
-        c = db.rawQuery("PRAGMA table_info(" + PopularEntry.TABLE_NAME + ")",
+        Cursor c = db.rawQuery("PRAGMA table_info(" + PopularEntry.TABLE_NAME + ")",
                 null);
 
         assertTrue("Error: This means that we were unable to query the database for table information.",
@@ -90,10 +96,47 @@ public class TesteDb extends AndroidTestCase {
             popularColumnHashSet.remove(columnName);
         } while (c.moveToNext());
 
-        // if this fails, it means that your database doesn't contain all of the required location
+        // if this fails, it means that your database doesn't contain all of the required popular
         // entry columns
-        assertTrue("Error: The database doesn't contain all of the required location entry columns",
+        assertTrue("Error: The database doesn't contain all of the required popular entry columns",
                 popularColumnHashSet.isEmpty());
+        db.close();
+    }
+
+    public void testTopRatedColumns() {
+        // instância do bd
+        SQLiteDatabase db = new MoviesDbHelper(this.mContext).getWritableDatabase();
+
+        // verificando se conexão com banco está abertos
+        assertEquals(true, db.isOpen());
+
+        Cursor c = db.rawQuery("PRAGMA table_info(" + TopRatedEntry.TABLE_NAME + ")",
+                null);
+
+        assertTrue("Error: This means that we were unable to query the database for table information.",
+                c.moveToFirst());
+
+        // Build a HashSet of all of the column names we want to look for
+        final HashSet<String> topRatedColumnHashSet = new HashSet<>();
+        topRatedColumnHashSet.add(TopRatedEntry._ID);
+        topRatedColumnHashSet.add(TopRatedEntry.COLUMN_ORIGINAL_TITLE);
+        topRatedColumnHashSet.add(TopRatedEntry.COLUMN_POSTER_PATH);
+        topRatedColumnHashSet.add(TopRatedEntry.COLUMN_RELEASE_DATE);
+        topRatedColumnHashSet.add(TopRatedEntry.COLUMN_VOTE_AVERAGE);
+        topRatedColumnHashSet.add(TopRatedEntry.COLUMN_OVERVIEW);
+        topRatedColumnHashSet.add(TopRatedEntry.COLUMN_BACKDROP_PATH);
+
+        int columnNameIndex = c.getColumnIndex("name");// now, do our tables contain the correct columns?
+
+        do {
+            String columnName = c.getString(columnNameIndex);
+            topRatedColumnHashSet.remove(columnName);
+        } while (c.moveToNext());
+
+        // if this fails, it means that your database doesn't contain all of the required popular
+        // entry columns
+        assertTrue("Error: The database doesn't contain all of the required top_rated entry columns",
+                topRatedColumnHashSet.isEmpty());
         db.close();
     }
 
@@ -102,7 +145,7 @@ public class TesteDb extends AndroidTestCase {
         SQLiteDatabase db = new MoviesDbHelper(this.mContext).getWritableDatabase();
 
         // Create values to insert
-        ContentValues testValues = getContentValuesPopular();
+        ContentValues testValues = getContentValuesMovie();
 
         // Insert values into database and get row id get back
         db.insert(PopularEntry.TABLE_NAME, null, testValues);
@@ -132,7 +175,42 @@ public class TesteDb extends AndroidTestCase {
         db.close();
     }
 
-    private ContentValues getContentValuesPopular() {
+    public void testTopRatedTable() {
+        // Get reference database
+        SQLiteDatabase db = new MoviesDbHelper(this.mContext).getWritableDatabase();
+
+        // Create values to insert
+        ContentValues testValues = getContentValuesMovie();
+
+        // Insert values into database and get row id get back
+        db.insert(TopRatedEntry.TABLE_NAME, null, testValues);
+
+        // Query the database and receive cursor back
+        Cursor cursor = db.query(TopRatedEntry.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+
+        // Move the cursor to a valid database row
+        assertTrue("Error: This means that the database has not been created correctly",
+                cursor.moveToFirst());
+
+        // Validate data in resulting Cursor with the original ContentValues
+        // (you can use the validateCurrentRecord function in TestUtilities to validate the
+        // query if you like)
+        TestUtilities.validateCurrentRecord("Error: Top Rated Query Validation Failed",
+                cursor, testValues);
+
+
+        // Finally, close the cursor and database
+        cursor.close();
+        db.close();
+    }
+
+    private ContentValues getContentValuesMovie() {
         ContentValues testValues = new ContentValues();
         testValues.put(PopularEntry._ID, 271110);
         testValues.put(PopularEntry.COLUMN_ORIGINAL_TITLE, "Captain America: Civil War");

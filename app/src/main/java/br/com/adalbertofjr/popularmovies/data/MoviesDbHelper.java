@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import br.com.adalbertofjr.popularmovies.data.MoviesContract.PopularEntry;
+import br.com.adalbertofjr.popularmovies.data.MoviesContract.TopRatedEntry;
 
 /**
  * Popular Movies
@@ -16,8 +17,8 @@ import br.com.adalbertofjr.popularmovies.data.MoviesContract.PopularEntry;
 
 public class MoviesDbHelper extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME = "popularmovies.db";
-    private static final int DATABASE_VERSION = 1;
+    public static final String DATABASE_NAME = "popularmovies.db";
+    public static final int DATABASE_VERSION = 1;
 
     public MoviesDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -36,12 +37,25 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
                 PopularEntry.COLUMN_BACKDROP_PATH + " TEXT NOT NULL " +
                 ");";
 
+        final String SQL_CREATE_TOP_RATED_TABLE = "CREATE TABLE " +
+                TopRatedEntry.TABLE_NAME + " (" +
+                TopRatedEntry._ID + " INTEGER PRIMATY KEY, " +
+                TopRatedEntry.COLUMN_ORIGINAL_TITLE + " TEXT UNIQUE NOT NULL, " +
+                TopRatedEntry.COLUMN_POSTER_PATH + " TEXT NOT NULL, " +
+                TopRatedEntry.COLUMN_RELEASE_DATE + " TEXT NOT NULL, " +
+                TopRatedEntry.COLUMN_VOTE_AVERAGE + " REAL NOT NULL, " +
+                TopRatedEntry.COLUMN_OVERVIEW + " TEXT NOT NULL, " +
+                TopRatedEntry.COLUMN_BACKDROP_PATH + " TEXT NOT NULL " +
+                ");";
+
 
         sqLiteDatabase.execSQL(SQL_CREATE_POPULAR_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_TOP_RATED_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
         sqLiteDatabase.execSQL("DROP DATABASE IF EXISTS " + PopularEntry.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP DATABASE IF EXISTS " + TopRatedEntry.TABLE_NAME);
     }
 }
