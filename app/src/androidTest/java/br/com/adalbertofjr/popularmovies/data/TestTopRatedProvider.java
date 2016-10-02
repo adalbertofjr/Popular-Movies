@@ -43,7 +43,7 @@ public class TestTopRatedProvider extends AndroidTestCase {
                 null,
                 null
         );
-        assertEquals("Error: Records not deleted from Popular table during delete", 0, cursor.getCount());
+        assertEquals("Error: Records not deleted from Top Rated table during delete", 0, cursor.getCount());
         cursor.close();
     }
 
@@ -132,14 +132,14 @@ public class TestTopRatedProvider extends AndroidTestCase {
         // Register a content observer for our insert.  This time, directly with the content resolver
         TestUtilities.TestContentObserver tco = TestUtilities.getTestContentObserver();
         mContext.getContentResolver().registerContentObserver(MoviesContract.TopRatedEntry.CONTENT_URI, true, tco);
-        Uri popularUri = mContext.getContentResolver().insert(MoviesContract.TopRatedEntry.CONTENT_URI, testValues);
+        Uri topRatedUri = mContext.getContentResolver().insert(MoviesContract.TopRatedEntry.CONTENT_URI, testValues);
 
         // Did our content observer get called?  Students:  If this fails, your insert popular
         // isn't calling getContext().getContentResolver().notifyChange(uri, null);
         tco.waitForNotificationOrFail();
         mContext.getContentResolver().unregisterContentObserver(tco);
 
-        long movieRowId = ContentUris.parseId(popularUri);
+        long movieRowId = ContentUris.parseId(topRatedUri);
 
         // Verify we got a row back.
         assertTrue(movieRowId != -1);
@@ -165,22 +165,22 @@ public class TestTopRatedProvider extends AndroidTestCase {
     // Student: Uncomment this test after you have completed writing the delete functionality
     // in your provider.  It relies on insertions with testInsertReadProvider, so insert and
     // query functionality must also be complete before this test can be used.
-//    public void testDeleteRecords() {
-//        testInsertReadProvider();
-//
-//        // Register a content observer for our popular movie delete.
-//        TestUtilities.TestContentObserver popularMovieObserver = TestUtilities.getTestContentObserver();
-//        mContext.getContentResolver().registerContentObserver(MoviesContract.TopRatedEntry.CONTENT_URI, true, popularMovieObserver);
-//
-//        deleteAllRecordsFromProvider();
-//
-//        // Students: If either of these fail, you most-likely are not calling the
-//        // getContext().getContentResolver().notifyChange(uri, null); in the ContentProvider
-//        // delete.  (only if the insertReadProvider is succeeding)
-//        popularMovieObserver.waitForNotificationOrFail();
-//
-//        mContext.getContentResolver().unregisterContentObserver(popularMovieObserver);
-//    }
+    public void testDeleteRecords() {
+        testInsertReadProvider();
+
+        // Register a content observer for our popular movie delete.
+        TestUtilities.TestContentObserver tco = TestUtilities.getTestContentObserver();
+        mContext.getContentResolver().registerContentObserver(MoviesContract.TopRatedEntry.CONTENT_URI, true, tco);
+
+        deleteAllRecordsFromProvider();
+
+        // Students: If either of these fail, you most-likely are not calling the
+        // getContext().getContentResolver().notifyChange(uri, null); in the ContentProvider
+        // delete.  (only if the insertReadProvider is succeeding)
+        tco.waitForNotificationOrFail();
+
+        mContext.getContentResolver().unregisterContentObserver(tco);
+    }
 
     /*
        This test uses the provider to insert and then update the data. Uncomment this test to
