@@ -11,4 +11,7 @@
     <string name="msg_no_network_connection">No network connection available.</string>
     <string name="movie_poster_description">Movie Poster</string>
     <string name="star_rating_description">Star rating</string>
+
+    <!--Content Provider -->
+    <string name="content_authority" translatable="false">br.com.adalbertofjr.popularmovies</string>
 </resources>

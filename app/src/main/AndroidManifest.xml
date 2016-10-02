@@ -25,6 +25,12 @@
             android:name=".ui.DetailActivity"
             android:label="@string/detail_movie_label"
             android:parentActivityName=".ui.MainActivity" />
+        <!-- Registrando Content Provider -->
+        <provider
+            android:name=".data.MoviesProvider"
+            android:authorities="@string/content_authority"
+            android:exported="false"
+            android:syncable="true" />
     </application>
 
 </manifest>
