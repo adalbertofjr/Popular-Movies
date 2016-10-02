@@ -1,5 +1,6 @@
 package br.com.adalbertofjr.popularmovies.data;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
@@ -92,31 +93,31 @@ public class TestTopRatedProvider extends AndroidTestCase {
         read out the data.  Uncomment this test to see if the basic popular query functionality
         given in the ContentProvider is working correctly.
      */
-//    public void testBasicPopularQuery() {
-//        // insert our test records into the database
-//        MoviesDbHelper dbHelper = new MoviesDbHelper(mContext);
-//        SQLiteDatabase db = dbHelper.getWritableDatabase();
-//
-//        // Fantastic.  Now that we have add some movie!
-//        ContentValues movieValues = TestUtilities.createCaptainAmericaPopularValues();
-//
-//        long weatherRowId = db.insert(MoviesContract.PopularEntry.TABLE_NAME, null, movieValues);
-//        assertTrue("Unable to Insert PopularEntry into the Database", weatherRowId != -1);
-//
-//        db.close();
-//
-//        // Test the basic content provider query
-//        Cursor popularCursor = mContext.getContentResolver().query(
-//                MoviesContract.PopularEntry.CONTENT_URI,
-//                null,
-//                null,
-//                null,
-//                null
-//        );
-//
-//        // Make sure we get the correct cursor out of the database
-//        TestUtilities.validateCursor("testBasicPopularQuery", popularCursor, movieValues);
-//    }
+    public void testBasicTopRatedQuery() {
+        // insert our test records into the database
+        MoviesDbHelper dbHelper = new MoviesDbHelper(mContext);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        // Fantastic.  Now that we have add some movie!
+        ContentValues movieValues = TestUtilities.createCaptainAmericaValues();
+
+        long movieRowId = db.insert(MoviesContract.TopRatedEntry.TABLE_NAME, null, movieValues);
+        assertTrue("Unable to Insert TopRatedEntry into the Database", movieRowId != -1);
+
+        db.close();
+
+        // Test the basic content provider query
+        Cursor topRatedCursor = mContext.getContentResolver().query(
+                MoviesContract.TopRatedEntry.CONTENT_URI,
+                null,
+                null,
+                null,
+                null
+        );
+
+        // Make sure we get the correct cursor out of the database
+        TestUtilities.validateCursor("testBasicTopRatedQuery", topRatedCursor, movieValues);
+    }
 
     // Make sure we can still delete after adding/updating stuff
     //
@@ -124,7 +125,7 @@ public class TestTopRatedProvider extends AndroidTestCase {
     // in your provider.  It relies on insertions with testInsertReadProvider, so insert and
     // query functionality must also be complete before this test can be used.
 //    public void testInsertReadProvider() {
-//        ContentValues testValues = TestUtilities.createCaptainAmericaPopularValues();
+//        ContentValues testValues = TestUtilities.createCaptainAmericaValues();
 //
 //        // Register a content observer for our insert.  This time, directly with the content resolver
 //        TestUtilities.TestContentObserver tco = TestUtilities.getTestContentObserver();
@@ -184,7 +185,7 @@ public class TestTopRatedProvider extends AndroidTestCase {
        see if your update location is functioning correctly.
     */
 //    public void testUpdatePopularMovie() {
-//        ContentValues movieValues = TestUtilities.createCaptainAmericaPopularValues();
+//        ContentValues movieValues = TestUtilities.createCaptainAmericaValues();
 //
 //        Uri popularMovieUri = mContext.getContentResolver().
 //                insert(MoviesContract.PopularEntry.CONTENT_URI, movieValues);

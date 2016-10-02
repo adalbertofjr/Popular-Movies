@@ -105,7 +105,7 @@ public class TestPopularProvider extends AndroidTestCase {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         // Fantastic.  Now that we have add some movie!
-        ContentValues movieValues = TestUtilities.createCaptainAmericaPopularValues();
+        ContentValues movieValues = TestUtilities.createCaptainAmericaValues();
 
         long weatherRowId = db.insert(PopularEntry.TABLE_NAME, null, movieValues);
         assertTrue("Unable to Insert PopularEntry into the Database", weatherRowId != -1);
@@ -131,7 +131,7 @@ public class TestPopularProvider extends AndroidTestCase {
     // in your provider.  It relies on insertions with testInsertReadProvider, so insert and
     // query functionality must also be complete before this test can be used.
     public void testInsertReadProvider() {
-        ContentValues testValues = TestUtilities.createCaptainAmericaPopularValues();
+        ContentValues testValues = TestUtilities.createCaptainAmericaValues();
 
         // Register a content observer for our insert.  This time, directly with the content resolver
         TestUtilities.TestContentObserver tco = TestUtilities.getTestContentObserver();
@@ -191,7 +191,7 @@ public class TestPopularProvider extends AndroidTestCase {
        see if your update location is functioning correctly.
     */
     public void testUpdatePopularMovie() {
-        ContentValues movieValues = TestUtilities.createCaptainAmericaPopularValues();
+        ContentValues movieValues = TestUtilities.createCaptainAmericaValues();
 
         Uri popularMovieUri = mContext.getContentResolver().
                 insert(PopularEntry.CONTENT_URI, movieValues);

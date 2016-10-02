@@ -44,7 +44,7 @@ public class TestUtilities extends AndroidTestCase {
         }
     }
 
-    public static ContentValues createCaptainAmericaPopularValues() {
+    public static ContentValues createCaptainAmericaValues() {
         ContentValues testValues = new ContentValues();
         testValues.put(MoviesContract.PopularEntry._ID, 271110);
         testValues.put(MoviesContract.PopularEntry.COLUMN_ORIGINAL_TITLE, "Captain America: Civil War");
@@ -60,7 +60,7 @@ public class TestUtilities extends AndroidTestCase {
         // insert our test records into the database
         MoviesDbHelper dbHelper = new MoviesDbHelper(context);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues testValues = TestUtilities.createCaptainAmericaPopularValues();
+        ContentValues testValues = TestUtilities.createCaptainAmericaValues();
 
         long locationRowId;
         locationRowId = db.insert(MoviesContract.PopularEntry.TABLE_NAME, null, testValues);

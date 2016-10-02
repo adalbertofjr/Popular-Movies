@@ -63,6 +63,18 @@ public class MoviesProvider extends ContentProvider {
                 );
                 break;
             }
+            case TOP_RATED: {
+                retCursor = mOpenHelper.getWritableDatabase().query(
+                        TopRatedEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
