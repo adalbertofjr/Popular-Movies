@@ -169,6 +169,10 @@ public class MoviesProvider extends ContentProvider {
                 rowsUpdate = db.update(MoviesContract.PopularEntry.TABLE_NAME, values, selection, selectionArgs);
                 break;
             }
+            case TOP_RATED: {
+                rowsUpdate = db.update(MoviesContract.TopRatedEntry.TABLE_NAME, values, selection, selectionArgs);
+                break;
+            }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }

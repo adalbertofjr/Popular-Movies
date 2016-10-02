@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.test.AndroidTestCase;
+import android.util.Log;
 
 /**
  * PopularMovies
@@ -186,46 +187,46 @@ public class TestTopRatedProvider extends AndroidTestCase {
        This test uses the provider to insert and then update the data. Uncomment this test to
        see if your update location is functioning correctly.
     */
-//    public void testUpdatePopularMovie() {
-//        ContentValues movieValues = TestUtilities.createCaptainAmericaValues();
-//
-//        Uri popularMovieUri = mContext.getContentResolver().
-//                insert(MoviesContract.TopRatedEntry.CONTENT_URI, movieValues);
-//
-//        long popularMovieId = ContentUris.parseId(popularMovieUri);
-//
-//        assertTrue(popularMovieId != -1);
-//        Log.d(LOG_TAG, "New row id: " + popularMovieId);
-//
-//        ContentValues updatedValues = new ContentValues(movieValues);
-//        updatedValues.put(MoviesContract.TopRatedEntry.COLUMN_ORIGINAL_TITLE, "Capitão America");
-//
-//        Cursor popularMovieCursor = mContext.getContentResolver().query(MoviesContract.TopRatedEntry.CONTENT_URI, null, null, null, null);
-//
-//        TestUtilities.TestContentObserver tco = TestUtilities.getTestContentObserver();
-//        popularMovieCursor.registerContentObserver(tco);
-//
-//        int count = mContext.getContentResolver().update(
-//                MoviesContract.TopRatedEntry.CONTENT_URI, updatedValues, MoviesContract.TopRatedEntry._ID + "= ?",
-//                new String[]{Long.toString(popularMovieId)});
-//        assertEquals(count, 1);
-//
-//        tco.waitForNotificationOrFail();
-//
-//        popularMovieCursor.unregisterContentObserver(tco);
-//        popularMovieCursor.close();
-//
-//        Cursor cursor = mContext.getContentResolver().query(
-//                MoviesContract.TopRatedEntry.CONTENT_URI,
-//                null,   // projection
-//                MoviesContract.TopRatedEntry._ID + " = " + popularMovieId,
-//                null,   // Values for the "where" clause
-//                null    // sort order
-//        );
-//
-//        TestUtilities.validateCursor("testUpdatePopularMovie.  Error validating location entry update.",
-//                cursor, updatedValues);
-//
-//        cursor.close();
-//    }
+    public void testUpdateTopRatedMovie() {
+        ContentValues movieValues = TestUtilities.createCaptainAmericaValues();
+
+        Uri topRatedMovieUri = mContext.getContentResolver().
+                insert(MoviesContract.TopRatedEntry.CONTENT_URI, movieValues);
+
+        long topRatedMovieId = ContentUris.parseId(topRatedMovieUri);
+
+        assertTrue(topRatedMovieId != -1);
+        Log.d(LOG_TAG, "New row id: " + topRatedMovieId);
+
+        ContentValues updatedValues = new ContentValues(movieValues);
+        updatedValues.put(MoviesContract.TopRatedEntry.COLUMN_ORIGINAL_TITLE, "Capitão America");
+
+        Cursor topRatedMovieCursor = mContext.getContentResolver().query(MoviesContract.TopRatedEntry.CONTENT_URI, null, null, null, null);
+
+        TestUtilities.TestContentObserver tco = TestUtilities.getTestContentObserver();
+        topRatedMovieCursor.registerContentObserver(tco);
+
+        int count = mContext.getContentResolver().update(
+                MoviesContract.TopRatedEntry.CONTENT_URI, updatedValues, MoviesContract.TopRatedEntry._ID + "= ?",
+                new String[]{Long.toString(topRatedMovieId)});
+        assertEquals(count, 1);
+
+        tco.waitForNotificationOrFail();
+
+        topRatedMovieCursor.unregisterContentObserver(tco);
+        topRatedMovieCursor.close();
+
+        Cursor cursor = mContext.getContentResolver().query(
+                MoviesContract.TopRatedEntry.CONTENT_URI,
+                null,   // projection
+                MoviesContract.TopRatedEntry._ID + " = " + topRatedMovieId,
+                null,   // Values for the "where" clause
+                null    // sort order
+        );
+
+        TestUtilities.validateCursor("testUpdateTopRatedMovie.  Error validating location entry update.",
+                cursor, updatedValues);
+
+        cursor.close();
+    }
 }
