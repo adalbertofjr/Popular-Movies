@@ -19,13 +19,21 @@ import br.com.adalbertofjr.popularmovies.data.MoviesContract.PopularEntry;
 
 public class TesteDb extends AndroidTestCase {
 
-    @Override
-    protected void setUp() {
-        deleteTheDatabase();
+    public void deleteAllRecordsFromDB() {
+        MoviesDbHelper dbHelper = new MoviesDbHelper(mContext);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        db.delete(PopularEntry.TABLE_NAME, null, null);
+        db.close();
     }
 
-    private void deleteTheDatabase() {
-        mContext.deleteDatabase(PopularEntry.TABLE_NAME);
+    public void deleteAllRecords() {
+        deleteAllRecordsFromDB();
+    }
+
+    @Override
+    protected void setUp() {
+        deleteAllRecords();
     }
 
     public void testCreateDb() throws Throwable {

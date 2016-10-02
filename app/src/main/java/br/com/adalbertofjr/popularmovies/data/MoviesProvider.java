@@ -94,7 +94,7 @@ public class MoviesProvider extends ContentProvider {
             case POPULAR: {
                 long _id = db.insert(PopularEntry.TABLE_NAME, null, values);
                 if (_id > 0)
-                    returnUri = PopularEntry.buildPopularMovieUri(_id);
+                    returnUri = PopularEntry.buildPopularMovieUri(values.getAsLong(PopularEntry._ID));
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
@@ -109,7 +109,6 @@ public class MoviesProvider extends ContentProvider {
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-
         final int match = sUriMatcher.match(uri);
         int rowsDeleted;
 
@@ -131,7 +130,24 @@ public class MoviesProvider extends ContentProvider {
     }
 
     @Override
-    public int update(Uri uri, ContentValues contentValues, String s, String[] strings) {
-        return 0;
+    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        final int match = sUriMatcher.match(uri);
+        int rowsUpdate;
+        switch (match) {
+            case POPULAR: {
+                rowsUpdate = db.update(MoviesContract.PopularEntry.TABLE_NAME, values, selection, selectionArgs);
+                break;
+            }
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+
+        if (rowsUpdate != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+
+        // Student: return the actual rows updated
+        return rowsUpdate;
     }
 }

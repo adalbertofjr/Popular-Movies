@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.test.AndroidTestCase;
+import android.util.Log;
 
 import br.com.adalbertofjr.popularmovies.data.MoviesContract.PopularEntry;
 
@@ -23,15 +24,17 @@ import br.com.adalbertofjr.popularmovies.data.MoviesContract.PopularEntry;
 
 public class TestProvider extends AndroidTestCase {
 
-    /*
-       This helper function deletes all records from both database tables using the ContentProvider.
-       It also queries the ContentProvider to make sure that the database has been successfully
-       deleted, so it cannot be used until the Query and Delete functions have been written
-       in the ContentProvider.
+    private static final String LOG_TAG = TestProvider.class.getSimpleName();
 
-       Students: Replace the calls to deleteAllRecordsFromDB with this one after you have written
-       the delete functionality in the ContentProvider.
-     */
+    /*
+           This helper function deletes all records from both database tables using the ContentProvider.
+           It also queries the ContentProvider to make sure that the database has been successfully
+           deleted, so it cannot be used until the Query and Delete functions have been written
+           in the ContentProvider.
+
+           Students: Replace the calls to deleteAllRecordsFromDB with this one after you have written
+           the delete functionality in the ContentProvider.
+         */
     public void deleteAllRecordsFromProvider() {
         mContext.getContentResolver().delete(
                 PopularEntry.CONTENT_URI,
@@ -132,7 +135,6 @@ public class TestProvider extends AndroidTestCase {
 
         // Fantastic.  Now that we have add some movie!
         ContentValues movieValues = TestUtilities.createCaptainAmericaPopularValues();
-        ;
 
         long weatherRowId = db.insert(PopularEntry.TABLE_NAME, null, movieValues);
         assertTrue("Unable to Insert PopularEntry into the Database", weatherRowId != -1);
@@ -213,5 +215,50 @@ public class TestProvider extends AndroidTestCase {
         mContext.getContentResolver().unregisterContentObserver(popularMovieObserver);
     }
 
+    /*
+       This test uses the provider to insert and then update the data. Uncomment this test to
+       see if your update location is functioning correctly.
+    */
+    public void testUpdatePopularMovie() {
+        ContentValues movieValues = TestUtilities.createCaptainAmericaPopularValues();
 
+        Uri popularMovieUri = mContext.getContentResolver().
+                insert(PopularEntry.CONTENT_URI, movieValues);
+
+        long popularMovieId = ContentUris.parseId(popularMovieUri);
+
+        assertTrue(popularMovieId != -1);
+        Log.d(LOG_TAG, "New row id: " + popularMovieId);
+
+        ContentValues updatedValues = new ContentValues(movieValues);
+        updatedValues.put(PopularEntry.COLUMN_ORIGINAL_TITLE, "Capitão America");
+
+        Cursor popularMovieCursor = mContext.getContentResolver().query(PopularEntry.CONTENT_URI, null, null, null, null);
+
+        TestUtilities.TestContentObserver tco = TestUtilities.getTestContentObserver();
+        popularMovieCursor.registerContentObserver(tco);
+
+        int count = mContext.getContentResolver().update(
+                PopularEntry.CONTENT_URI, updatedValues, PopularEntry._ID + "= ?",
+                new String[]{Long.toString(popularMovieId)});
+        assertEquals(count, 1);
+
+        tco.waitForNotificationOrFail();
+
+        popularMovieCursor.unregisterContentObserver(tco);
+        popularMovieCursor.close();
+
+        Cursor cursor = mContext.getContentResolver().query(
+                PopularEntry.CONTENT_URI,
+                null,   // projection
+                PopularEntry._ID + " = " + popularMovieId,
+                null,   // Values for the "where" clause
+                null    // sort order
+        );
+
+        TestUtilities.validateCursor("testUpdatePopularMovie.  Error validating location entry update.",
+                cursor, updatedValues);
+
+        cursor.close();
+    }
 }
