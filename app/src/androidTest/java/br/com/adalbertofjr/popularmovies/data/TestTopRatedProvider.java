@@ -1,8 +1,10 @@
 package br.com.adalbertofjr.popularmovies.data;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.test.AndroidTestCase;
 
 /**
@@ -124,39 +126,39 @@ public class TestTopRatedProvider extends AndroidTestCase {
     // Student: Uncomment this test after you have completed writing the insert functionality
     // in your provider.  It relies on insertions with testInsertReadProvider, so insert and
     // query functionality must also be complete before this test can be used.
-//    public void testInsertReadProvider() {
-//        ContentValues testValues = TestUtilities.createCaptainAmericaValues();
-//
-//        // Register a content observer for our insert.  This time, directly with the content resolver
-//        TestUtilities.TestContentObserver tco = TestUtilities.getTestContentObserver();
-//        mContext.getContentResolver().registerContentObserver(MoviesContract.PopularEntry.CONTENT_URI, true, tco);
-//        Uri popularUri = mContext.getContentResolver().insert(MoviesContract.PopularEntry.CONTENT_URI, testValues);
-//
-//        // Did our content observer get called?  Students:  If this fails, your insert popular
-//        // isn't calling getContext().getContentResolver().notifyChange(uri, null);
-//        tco.waitForNotificationOrFail();
-//        mContext.getContentResolver().unregisterContentObserver(tco);
-//
-//        long locationRowId = ContentUris.parseId(popularUri);
-//
-//        // Verify we got a row back.
-//        assertTrue(locationRowId != -1);
-//
-//        // Data's inserted.  IN THEORY.  Now pull some out to stare at it and verify it made
-//        // the round trip.
-//
-//        // A cursor is your primary interface to the query results.
-//        Cursor cursor = mContext.getContentResolver().query(
-//                MoviesContract.PopularEntry.CONTENT_URI,
-//                null, // leaving "columns" null just returns all the columns.
-//                null, // cols for "where" clause
-//                null, // values for "where" clause
-//                null  // sort order
-//        );
-//
-//        TestUtilities.validateCursor("testInsertReadProvider. Error validating PopularEntry.",
-//                cursor, testValues);
-//    }
+    public void testInsertReadProvider() {
+        ContentValues testValues = TestUtilities.createCaptainAmericaValues();
+
+        // Register a content observer for our insert.  This time, directly with the content resolver
+        TestUtilities.TestContentObserver tco = TestUtilities.getTestContentObserver();
+        mContext.getContentResolver().registerContentObserver(MoviesContract.TopRatedEntry.CONTENT_URI, true, tco);
+        Uri popularUri = mContext.getContentResolver().insert(MoviesContract.TopRatedEntry.CONTENT_URI, testValues);
+
+        // Did our content observer get called?  Students:  If this fails, your insert popular
+        // isn't calling getContext().getContentResolver().notifyChange(uri, null);
+        tco.waitForNotificationOrFail();
+        mContext.getContentResolver().unregisterContentObserver(tco);
+
+        long movieRowId = ContentUris.parseId(popularUri);
+
+        // Verify we got a row back.
+        assertTrue(movieRowId != -1);
+
+        // Data's inserted.  IN THEORY.  Now pull some out to stare at it and verify it made
+        // the round trip.
+
+        // A cursor is your primary interface to the query results.
+        Cursor cursor = mContext.getContentResolver().query(
+                MoviesContract.TopRatedEntry.CONTENT_URI,
+                null, // leaving "columns" null just returns all the columns.
+                null, // cols for "where" clause
+                null, // values for "where" clause
+                null  // sort order
+        );
+
+        TestUtilities.validateCursor("testInsertReadProvider. Error validating TopRatedEntry.",
+                cursor, testValues);
+    }
 
     // Make sure we can still delete after adding/updating stuff
     //
@@ -168,7 +170,7 @@ public class TestTopRatedProvider extends AndroidTestCase {
 //
 //        // Register a content observer for our popular movie delete.
 //        TestUtilities.TestContentObserver popularMovieObserver = TestUtilities.getTestContentObserver();
-//        mContext.getContentResolver().registerContentObserver(MoviesContract.PopularEntry.CONTENT_URI, true, popularMovieObserver);
+//        mContext.getContentResolver().registerContentObserver(MoviesContract.TopRatedEntry.CONTENT_URI, true, popularMovieObserver);
 //
 //        deleteAllRecordsFromProvider();
 //
@@ -188,7 +190,7 @@ public class TestTopRatedProvider extends AndroidTestCase {
 //        ContentValues movieValues = TestUtilities.createCaptainAmericaValues();
 //
 //        Uri popularMovieUri = mContext.getContentResolver().
-//                insert(MoviesContract.PopularEntry.CONTENT_URI, movieValues);
+//                insert(MoviesContract.TopRatedEntry.CONTENT_URI, movieValues);
 //
 //        long popularMovieId = ContentUris.parseId(popularMovieUri);
 //
@@ -196,15 +198,15 @@ public class TestTopRatedProvider extends AndroidTestCase {
 //        Log.d(LOG_TAG, "New row id: " + popularMovieId);
 //
 //        ContentValues updatedValues = new ContentValues(movieValues);
-//        updatedValues.put(MoviesContract.PopularEntry.COLUMN_ORIGINAL_TITLE, "Capitão America");
+//        updatedValues.put(MoviesContract.TopRatedEntry.COLUMN_ORIGINAL_TITLE, "Capitão America");
 //
-//        Cursor popularMovieCursor = mContext.getContentResolver().query(MoviesContract.PopularEntry.CONTENT_URI, null, null, null, null);
+//        Cursor popularMovieCursor = mContext.getContentResolver().query(MoviesContract.TopRatedEntry.CONTENT_URI, null, null, null, null);
 //
 //        TestUtilities.TestContentObserver tco = TestUtilities.getTestContentObserver();
 //        popularMovieCursor.registerContentObserver(tco);
 //
 //        int count = mContext.getContentResolver().update(
-//                MoviesContract.PopularEntry.CONTENT_URI, updatedValues, MoviesContract.PopularEntry._ID + "= ?",
+//                MoviesContract.TopRatedEntry.CONTENT_URI, updatedValues, MoviesContract.TopRatedEntry._ID + "= ?",
 //                new String[]{Long.toString(popularMovieId)});
 //        assertEquals(count, 1);
 //
@@ -214,9 +216,9 @@ public class TestTopRatedProvider extends AndroidTestCase {
 //        popularMovieCursor.close();
 //
 //        Cursor cursor = mContext.getContentResolver().query(
-//                MoviesContract.PopularEntry.CONTENT_URI,
+//                MoviesContract.TopRatedEntry.CONTENT_URI,
 //                null,   // projection
-//                MoviesContract.PopularEntry._ID + " = " + popularMovieId,
+//                MoviesContract.TopRatedEntry._ID + " = " + popularMovieId,
 //                null,   // Values for the "where" clause
 //                null    // sort order
 //        );

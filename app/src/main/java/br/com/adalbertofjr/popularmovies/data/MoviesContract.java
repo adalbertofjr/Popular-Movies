@@ -72,5 +72,9 @@ public class MoviesContract {
         public static Uri buildMoviesTopRated(String testMoviesTopRated) {
             return CONTENT_URI.buildUpon().appendPath(testMoviesTopRated).build();
         }
+
+        public static Uri buildTopRatedMovieUri(Long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
     }
 }
