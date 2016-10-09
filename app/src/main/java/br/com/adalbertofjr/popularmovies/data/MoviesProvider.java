@@ -143,6 +143,14 @@ public class MoviesProvider extends ContentProvider {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
             }
+            case TRAILERS: {
+                long _id = db.insert(TrailersEntry.TABLE_NAME, null, values);
+                if (_id > 0)
+                    returnUri = TrailersEntry.buildTrailersMovieUri(values.getAsLong(TrailersEntry._ID));
+                else
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
+            }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }

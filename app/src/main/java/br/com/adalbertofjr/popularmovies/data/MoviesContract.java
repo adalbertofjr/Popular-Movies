@@ -97,5 +97,9 @@ public class MoviesContract {
         public static Uri buildMoviesTrailers(String testMoviesTrailers) {
             return CONTENT_URI.buildUpon().appendPath(testMoviesTrailers).build();
         }
+
+        public static Uri buildTrailersMovieUri(Long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
     }
 }
