@@ -22,6 +22,7 @@ public class MoviesContract {
     public static final String PATH_POPULAR = "popular";
     public static final String PATH_TOP_RATED = "top_rated";
     public static final String PATH_TRAILERS = "trailers";
+    public static final String PATH_REVIEWS = "reviews";
 
 
     public static final class PopularEntry implements BaseColumns {
@@ -104,10 +105,18 @@ public class MoviesContract {
     }
 
     public static final class ReviewsEntry implements BaseColumns {
+        // Content Provider
+        private static final Uri CONTENT_URI = BASE_CONTENT_URI
+                .buildUpon()
+                .appendPath(PATH_REVIEWS).build();
 
         // Reviews table db
         public static final String TABLE_NAME = "reviews";
         public static final String COLUMN_AUTHOR = "author";
         public static final String COLUMN_CONTENT = "content";
+
+        public static Uri buildMoviesReviews(String testMoviesReviews) {
+            return CONTENT_URI.buildUpon().appendPath(testMoviesReviews).build();
+        }
     }
 }
