@@ -1,5 +1,6 @@
 package br.com.adalbertofjr.popularmovies.data;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
@@ -92,31 +93,31 @@ public class TestTrailersProvider extends AndroidTestCase {
         read out the data.  Uncomment this test to see if the basic popular query functionality
         given in the ContentProvider is working correctly.
      */
-//    public void testBasicTopRatedQuery() {
-//        // insert our test records into the database
-//        MoviesDbHelper dbHelper = new MoviesDbHelper(mContext);
-//        SQLiteDatabase db = dbHelper.getWritableDatabase();
-//
-//        // Fantastic.  Now that we have add some movie!
-//        ContentValues movieValues = TestUtilities.createCaptainAmericaValues();
-//
-//        long movieRowId = db.insert(MoviesContract.TrailersEntry.TABLE_NAME, null, movieValues);
-//        assertTrue("Unable to Insert TrailersEntry into the Database", movieRowId != -1);
-//
-//        db.close();
-//
-//        // Test the basic content provider query
-//        Cursor topRatedCursor = mContext.getContentResolver().query(
-//                MoviesContract.TrailersEntry.CONTENT_URI,
-//                null,
-//                null,
-//                null,
-//                null
-//        );
-//
-//        // Make sure we get the correct cursor out of the database
-//        TestUtilities.validateCursor("testBasicTopRatedQuery", topRatedCursor, movieValues);
-//    }
+    public void testBasicTrailersQuery() {
+        // insert our test records into the database
+        MoviesDbHelper dbHelper = new MoviesDbHelper(mContext);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        // Fantastic.  Now that we have add some trailer!
+        ContentValues trailerValues = TestUtilities.createTrailerValues();
+
+        long movieRowId = db.insert(MoviesContract.TrailersEntry.TABLE_NAME, null, trailerValues);
+        assertTrue("Unable to Insert TrailersEntry into the Database", movieRowId != -1);
+
+        db.close();
+
+        // Test the basic content provider query
+        Cursor trailersCursor = mContext.getContentResolver().query(
+                MoviesContract.TrailersEntry.CONTENT_URI,
+                null,
+                null,
+                null,
+                null
+        );
+
+        // Make sure we get the correct cursor out of the database
+        TestUtilities.validateCursor("testBasicTrailersQuery", trailersCursor, trailerValues);
+    }
 
     // Make sure we can still delete after adding/updating stuff
     //
