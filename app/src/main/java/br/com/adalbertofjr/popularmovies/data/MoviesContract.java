@@ -85,6 +85,9 @@ public class MoviesContract {
                 .buildUpon()
                 .appendPath(PATH_TRAILERS).build();
 
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_TRAILERS;
+
         //Trailer table db
         public static final String TABLE_NAME = "trailers";
         public static final String COLUMN_KEY = "key";

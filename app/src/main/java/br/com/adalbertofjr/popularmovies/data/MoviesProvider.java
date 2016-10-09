@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 
 import br.com.adalbertofjr.popularmovies.data.MoviesContract.PopularEntry;
 import br.com.adalbertofjr.popularmovies.data.MoviesContract.TopRatedEntry;
+import br.com.adalbertofjr.popularmovies.data.MoviesContract.TrailersEntry;
 
 /**
  * PopularMovies
@@ -27,6 +28,7 @@ public class MoviesProvider extends ContentProvider {
 
     private static final int POPULAR = 100;
     private static final int TOP_RATED = 200;
+    private static final int TRAILERS = 300;
     private SQLiteOpenHelper mOpenHelper;
 
     private static UriMatcher buildUriMatcher() {
@@ -35,6 +37,7 @@ public class MoviesProvider extends ContentProvider {
         String authority = MoviesContract.CONTENT_AUTHORITY;
         uriMatcherMatcher.addURI(authority, MoviesContract.PATH_POPULAR, POPULAR);
         uriMatcherMatcher.addURI(authority, MoviesContract.PATH_TOP_RATED, TOP_RATED);
+        uriMatcherMatcher.addURI(authority, MoviesContract.PATH_TRAILERS, TRAILERS);
 
         return uriMatcherMatcher;
     }
@@ -95,6 +98,9 @@ public class MoviesProvider extends ContentProvider {
             }
             case TOP_RATED: {
                 return TopRatedEntry.CONTENT_TYPE;
+            }
+            case TRAILERS: {
+                return TrailersEntry.CONTENT_TYPE;
             }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
