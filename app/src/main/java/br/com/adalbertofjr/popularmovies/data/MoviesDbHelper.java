@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import br.com.adalbertofjr.popularmovies.data.MoviesContract.PopularEntry;
+import br.com.adalbertofjr.popularmovies.data.MoviesContract.ReviewsEntry;
 import br.com.adalbertofjr.popularmovies.data.MoviesContract.TopRatedEntry;
 import br.com.adalbertofjr.popularmovies.data.MoviesContract.TrailersEntry;
 
@@ -51,15 +52,23 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 
         final String SQL_CREATE_TRAILERS_TABLE = "CREATE TABLE " +
                 TrailersEntry.TABLE_NAME + " (" +
-                TrailersEntry._ID + " INTEGER PRIMARY KEY, " +
+                TrailersEntry._ID + " INTEGER NOT NULL, " +
                 TrailersEntry.COLUMN_KEY + " TEXT NOT NULL, " +
                 TrailersEntry.COLUMN_NAME + " TEXT NOT NULL, " +
                 TrailersEntry.COLUMN_SITE + " TEXT NOT NULL " +
                 ");";
 
+        final String SQL_CREATE_REVIEWS_TABLE = "CREATE TABLE " +
+                ReviewsEntry.TABLE_NAME + " (" +
+                ReviewsEntry._ID + " INTEGER NOT NULL, " +
+                ReviewsEntry.COLUMN_AUTHOR + " TEXT NOT NULL, " +
+                ReviewsEntry.COLUMN_CONTENT + " TEXT NOT NULL " +
+                ");";
+
         sqLiteDatabase.execSQL(SQL_CREATE_POPULAR_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_TOP_RATED_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_TRAILERS_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_REVIEWS_TABLE);
     }
 
     @Override
@@ -67,5 +76,6 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("DROP DATABASE IF EXISTS " + PopularEntry.TABLE_NAME);
         sqLiteDatabase.execSQL("DROP DATABASE IF EXISTS " + TopRatedEntry.TABLE_NAME);
         sqLiteDatabase.execSQL("DROP DATABASE IF EXISTS " + TrailersEntry.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP DATABASE IF EXISTS " + ReviewsEntry.TABLE_NAME);
     }
 }

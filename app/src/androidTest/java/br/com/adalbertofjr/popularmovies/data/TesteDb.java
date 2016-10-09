@@ -8,6 +8,7 @@ import android.test.AndroidTestCase;
 import java.util.HashSet;
 
 import br.com.adalbertofjr.popularmovies.data.MoviesContract.PopularEntry;
+import br.com.adalbertofjr.popularmovies.data.MoviesContract.ReviewsEntry;
 import br.com.adalbertofjr.popularmovies.data.MoviesContract.TopRatedEntry;
 
 import static br.com.adalbertofjr.popularmovies.data.MoviesContract.TrailersEntry;
@@ -41,6 +42,7 @@ public class TesteDb extends AndroidTestCase {
         tableNameHashSet.add(PopularEntry.TABLE_NAME);
         tableNameHashSet.add(TopRatedEntry.TABLE_NAME);
         tableNameHashSet.add(TrailersEntry.TABLE_NAME);
+        tableNameHashSet.add(ReviewsEntry.TABLE_NAME);
 
         this.mContext.deleteDatabase(MoviesDbHelper.DATABASE_NAME);
 

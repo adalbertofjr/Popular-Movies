@@ -88,7 +88,7 @@ public class MoviesContract {
         public static final String CONTENT_TYPE =
                 ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_TRAILERS;
 
-        //Trailer table db
+        // Trailer table db
         public static final String TABLE_NAME = "trailers";
         public static final String COLUMN_KEY = "key";
         public static final String COLUMN_NAME = "name";
@@ -101,5 +101,13 @@ public class MoviesContract {
         public static Uri buildTrailersMovieUri(Long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
+    }
+
+    public static final class ReviewsEntry implements BaseColumns {
+
+        // Reviews table db
+        public static final String TABLE_NAME = "reviews";
+        public static final String COLUMN_AUTHOR = "author";
+        public static final String COLUMN_CONTENT = "content";
     }
 }
