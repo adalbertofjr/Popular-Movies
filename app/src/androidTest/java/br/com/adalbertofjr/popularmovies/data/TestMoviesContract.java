@@ -16,6 +16,7 @@ public class TestMoviesContract extends AndroidTestCase {
 
     private static final String TEST_MOVIES_POPULAR = "/Captain America: Civil War";
     private static final String TEST_MOVIES_TOP_RATED = "/Captain America: Civil War";
+    private static final String TEST_MOVIES_TRAILERS = "/271110";
 
 
     // Teste
@@ -47,5 +48,20 @@ public class TestMoviesContract extends AndroidTestCase {
         assertEquals("Error: Movies top_rated Uri doesn't match our expected result",
                 topRatedUri.toString(),
                 "content://br.com.adalbertofjr.popularmovies/top_rated/%2FCaptain%20America%3A%20Civil%20War");
+    }
+
+    public void testBuildMoviesTrailers() {
+        Uri trailersUri = MoviesContract.TrailersEntry.buildMoviesTrailers(TEST_MOVIES_TRAILERS);
+
+        assertNotNull("Error: Null Uri returned.  You must fill-in testBuildMoviesTrailers in " +
+                        "MoviesContract.",
+                trailersUri);
+
+        assertEquals("Error: Movies trailers not properly appended to the end of the Uri",
+                TEST_MOVIES_TRAILERS, trailersUri.getLastPathSegment());
+
+        assertEquals("Error: Movies trailers Uri doesn't match our expected result",
+                trailersUri.toString(),
+                "content://br.com.adalbertofjr.popularmovies/trailers/%2F271110");
     }
 }

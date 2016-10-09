@@ -21,6 +21,7 @@ public class MoviesContract {
 
     public static final String PATH_POPULAR = "popular";
     public static final String PATH_TOP_RATED = "top_rated";
+    public static final String PATH_TRAILERS = "trailers";
 
 
     public static final class PopularEntry implements BaseColumns {
@@ -79,6 +80,10 @@ public class MoviesContract {
     }
 
     public static final class TrailersEntry implements BaseColumns {
+        // Content provider
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI
+                .buildUpon()
+                .appendPath(PATH_TRAILERS).build();
 
         //Trailer table db
         public static final String TABLE_NAME = "trailers";
@@ -86,5 +91,8 @@ public class MoviesContract {
         public static final String COLUMN_NAME = "name";
         public static final String COLUMN_SITE = "site";
 
+        public static Uri buildMoviesTrailers(String testMoviesTrailers) {
+            return CONTENT_URI.buildUpon().appendPath(testMoviesTrailers).build();
+        }
     }
 }
