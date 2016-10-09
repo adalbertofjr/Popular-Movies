@@ -51,8 +51,17 @@ public class TestUtilities extends AndroidTestCase {
         testValues.put(MoviesContract.PopularEntry.COLUMN_POSTER_PATH, "/5N20rQURev5CNDcMjHVUZhpoCNC.jpg");
         testValues.put(MoviesContract.PopularEntry.COLUMN_RELEASE_DATE, "2016-04-27");
         testValues.put(MoviesContract.PopularEntry.COLUMN_VOTE_AVERAGE, 6.94);
-        testValues.put(MoviesContract.PopularEntry.COLUMN_OVERVIEW, "Matrix");
+        testValues.put(MoviesContract.PopularEntry.COLUMN_OVERVIEW, "Following the events of Age of Ultron, the collective governments of the world pass an act designed to regulate all superhuman activity. This polarizes opinion amongst the Avengers, causing two factions to side with Iron Man or Captain America, which causes an epic battle between former allies.");
         testValues.put(MoviesContract.PopularEntry.COLUMN_BACKDROP_PATH, "/rqAHkvXldb9tHlnbQDwOzRi0yVD.jpg");
+        return testValues;
+    }
+
+    public static ContentValues createTrailerValues() {
+        ContentValues testValues = new ContentValues();
+        testValues.put(MoviesContract.TrailersEntry._ID, 271110);
+        testValues.put(MoviesContract.TrailersEntry.COLUMN_KEY, "43NWzay3W4s");
+        testValues.put(MoviesContract.TrailersEntry.COLUMN_NAME, "Official Trailer #1");
+        testValues.put(MoviesContract.TrailersEntry.COLUMN_SITE, "YouTube");
         return testValues;
     }
 
@@ -69,10 +78,6 @@ public class TestUtilities extends AndroidTestCase {
         assertTrue("Error: Failure to insert Captain America Popular Values", locationRowId != -1);
 
         return locationRowId;
-    }
-
-    public static ContentValues createMovieValues() {
-        return null;
     }
 
     /*

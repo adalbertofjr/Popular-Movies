@@ -143,12 +143,46 @@ public class TesteDb extends AndroidTestCase {
         db.close();
     }
 
+    public void testTrailersColumns() {
+        // instância do bd
+        SQLiteDatabase db = new MoviesDbHelper(this.mContext).getWritableDatabase();
+
+        // verificando se conexão com banco está abertos
+        assertEquals(true, db.isOpen());
+
+        Cursor c = db.rawQuery("PRAGMA table_info(" + TrailersEntry.TABLE_NAME + ")",
+                null);
+
+        assertTrue("Error: This means that we were unable to query the database for table information.",
+                c.moveToFirst());
+
+        // Build a HashSet of all of the column names we want to look for
+        final HashSet<String> trailersColumnHashSet = new HashSet<>();
+        trailersColumnHashSet.add(TrailersEntry._ID);
+        trailersColumnHashSet.add(TrailersEntry.COLUMN_KEY);
+        trailersColumnHashSet.add(TrailersEntry.COLUMN_NAME);
+        trailersColumnHashSet.add(TrailersEntry.COLUMN_SITE);
+
+        int columnNameIndex = c.getColumnIndex("name");// now, do our tables contain the correct columns?
+
+        do {
+            String columnName = c.getString(columnNameIndex);
+            trailersColumnHashSet.remove(columnName);
+        } while (c.moveToNext());
+
+        // if this fails, it means that your database doesn't contain all of the required popular
+        // entry columns
+        assertTrue("Error: The database doesn't contain all of the required trailers entry columns",
+                trailersColumnHashSet.isEmpty());
+        db.close();
+    }
+
     public void testPopularTable() {
         // Get reference database
         SQLiteDatabase db = new MoviesDbHelper(this.mContext).getWritableDatabase();
 
         // Create values to insert
-        ContentValues testValues = getContentValuesMovie();
+        ContentValues testValues = TestUtilities.createCaptainAmericaValues();
 
         // Insert values into database and get row id get back
         db.insert(PopularEntry.TABLE_NAME, null, testValues);
@@ -183,7 +217,7 @@ public class TesteDb extends AndroidTestCase {
         SQLiteDatabase db = new MoviesDbHelper(this.mContext).getWritableDatabase();
 
         // Create values to insert
-        ContentValues testValues = getContentValuesMovie();
+        ContentValues testValues = TestUtilities.createCaptainAmericaValues();
 
         // Insert values into database and get row id get back
         db.insert(TopRatedEntry.TABLE_NAME, null, testValues);
@@ -213,15 +247,50 @@ public class TesteDb extends AndroidTestCase {
         db.close();
     }
 
-    private ContentValues getContentValuesMovie() {
-        ContentValues testValues = new ContentValues();
-        testValues.put(PopularEntry._ID, 271110);
-        testValues.put(PopularEntry.COLUMN_ORIGINAL_TITLE, "Captain America: Civil War");
-        testValues.put(PopularEntry.COLUMN_POSTER_PATH, "/5N20rQURev5CNDcMjHVUZhpoCNC.jpg");
-        testValues.put(PopularEntry.COLUMN_RELEASE_DATE, "2016-04-27");
-        testValues.put(PopularEntry.COLUMN_VOTE_AVERAGE, 6.94);
-        testValues.put(PopularEntry.COLUMN_OVERVIEW, "Matrix");
-        testValues.put(PopularEntry.COLUMN_BACKDROP_PATH, "/rqAHkvXldb9tHlnbQDwOzRi0yVD.jpg");
-        return testValues;
+    public void testTrailersTable() {
+        // Get reference database
+        SQLiteDatabase db = new MoviesDbHelper(this.mContext).getWritableDatabase();
+
+        // Create values to insert
+        ContentValues testValues = TestUtilities.createTrailerValues();
+
+        // Insert values into database and get row id get back
+        db.insert(TrailersEntry.TABLE_NAME, null, testValues);
+
+        // Query the database and receive cursor back
+        Cursor cursor = db.query(TrailersEntry.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+
+        // Move the cursor to a valid database row
+        assertTrue("Error: This means that the database has not been created correctly",
+                cursor.moveToFirst());
+
+        // Validate data in resulting Cursor with the original ContentValues
+        // (you can use the validateCurrentRecord function in TestUtilities to validate the
+        // query if you like)
+        TestUtilities.validateCurrentRecord("Error: Trailers Query Validation Failed",
+                cursor, testValues);
+
+
+        // Finally, close the cursor and database
+        cursor.close();
+        db.close();
     }
+
+//    private ContentValues getContentValuesMovie() {
+//        ContentValues testValues = new ContentValues();
+//        testValues.put(PopularEntry._ID, 271110);
+//        testValues.put(PopularEntry.COLUMN_ORIGINAL_TITLE, "Captain America: Civil War");
+//        testValues.put(PopularEntry.COLUMN_POSTER_PATH, "/5N20rQURev5CNDcMjHVUZhpoCNC.jpg");
+//        testValues.put(PopularEntry.COLUMN_RELEASE_DATE, "2016-04-27");
+//        testValues.put(PopularEntry.COLUMN_VOTE_AVERAGE, 6.94);
+//        testValues.put(PopularEntry.COLUMN_OVERVIEW, "Following the events of Age of Ultron, the collective governments of the world pass an act designed to regulate all superhuman activity. This polarizes opinion amongst the Avengers, causing two factions to side with Iron Man or Captain America, which causes an epic battle between former allies.");
+//        testValues.put(PopularEntry.COLUMN_BACKDROP_PATH, "/rqAHkvXldb9tHlnbQDwOzRi0yVD.jpg");
+//        return testValues;
+//    }
 }
