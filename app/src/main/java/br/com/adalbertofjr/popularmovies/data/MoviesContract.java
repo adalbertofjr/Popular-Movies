@@ -106,9 +106,12 @@ public class MoviesContract {
 
     public static final class ReviewsEntry implements BaseColumns {
         // Content Provider
-        private static final Uri CONTENT_URI = BASE_CONTENT_URI
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI
                 .buildUpon()
                 .appendPath(PATH_REVIEWS).build();
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_REVIEWS;
 
         // Reviews table db
         public static final String TABLE_NAME = "reviews";
@@ -117,6 +120,10 @@ public class MoviesContract {
 
         public static Uri buildMoviesReviews(String testMoviesReviews) {
             return CONTENT_URI.buildUpon().appendPath(testMoviesReviews).build();
+        }
+
+        public static Uri buildReviewsMovieUri(Long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
         }
     }
 }
