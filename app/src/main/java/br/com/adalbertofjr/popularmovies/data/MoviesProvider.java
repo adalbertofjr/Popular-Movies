@@ -174,6 +174,10 @@ public class MoviesProvider extends ContentProvider {
                 rowsDeleted = db.delete(TopRatedEntry.TABLE_NAME, selection, selectionArgs);
                 break;
             }
+            case TRAILERS: {
+                rowsDeleted = db.delete(TrailersEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }

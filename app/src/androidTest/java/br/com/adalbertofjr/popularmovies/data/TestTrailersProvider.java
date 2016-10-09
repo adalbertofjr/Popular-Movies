@@ -165,22 +165,22 @@ public class TestTrailersProvider extends AndroidTestCase {
     // Student: Uncomment this test after you have completed writing the delete functionality
     // in your provider.  It relies on insertions with testInsertReadProvider, so insert and
     // query functionality must also be complete before this test can be used.
-//    public void testDeleteRecords() {
-//        testInsertReadProvider();
-//
-//        // Register a content observer for our popular movie delete.
-//        TestUtilities.TestContentObserver tco = TestUtilities.getTestContentObserver();
-//        mContext.getContentResolver().registerContentObserver(MoviesContract.TrailersEntry.CONTENT_URI, true, tco);
-//
-//        deleteAllRecordsFromProvider();
-//
-//        // Students: If either of these fail, you most-likely are not calling the
-//        // getContext().getContentResolver().notifyChange(uri, null); in the ContentProvider
-//        // delete.  (only if the insertReadProvider is succeeding)
-//        tco.waitForNotificationOrFail();
-//
-//        mContext.getContentResolver().unregisterContentObserver(tco);
-//    }
+    public void testDeleteRecords() {
+        testInsertReadProvider();
+
+        // Register a content observer for our popular movie delete.
+        TestUtilities.TestContentObserver tco = TestUtilities.getTestContentObserver();
+        mContext.getContentResolver().registerContentObserver(MoviesContract.TrailersEntry.CONTENT_URI, true, tco);
+
+        deleteAllRecordsFromProvider();
+
+        // Students: If either of these fail, you most-likely are not calling the
+        // getContext().getContentResolver().notifyChange(uri, null); in the ContentProvider
+        // delete.  (only if the insertReadProvider is succeeding)
+        tco.waitForNotificationOrFail();
+
+        mContext.getContentResolver().unregisterContentObserver(tco);
+    }
 
     /*
        This test uses the provider to insert and then update the data. Uncomment this test to
