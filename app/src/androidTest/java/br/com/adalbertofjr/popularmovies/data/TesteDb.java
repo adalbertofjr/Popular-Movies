@@ -284,15 +284,38 @@ public class TesteDb extends AndroidTestCase {
         db.close();
     }
 
-//    private ContentValues getContentValuesMovie() {
-//        ContentValues testValues = new ContentValues();
-//        testValues.put(PopularEntry._ID, 271110);
-//        testValues.put(PopularEntry.COLUMN_ORIGINAL_TITLE, "Captain America: Civil War");
-//        testValues.put(PopularEntry.COLUMN_POSTER_PATH, "/5N20rQURev5CNDcMjHVUZhpoCNC.jpg");
-//        testValues.put(PopularEntry.COLUMN_RELEASE_DATE, "2016-04-27");
-//        testValues.put(PopularEntry.COLUMN_VOTE_AVERAGE, 6.94);
-//        testValues.put(PopularEntry.COLUMN_OVERVIEW, "Following the events of Age of Ultron, the collective governments of the world pass an act designed to regulate all superhuman activity. This polarizes opinion amongst the Avengers, causing two factions to side with Iron Man or Captain America, which causes an epic battle between former allies.");
-//        testValues.put(PopularEntry.COLUMN_BACKDROP_PATH, "/rqAHkvXldb9tHlnbQDwOzRi0yVD.jpg");
-//        return testValues;
-//    }
+    public void testReviewsTable() {
+        // Get reference database
+        SQLiteDatabase db = new MoviesDbHelper(this.mContext).getWritableDatabase();
+
+        // Create values to insert
+        ContentValues testValues = TestUtilities.createReviewsValues();
+
+        // Insert values into database and get row id get back
+        db.insert(ReviewsEntry.TABLE_NAME, null, testValues);
+
+        // Query the database and receive cursor back
+        Cursor cursor = db.query(ReviewsEntry.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+
+        // Move the cursor to a valid database row
+        assertTrue("Error: This means that the database has not been created correctly",
+                cursor.moveToFirst());
+
+        // Validate data in resulting Cursor with the original ContentValues
+        // (you can use the validateCurrentRecord function in TestUtilities to validate the
+        // query if you like)
+        TestUtilities.validateCurrentRecord("Error: Reviews Query Validation Failed",
+                cursor, testValues);
+
+
+        // Finally, close the cursor and database
+        cursor.close();
+        db.close();
+    }
 }

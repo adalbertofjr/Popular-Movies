@@ -65,6 +65,14 @@ public class TestUtilities extends AndroidTestCase {
         return testValues;
     }
 
+    public static ContentValues createReviewsValues() {
+        ContentValues testValues = new ContentValues();
+        testValues.put(MoviesContract.ReviewsEntry._ID, 271110);
+        testValues.put(MoviesContract.ReviewsEntry.COLUMN_AUTHOR, "Frank Ochieng");
+        testValues.put(MoviesContract.ReviewsEntry.COLUMN_CONTENT, "Well another super-sized Marvel Comics superhero saga hits the big screen with the selected savior Captain America taking the top billing on the marquee. Thus, the pulsating popcorn pleaser **Captain America: Civil War**");
+        return testValues;
+    }
+
     public static long insertCaptainAmericaPopularValues(Context context) {
         // insert our test records into the database
         MoviesDbHelper dbHelper = new MoviesDbHelper(context);
