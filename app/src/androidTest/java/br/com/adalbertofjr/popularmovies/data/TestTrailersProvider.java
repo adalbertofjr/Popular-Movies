@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.test.AndroidTestCase;
+import android.util.Log;
 
 /**
  * PopularMovies
@@ -186,46 +187,46 @@ public class TestTrailersProvider extends AndroidTestCase {
        This test uses the provider to insert and then update the data. Uncomment this test to
        see if your update location is functioning correctly.
     */
-//    public void testUpdateTopRatedMovie() {
-//        ContentValues movieValues = TestUtilities.createCaptainAmericaValues();
-//
-//        Uri topRatedMovieUri = mContext.getContentResolver().
-//                insert(MoviesContract.TrailersEntry.CONTENT_URI, movieValues);
-//
-//        long topRatedMovieId = ContentUris.parseId(topRatedMovieUri);
-//
-//        assertTrue(topRatedMovieId != -1);
-//        Log.d(LOG_TAG, "New row id: " + topRatedMovieId);
-//
-//        ContentValues updatedValues = new ContentValues(movieValues);
-//        updatedValues.put(MoviesContract.TrailersEntry.COLUMN_ORIGINAL_TITLE, "Capitão America");
-//
-//        Cursor topRatedMovieCursor = mContext.getContentResolver().query(MoviesContract.TrailersEntry.CONTENT_URI, null, null, null, null);
-//
-//        TestUtilities.TestContentObserver tco = TestUtilities.getTestContentObserver();
-//        topRatedMovieCursor.registerContentObserver(tco);
-//
-//        int count = mContext.getContentResolver().update(
-//                MoviesContract.TrailersEntry.CONTENT_URI, updatedValues, MoviesContract.TrailersEntry._ID + "= ?",
-//                new String[]{Long.toString(topRatedMovieId)});
-//        assertEquals(count, 1);
-//
-//        tco.waitForNotificationOrFail();
-//
-//        topRatedMovieCursor.unregisterContentObserver(tco);
-//        topRatedMovieCursor.close();
-//
-//        Cursor cursor = mContext.getContentResolver().query(
-//                MoviesContract.TrailersEntry.CONTENT_URI,
-//                null,   // projection
-//                MoviesContract.TrailersEntry._ID + " = " + topRatedMovieId,
-//                null,   // Values for the "where" clause
-//                null    // sort order
-//        );
-//
-//        TestUtilities.validateCursor("testUpdateTopRatedMovie.  Error validating location entry update.",
-//                cursor, updatedValues);
-//
-//        cursor.close();
-//    }
+    public void testUpdateTrailersMovie() {
+        ContentValues trailerValues = TestUtilities.createTrailerValues();
+
+        Uri trailerMovieUri = mContext.getContentResolver().
+                insert(MoviesContract.TrailersEntry.CONTENT_URI, trailerValues);
+
+        long topRatedMovieId = ContentUris.parseId(trailerMovieUri);
+
+        assertTrue(topRatedMovieId != -1);
+        Log.d(LOG_TAG, "New row id: " + topRatedMovieId);
+
+        ContentValues updatedValues = new ContentValues(trailerValues);
+        updatedValues.put(MoviesContract.TrailersEntry.COLUMN_NAME, "Trailer oficial #1");
+
+        Cursor trailerMovieCursor = mContext.getContentResolver().query(MoviesContract.TrailersEntry.CONTENT_URI, null, null, null, null);
+
+        TestUtilities.TestContentObserver tco = TestUtilities.getTestContentObserver();
+        trailerMovieCursor.registerContentObserver(tco);
+
+        int count = mContext.getContentResolver().update(
+                MoviesContract.TrailersEntry.CONTENT_URI, updatedValues, MoviesContract.TrailersEntry._ID + "= ?",
+                new String[]{Long.toString(topRatedMovieId)});
+        assertEquals(count, 1);
+
+        tco.waitForNotificationOrFail();
+
+        trailerMovieCursor.unregisterContentObserver(tco);
+        trailerMovieCursor.close();
+
+        Cursor cursor = mContext.getContentResolver().query(
+                MoviesContract.TrailersEntry.CONTENT_URI,
+                null,   // projection
+                MoviesContract.TrailersEntry._ID + " = " + topRatedMovieId,
+                null,   // Values for the "where" clause
+                null    // sort order
+        );
+
+        TestUtilities.validateCursor("testUpdateTrailersMovie.  Error validating trailer entry update.",
+                cursor, updatedValues);
+
+        cursor.close();
+    }
 }

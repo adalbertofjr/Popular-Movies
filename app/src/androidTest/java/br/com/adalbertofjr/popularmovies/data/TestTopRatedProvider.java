@@ -224,7 +224,7 @@ public class TestTopRatedProvider extends AndroidTestCase {
                 null    // sort order
         );
 
-        TestUtilities.validateCursor("testUpdateTopRatedMovie.  Error validating location entry update.",
+        TestUtilities.validateCursor("testUpdateTopRatedMovie.  Error validating top_rated entry update.",
                 cursor, updatedValues);
 
         cursor.close();
