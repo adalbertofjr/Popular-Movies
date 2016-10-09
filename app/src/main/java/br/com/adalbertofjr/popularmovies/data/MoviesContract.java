@@ -77,4 +77,14 @@ public class MoviesContract {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
     }
+
+    public static final class TrailersEntry implements BaseColumns {
+
+        //Trailer table db
+        public static final String TABLE_NAME = "trailers";
+        public static final String COLUMN_KEY = "key";
+        public static final String COLUMN_NAME = "name";
+        public static final String COLUMN_SITE = "site";
+
+    }
 }

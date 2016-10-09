@@ -10,6 +10,8 @@ import java.util.HashSet;
 import br.com.adalbertofjr.popularmovies.data.MoviesContract.PopularEntry;
 import br.com.adalbertofjr.popularmovies.data.MoviesContract.TopRatedEntry;
 
+import static br.com.adalbertofjr.popularmovies.data.MoviesContract.TrailersEntry;
+
 /**
  * Popular Movies
  * TesteDb
@@ -38,6 +40,7 @@ public class TesteDb extends AndroidTestCase {
         final HashSet<String> tableNameHashSet = new HashSet<>();
         tableNameHashSet.add(PopularEntry.TABLE_NAME);
         tableNameHashSet.add(TopRatedEntry.TABLE_NAME);
+        tableNameHashSet.add(TrailersEntry.TABLE_NAME);
 
         this.mContext.deleteDatabase(MoviesDbHelper.DATABASE_NAME);
 
@@ -59,7 +62,7 @@ public class TesteDb extends AndroidTestCase {
         } while (c.moveToNext());
 
         // if this fails, it means that your database doesn't contain the tables entry´s
-        assertTrue("Error: Your database was created without popular or top rated entry tables",
+        assertTrue("Error: Your database was created without entry tables. Check your tables.",
                 tableNameHashSet.isEmpty());
 
         db.close();
