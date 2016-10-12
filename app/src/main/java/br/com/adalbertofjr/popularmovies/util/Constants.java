@@ -21,7 +21,7 @@ public class Constants {
     //The Movie DB paths
     public static final String MOVIES_BASE_URL = "http://api.themoviedb.org/3/movie/";
     public static final String MOVIES_POPULAR_PATH = "popular";
-    private static final String MOVIES_TOP_RATED_PATH = "top_rated";
+    public static final String MOVIES_TOP_RATED_PATH = "top_rated";
     private static final String MOVIES_API_KEY_PARAMETER = "?api_key=" + THE_MOVIE_DB_API_KEY;
     public static final String MOVIES_POPULAR_URL = MOVIES_BASE_URL + MOVIES_POPULAR_PATH + MOVIES_API_KEY_PARAMETER;
     public static final String MOVIES_TOP_RATED_URL = MOVIES_BASE_URL + MOVIES_TOP_RATED_PATH + MOVIES_API_KEY_PARAMETER;

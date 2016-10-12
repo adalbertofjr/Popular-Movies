@@ -1,16 +1,19 @@
 package br.com.adalbertofjr.popularmovies.ui.fragments;
 
 import android.content.res.Configuration;
-import android.os.AsyncTask;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,21 +26,13 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 
 import br.com.adalbertofjr.popularmovies.R;
+import br.com.adalbertofjr.popularmovies.data.MoviesContract;
 import br.com.adalbertofjr.popularmovies.model.Movies;
-import br.com.adalbertofjr.popularmovies.ui.adapters.MoviesImageAdapter;
+import br.com.adalbertofjr.popularmovies.tasks.FetchMoviesTask;
+import br.com.adalbertofjr.popularmovies.ui.adapters.MoviesGridAdapter;
 import br.com.adalbertofjr.popularmovies.util.Constants;
 import br.com.adalbertofjr.popularmovies.util.Util;
 
@@ -50,10 +45,12 @@ import br.com.adalbertofjr.popularmovies.util.Util;
  */
 
 public class MoviesFragment extends Fragment
-        implements MoviesImageAdapter.OnMovieSelectedListener {
+        implements MoviesGridAdapter.OnMovieSelectedListener,
+        LoaderManager.LoaderCallbacks<Cursor> {
     private static final String MOVIES_INSTANCE_STATE = "movies";
     public static final String MOVIE_FRAGMENT_TAG = "MFTAG";
-    private MoviesImageAdapter mMoviesAdapter;
+    private static final int MOVIES_LOADER = 0;
+    private MoviesGridAdapter mMoviesAdapter;
     private ArrayList<Movies> mMovies;
     private ProgressBar mMoviesProgressBar;
     private TextView mErrorMessage;
@@ -72,6 +69,12 @@ public class MoviesFragment extends Fragment
         if (savedInstanceState != null && savedInstanceState.containsKey(MOVIES_INSTANCE_STATE)) {
             mMovies = savedInstanceState.getParcelableArrayList(MOVIES_INSTANCE_STATE);
         }
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        getLoaderManager().initLoader(MOVIES_LOADER, null, this);
     }
 
     @Nullable
@@ -107,6 +110,8 @@ public class MoviesFragment extends Fragment
         mGridMoviesRecyclerView.setLayoutManager(gridLayout);
         mGridMoviesRecyclerView.setHasFixedSize(true);
 
+        mFetchOption = Util.getSortOptionPreference(getActivity());
+
         return rootView;
     }
 
@@ -130,17 +135,14 @@ public class MoviesFragment extends Fragment
     @Override
     public void onStart() {
         super.onStart();
-        if (mMovies == null) {
-            startFetchMoviesTask();
-        } else {
-            updateMoviesAdapter(mMovies);
-        }
+        updateMoviesAdapter();
     }
 
     private void startFetchMoviesTask() {
         if (Util.isConnected(getActivity())) {
-            FetchMoviesTask moviesTask = new FetchMoviesTask();
-            moviesTask.execute();
+            FetchMoviesTask moviesTask = new FetchMoviesTask(getActivity());
+            moviesTask.execute(mFetchOption);
+            getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
         } else {
             hideProgressBar();
             // Todo - Corrigir mensagens de erro de conexão.
@@ -174,9 +176,9 @@ public class MoviesFragment extends Fragment
                 String option = getResources().getStringArray(R.array.pref_sort_options_values)[(int) position];
 
                 if (option.equals(Constants.MOVIES_POPULAR_PATH)) {
-                    mFetchOption = Constants.MOVIES_POPULAR_URL;
+                    mFetchOption = option;
                 } else {
-                    mFetchOption = Constants.MOVIES_TOP_RATED_URL;
+                    mFetchOption = Constants.MOVIES_TOP_RATED_PATH;
                 }
 
                 startFetchMoviesTask();
@@ -204,7 +206,7 @@ public class MoviesFragment extends Fragment
 
     private void refreshFetchMovies() {
         if (Util.isConnected(getActivity())) {
-            startFetchMoviesTask();
+            mMoviesAdapter.notifyDataSetChanged();
         } else {
             hideProgressBar();
             // Todo - Corrigir mensagens de erro de conexão.
@@ -215,101 +217,18 @@ public class MoviesFragment extends Fragment
 
     @Override
     public void onMovieSelected(Movies movie) {
-        ((MoviesImageAdapter.OnMovieSelectedListener) getActivity())
+        ((MoviesGridAdapter.OnMovieSelectedListener) getActivity())
                 .onMovieSelected(movie);
     }
 
-    private class FetchMoviesTask extends AsyncTask<Void, Void, ArrayList<Movies>> {
-        private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
+    private void updateMoviesAdapter() {
+        hideProgressBar();
 
-        @Override
-        protected ArrayList<Movies> doInBackground(Void... voids) {
+        mMoviesAdapter = new MoviesGridAdapter(getActivity(), null, this);
+        mGridMoviesRecyclerView.setAdapter(mMoviesAdapter);
 
-            HttpURLConnection urlConnection = null;
-            BufferedReader reader = null;
-
-            String moviesJsonString;
-
-            try {
-
-                if (mFetchOption == null)
-                    mFetchOption = Util.getOptionSortFetchMovies(getActivity());
-
-                URL url = new URL(mFetchOption);
-
-                // Create the request to OpenWeatherMap, and open the connection
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.connect();
-
-                // Read the input stream into a String
-                InputStream inputStream = urlConnection.getInputStream();
-                StringBuilder buffer = new StringBuilder();
-                if (inputStream == null) {
-                    // Nothing to do.
-                    return null;
-                }
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                    // But it does make debugging a *lot* easier if you print out the completed
-                    // buffer for debugging.
-                    buffer.append(line).append("\n");
-                }
-
-                if (buffer.length() == 0) {
-                    // Stream was empty.  No point in parsing.
-                    return null;
-                }
-
-                moviesJsonString = buffer.toString();
-
-                try {
-                    return getMoviesDataFromJson(moviesJsonString);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            } catch (IOException e) {
-                Log.e(LOG_TAG, "Error ", e);
-                // If the code didn't successfully get the weather data, there's no point in attemping
-                // to parse it.
-                return null;
-            } finally {
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (final IOException e) {
-                        Log.e(LOG_TAG, "Error closing stream", e);
-                    }
-                }
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<Movies> movies) {
-            super.onPostExecute(movies);
-            updateMoviesAdapter(movies);
-        }
-    }
-
-    private void updateMoviesAdapter(ArrayList<Movies> movies) {
-        if (movies != null) {
-            hideProgressBar();
-
-            mMovies = movies;
-
-            mMoviesAdapter = new MoviesImageAdapter(getActivity(), mMovies, this);
-            mGridMoviesRecyclerView.setAdapter(mMoviesAdapter);
-
-            if(mTwoPane){
-                onMovieSelected(mMovies.get(0));
-            }
+        if (mTwoPane) {
+            onMovieSelected(mMovies.get(0));
         }
     }
 
@@ -319,43 +238,31 @@ public class MoviesFragment extends Fragment
         }
     }
 
-    private ArrayList<Movies> getMoviesDataFromJson(String moviesJsonString)
-            throws JSONException {
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Uri contentUri;
 
-        JSONObject moviesJson = new JSONObject(moviesJsonString);
-        JSONArray moviesArray = moviesJson.getJSONArray(Constants.MOVIES_LIST_KEY);
-
-        ArrayList<Movies> movies = new ArrayList<>();
-
-        for (int i = 0; i < moviesArray.length(); i++) {
-            String id;
-            String backdrop_path;
-            String poster_path;
-            String vote_average;
-            String original_title;
-            String release_date;
-            String overview;
-
-            JSONObject movieData = moviesArray.getJSONObject(i);
-
-            id = movieData.getString(Constants.MOVIES_ID);
-            backdrop_path = movieData.getString(Constants.MOVIES_BACKGROUND_KEY);
-            poster_path = movieData.getString(Constants.MOVIES_POSTER_KEY);
-            vote_average = movieData.getString(Constants.MOVIES_VOTE_AVERAGE_KEY);
-            original_title = movieData.getString(Constants.MOVIES_TITLE_KEY);
-            release_date = movieData.getString(Constants.MOVIES_RELEASE_DATE_KEY);
-            overview = movieData.getString(Constants.MOVIES_OVERVIEW_KEY);
-
-            Movies movie = new Movies(id, backdrop_path,
-                    poster_path,
-                    vote_average,
-                    original_title,
-                    release_date,
-                    overview);
-
-            movies.add(movie);
+        if (mFetchOption.equals(Constants.MOVIES_POPULAR_PATH)) {
+            contentUri = MoviesContract.PopularEntry.CONTENT_URI;
+        } else {
+            contentUri = MoviesContract.TopRatedEntry.CONTENT_URI;
         }
 
-        return movies;
+        return new CursorLoader(getActivity(),
+                contentUri,
+                null,
+                null,
+                null,
+                null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        mMoviesAdapter.swapCursor(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mMoviesAdapter.swapCursor(null);
     }
 }

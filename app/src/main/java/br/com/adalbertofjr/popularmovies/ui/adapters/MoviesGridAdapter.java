@@ -1,6 +1,7 @@
 package br.com.adalbertofjr.popularmovies.ui.adapters;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -11,43 +12,44 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
-
 import br.com.adalbertofjr.popularmovies.R;
 import br.com.adalbertofjr.popularmovies.model.Movies;
 import br.com.adalbertofjr.popularmovies.util.Constants;
 
 /**
  * Popular Movies
- * MoviesImageAdapter
+ * MoviesGridAdapter
  * <p/>
  * Created by Adalberto Fernandes Júnior on 10/07/2016.
  * Copyright © 2016 - Adalberto Fernandes Júnior. All rights reserved.
  */
 
-public class MoviesImageAdapter extends RecyclerView.Adapter<MoviesImageAdapter.ViewHolder> {
-    private static final String LOG_TAG = MoviesImageAdapter.class.getSimpleName();
+public class MoviesGridAdapter extends CursorRecyclerViewAdapter<MoviesGridAdapter.ViewHolder> {
+    private static final String LOG_TAG = MoviesGridAdapter.class.getSimpleName();
     private final Context mContext;
-    private final ArrayList<Movies> mMovies;
     private final OnMovieSelectedListener mListener;
 
-    public MoviesImageAdapter(Context mContext, ArrayList<Movies> mMovies, OnMovieSelectedListener mListener) {
+    public MoviesGridAdapter(Context mContext, Cursor cursor, OnMovieSelectedListener mListener) {
+        super(mContext, cursor);
         this.mContext = mContext;
-        this.mMovies = mMovies;
         this.mListener = mListener;
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.movies_item, parent, false);
+    public void onBindViewHolder(ViewHolder holder, Cursor cursor) {
+        final Movies movie = new Movies();
 
-
-        return new ViewHolder(view);
-    }
-
-    @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        final Movies movie = mMovies.get(position);
+        if (cursor.moveToNext()) {
+            movie.setId(cursor.getString(0));
+            movie.setOriginal_title(cursor.getString(1));
+            movie.setPoster_path(cursor.getString(2));
+            movie.setRelease_date(cursor.getString(3));
+            movie.setVote_average(cursor.getString(4));
+            movie.setOverview(cursor.getString(5));
+            movie.setBackdrop_path(cursor.getString(6));
+        } else {
+            return;
+        }
 
         Uri.Builder uriImage = Uri.parse(Constants.MOVIE_IMAGE_POSTER_URL)
                 .buildUpon()
@@ -67,11 +69,14 @@ public class MoviesImageAdapter extends RecyclerView.Adapter<MoviesImageAdapter.
                 }
             }
         });
+
     }
 
     @Override
-    public int getItemCount() {
-        return mMovies.size();
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(mContext).inflate(R.layout.movies_item, parent, false);
+
+        return new ViewHolder(view);
     }
 
     public interface OnMovieSelectedListener {
