@@ -22,7 +22,6 @@ import java.util.ArrayList;
 
 import br.com.adalbertofjr.popularmovies.data.MoviesContract;
 import br.com.adalbertofjr.popularmovies.model.Movies;
-import br.com.adalbertofjr.popularmovies.ui.adapters.MoviesGridAdapter;
 import br.com.adalbertofjr.popularmovies.util.Constants;
 
 /**
@@ -36,12 +35,11 @@ import br.com.adalbertofjr.popularmovies.util.Constants;
 
 public class FetchMoviesTask extends AsyncTask<String, Void, ArrayList<Movies>> {
     private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
-    private final MoviesGridAdapter mMoviesAdapter;
     private final Context mContext;
+    private String mFetchOption;
 
-    public FetchMoviesTask(Context context, MoviesGridAdapter mMoviesAdapter) {
+    public FetchMoviesTask(Context context) {
         mContext = context;
-        this.mMoviesAdapter = mMoviesAdapter;
     }
 
     @Override
@@ -53,13 +51,20 @@ public class FetchMoviesTask extends AsyncTask<String, Void, ArrayList<Movies>> 
         String moviesJsonString;
 
         try {
-            String fetchOption = strings[0];
+            mFetchOption = strings[0];
 
-            if (fetchOption == null) {
+            if (mFetchOption == null) {
                 return null;
             }
 
-            URL url = new URL(fetchOption);
+            String uriOption;
+            if (mFetchOption.equals(Constants.MOVIES_POPULAR_PATH)) {
+                uriOption = Constants.MOVIES_POPULAR_URL;
+            } else {
+                uriOption = Constants.MOVIES_TOP_RATED_URL;
+            }
+
+            URL url = new URL(uriOption);
 
             // Create the request to OpenWeatherMap, and open the connection
             urlConnection = (HttpURLConnection) url.openConnection();
@@ -128,8 +133,6 @@ public class FetchMoviesTask extends AsyncTask<String, Void, ArrayList<Movies>> 
         JSONObject moviesJson = new JSONObject(moviesJsonString);
         JSONArray moviesArray = moviesJson.getJSONArray(Constants.MOVIES_LIST_KEY);
 
-        ArrayList<Movies> movies = new ArrayList<>();
-
         for (int i = 0; i < moviesArray.length(); i++) {
             String id;
             String backdrop_path;
@@ -156,7 +159,6 @@ public class FetchMoviesTask extends AsyncTask<String, Void, ArrayList<Movies>> 
                     release_date,
                     overview);
 
-            //movies.add(movie);
             addMovie(movie.getId(), movie.getBackDropUrlPath(), movie.getPoster_path(),
                     movie.getVote_average(), movie.getOriginal_title(), movie.getRelease_date(),
                     movie.getOverview());
@@ -173,15 +175,23 @@ public class FetchMoviesTask extends AsyncTask<String, Void, ArrayList<Movies>> 
         String selection = MoviesContract.PopularEntry._ID + " = ?";
         String[] selectionArgs = new String[]{id};
 
+        Uri contentUri;
+
+        if (mFetchOption.equals(Constants.MOVIES_POPULAR_PATH)) {
+            contentUri = MoviesContract.PopularEntry.CONTENT_URI;
+        } else {
+            contentUri = MoviesContract.TopRatedEntry.CONTENT_URI;
+        }
+
         Cursor cursor = mContext.getContentResolver().query(
-                MoviesContract.PopularEntry.CONTENT_URI,
+                contentUri,
                 projection,
                 selection,
                 selectionArgs,
                 null);
 
         if (cursor.moveToNext()) {
-            int idIndex = cursor.getColumnIndex(MoviesContract.PopularEntry._ID);
+            int idIndex = cursor.getColumnIndex("_id");
             popularId = cursor.getLong(idIndex);
         } else {
             ContentValues values = new ContentValues();
@@ -193,7 +203,7 @@ public class FetchMoviesTask extends AsyncTask<String, Void, ArrayList<Movies>> 
             values.put(MoviesContract.PopularEntry.COLUMN_OVERVIEW, overview);
             values.put(MoviesContract.PopularEntry.COLUMN_BACKDROP_PATH, backdropPath);
 
-            Uri uri = mContext.getContentResolver().insert(MoviesContract.PopularEntry.CONTENT_URI,
+            Uri uri = mContext.getContentResolver().insert(contentUri,
                     values);
 
             popularId = ContentUris.parseId(uri);
