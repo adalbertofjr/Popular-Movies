@@ -6,12 +6,12 @@ import android.support.v7.app.AppCompatActivity;
 
 import br.com.adalbertofjr.popularmovies.R;
 import br.com.adalbertofjr.popularmovies.model.Movies;
-import br.com.adalbertofjr.popularmovies.ui.adapters.MoviesImageAdapter;
+import br.com.adalbertofjr.popularmovies.ui.adapters.MoviesGridAdapter;
 import br.com.adalbertofjr.popularmovies.ui.fragments.DetailMovieFragment;
 import br.com.adalbertofjr.popularmovies.util.Constants;
 
 public class MainActivity extends AppCompatActivity
-        implements MoviesImageAdapter.OnMovieSelectedListener {
+        implements MoviesGridAdapter.OnMovieSelectedListener {
 
     private boolean mTwoPane;
 

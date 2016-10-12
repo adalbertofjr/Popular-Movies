@@ -19,19 +19,19 @@ import br.com.adalbertofjr.popularmovies.util.Constants;
 
 /**
  * Popular Movies
- * MoviesImageAdapter
+ * MoviesGridAdapter
  * <p/>
  * Created by Adalberto Fernandes Júnior on 10/07/2016.
  * Copyright © 2016 - Adalberto Fernandes Júnior. All rights reserved.
  */
 
-public class MoviesImageAdapter extends RecyclerView.Adapter<MoviesImageAdapter.ViewHolder> {
-    private static final String LOG_TAG = MoviesImageAdapter.class.getSimpleName();
+public class MoviesGridAdapter extends RecyclerView.Adapter<MoviesGridAdapter.ViewHolder> {
+    private static final String LOG_TAG = MoviesGridAdapter.class.getSimpleName();
     private final Context mContext;
     private final ArrayList<Movies> mMovies;
     private final OnMovieSelectedListener mListener;
 
-    public MoviesImageAdapter(Context mContext, ArrayList<Movies> mMovies, OnMovieSelectedListener mListener) {
+    public MoviesGridAdapter(Context mContext, ArrayList<Movies> mMovies, OnMovieSelectedListener mListener) {
         this.mContext = mContext;
         this.mMovies = mMovies;
         this.mListener = mListener;

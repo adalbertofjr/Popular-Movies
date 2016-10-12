@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import br.com.adalbertofjr.popularmovies.R;
 import br.com.adalbertofjr.popularmovies.model.Movies;
 import br.com.adalbertofjr.popularmovies.tasks.FetchMoviesTask;
-import br.com.adalbertofjr.popularmovies.ui.adapters.MoviesImageAdapter;
+import br.com.adalbertofjr.popularmovies.ui.adapters.MoviesGridAdapter;
 import br.com.adalbertofjr.popularmovies.util.Constants;
 import br.com.adalbertofjr.popularmovies.util.Util;
 
@@ -39,10 +39,10 @@ import br.com.adalbertofjr.popularmovies.util.Util;
  */
 
 public class MoviesFragment extends Fragment
-        implements MoviesImageAdapter.OnMovieSelectedListener {
+        implements MoviesGridAdapter.OnMovieSelectedListener {
     private static final String MOVIES_INSTANCE_STATE = "movies";
     public static final String MOVIE_FRAGMENT_TAG = "MFTAG";
-    private MoviesImageAdapter mMoviesAdapter;
+    private MoviesGridAdapter mMoviesAdapter;
     private ArrayList<Movies> mMovies;
     private ProgressBar mMoviesProgressBar;
     private TextView mErrorMessage;
@@ -206,7 +206,7 @@ public class MoviesFragment extends Fragment
 
     @Override
     public void onMovieSelected(Movies movie) {
-        ((MoviesImageAdapter.OnMovieSelectedListener) getActivity())
+        ((MoviesGridAdapter.OnMovieSelectedListener) getActivity())
                 .onMovieSelected(movie);
     }
 
@@ -304,7 +304,7 @@ public class MoviesFragment extends Fragment
 
             mMovies = movies;
 
-            mMoviesAdapter = new MoviesImageAdapter(getActivity(), mMovies, this);
+            mMoviesAdapter = new MoviesGridAdapter(getActivity(), mMovies, this);
             mGridMoviesRecyclerView.setAdapter(mMoviesAdapter);
 
             if(mTwoPane){

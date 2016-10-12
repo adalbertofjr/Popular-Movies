@@ -22,7 +22,7 @@ import java.util.ArrayList;
 
 import br.com.adalbertofjr.popularmovies.data.MoviesContract;
 import br.com.adalbertofjr.popularmovies.model.Movies;
-import br.com.adalbertofjr.popularmovies.ui.adapters.MoviesImageAdapter;
+import br.com.adalbertofjr.popularmovies.ui.adapters.MoviesGridAdapter;
 import br.com.adalbertofjr.popularmovies.util.Constants;
 
 /**
@@ -36,10 +36,10 @@ import br.com.adalbertofjr.popularmovies.util.Constants;
 
 public class FetchMoviesTask extends AsyncTask<String, Void, ArrayList<Movies>> {
     private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
-    private final MoviesImageAdapter mMoviesAdapter;
+    private final MoviesGridAdapter mMoviesAdapter;
     private final Context mContext;
 
-    public FetchMoviesTask(Context context, MoviesImageAdapter mMoviesAdapter) {
+    public FetchMoviesTask(Context context, MoviesGridAdapter mMoviesAdapter) {
         mContext = context;
         this.mMoviesAdapter = mMoviesAdapter;
     }
