@@ -91,7 +91,8 @@ public class FetchMoviesTask extends AsyncTask<String, Void, ArrayList<Movies>> 
             moviesJsonString = buffer.toString();
 
             try {
-                return getMoviesDataFromJson(moviesJsonString);
+                getMoviesDataFromJson(moviesJsonString);
+                return null;
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -121,7 +122,7 @@ public class FetchMoviesTask extends AsyncTask<String, Void, ArrayList<Movies>> 
 //        updateMoviesAdapter(movies);
     }
 
-    private ArrayList<Movies> getMoviesDataFromJson(String moviesJsonString)
+    private void getMoviesDataFromJson(String moviesJsonString)
             throws JSONException {
 
         JSONObject moviesJson = new JSONObject(moviesJsonString);
@@ -155,14 +156,16 @@ public class FetchMoviesTask extends AsyncTask<String, Void, ArrayList<Movies>> 
                     release_date,
                     overview);
 
-            movies.add(movie);
+            //movies.add(movie);
+            addMovie(movie.getId(), movie.getBackDropUrlPath(), movie.getPoster_path(),
+                    movie.getVote_average(), movie.getOriginal_title(), movie.getRelease_date(),
+                    movie.getOverview());
         }
 
-        return movies;
     }
 
 
-    public long addMovie(String id, String backdropPath, String posterPath, Double voteAverage,
+    public long addMovie(String id, String backdropPath, String posterPath, String voteAverage,
                          String originalTitle, String releaseDate, String overview) {
         long popularId;
 

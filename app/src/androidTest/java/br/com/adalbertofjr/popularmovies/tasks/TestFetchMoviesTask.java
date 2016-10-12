@@ -19,7 +19,7 @@ public class TestFetchMoviesTask extends AndroidTestCase {
     private static final String ADD_ID = "271110";
     private static final String ADD_BACKDROP_PATH = "/rqAHkvXldb9tHlnbQDwOzRi0yVD.jpg";
     private static final String ADD_POSTER_PATH = "/5N20rQURev5CNDcMjHVUZhpoCNC.jpg";
-    private static final Double ADD_VOTE_AVERAGE = 6.94;
+    private static final String ADD_VOTE_AVERAGE = "6.94";
     private static final String ADD_ORIGINAL_TITLE = "Captain America: Civil War";
     private static final String ADD_RELEASE_DATE = "2016-04-27";
     private static final String ADD_OVERVIEW = "Following the events of Age of Ultron, the collective governments of the world pass an act designed to regulate all superhuman activity. This polarizes opinion amongst the Avengers, causing two factions to side with Iron Man or Captain America, which causes an epic battle between former allies.";
@@ -71,7 +71,7 @@ public class TestFetchMoviesTask extends AndroidTestCase {
                 assertEquals("Error: the queried value of release date is incorrect",
                          cursor.getString(3), ADD_RELEASE_DATE);
                 assertEquals("Error: the queried value of vote average is incorrect",
-                        cursor.getDouble(4), ADD_VOTE_AVERAGE);
+                        String.valueOf(cursor.getDouble(4)), ADD_VOTE_AVERAGE);
                 assertEquals("Error: the queried value of overview is incorrect",
                         cursor.getString(5), ADD_OVERVIEW);
                 assertEquals("Error: the queried value of backdrop path is incorrect",
