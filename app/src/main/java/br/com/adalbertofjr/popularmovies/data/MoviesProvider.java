@@ -1,6 +1,7 @@
 package br.com.adalbertofjr.popularmovies.data;
 
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
@@ -62,6 +63,20 @@ public class MoviesProvider extends ContentProvider {
         Cursor retCursor;
         switch (match) {
             case POPULAR: {
+                retCursor = mOpenHelper.getWritableDatabase().query(
+                        PopularEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
+            case POPULAR_WITH_MOVIE: {
+                selection = "_id = ?";
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 retCursor = mOpenHelper.getWritableDatabase().query(
                         PopularEntry.TABLE_NAME,
                         projection,

@@ -131,6 +131,19 @@ public class TestPopularProvider extends AndroidTestCase {
 
         // Make sure we get the correct cursor out of the database
         TestUtilities.validateCursor("testBasicPopularQuery", popularCursor, movieValues);
+
+        Uri uriPopularWithMovie = PopularEntry.buildPopularMovieUri(271110);
+
+        Cursor popularWithMovieCursor = mContext.getContentResolver().query(
+                uriPopularWithMovie,
+                null,
+                null,
+                null,
+                null
+        );
+
+        // Make sure we get the correct cursor out of the database
+        TestUtilities.validateCursor("testBasicPopularQueryWithMovie", popularWithMovieCursor, movieValues);
     }
 
     // Make sure we can still delete after adding/updating stuff
