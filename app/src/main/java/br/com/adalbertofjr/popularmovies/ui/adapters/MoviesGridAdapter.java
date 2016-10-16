@@ -63,7 +63,7 @@ public class MoviesGridAdapter extends CursorRecyclerViewAdapter<MoviesGridAdapt
             @Override
             public void onClick(View view) {
                 if (mListener != null) {
-                    mListener.onMovieSelected(movie);
+                    mListener.onMovieSelected(movie, null);
                 } else {
                     Log.d(LOG_TAG, "You need MoviesFragment.OnMovieSelectedListener callback.");
                 }
@@ -80,7 +80,7 @@ public class MoviesGridAdapter extends CursorRecyclerViewAdapter<MoviesGridAdapt
     }
 
     public interface OnMovieSelectedListener {
-        void onMovieSelected(Movies movie);
+        void onMovieSelected(Movies movie, Uri uri);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

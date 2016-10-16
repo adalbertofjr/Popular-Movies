@@ -35,6 +35,9 @@ public class MoviesContract {
         public static final String CONTENT_TYPE =
                 ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_POPULAR;
 
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_POPULAR;
+
         // Popular table db
         public static final String TABLE_NAME = "popular";
         public static final String COLUMN_BACKDROP_PATH = "backdrop_path";
@@ -51,6 +54,7 @@ public class MoviesContract {
         public static Uri buildPopularMovieUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
+
     }
 
     public static final class TopRatedEntry implements BaseColumns {

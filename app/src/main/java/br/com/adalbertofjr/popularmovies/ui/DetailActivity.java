@@ -6,9 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
 import br.com.adalbertofjr.popularmovies.R;
-import br.com.adalbertofjr.popularmovies.model.Movies;
 import br.com.adalbertofjr.popularmovies.ui.fragments.DetailMovieFragment;
-import br.com.adalbertofjr.popularmovies.util.Constants;
 
 /**
  * Popular Movies
@@ -26,9 +24,9 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
 
         Intent intent = getIntent();
-        Movies movie = intent.getParcelableExtra(Constants.MOVIE_DETAIL_EXTRA);
+        String uri = intent.getStringExtra(Intent.EXTRA_TEXT);
 
-        DetailMovieFragment dmf = DetailMovieFragment.newInstance(movie);
+        DetailMovieFragment dmf = DetailMovieFragment.newInstance(uri);
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fl_detail_container, dmf, null)

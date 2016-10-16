@@ -1,6 +1,7 @@
 package br.com.adalbertofjr.popularmovies.ui;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
@@ -8,7 +9,6 @@ import br.com.adalbertofjr.popularmovies.R;
 import br.com.adalbertofjr.popularmovies.model.Movies;
 import br.com.adalbertofjr.popularmovies.ui.adapters.MoviesGridAdapter;
 import br.com.adalbertofjr.popularmovies.ui.fragments.DetailMovieFragment;
-import br.com.adalbertofjr.popularmovies.util.Constants;
 
 public class MainActivity extends AppCompatActivity
         implements MoviesGridAdapter.OnMovieSelectedListener {
@@ -32,15 +32,17 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onMovieSelected(Movies movie) {
+    public void onMovieSelected(Movies movie, Uri uri) {
+        String uriMovie = uri.buildUpon().appendPath(movie.getId()).toString();
+
         if (mTwoPane) {
-            DetailMovieFragment fragment = DetailMovieFragment.newInstance(movie);
+            DetailMovieFragment fragment = DetailMovieFragment.newInstance(uriMovie);
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.main_detail_container, fragment, DetailMovieFragment.DETAIL_MOVIE_FRAGMENT_TAG)
                     .commit();
         } else {
             Intent intent = new Intent(this, DetailActivity.class);
-            intent.putExtra(Constants.MOVIE_DETAIL_EXTRA, movie);
+            intent.putExtra(Intent.EXTRA_TEXT, uriMovie);
             startActivity(intent);
         }
     }

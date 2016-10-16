@@ -1,23 +1,22 @@
 package br.com.adalbertofjr.popularmovies.ui.fragments;
 
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,7 +39,6 @@ import br.com.adalbertofjr.popularmovies.model.Reviews;
 import br.com.adalbertofjr.popularmovies.model.Trailers;
 import br.com.adalbertofjr.popularmovies.ui.adapters.TrailersAdapter;
 import br.com.adalbertofjr.popularmovies.util.Constants;
-import br.com.adalbertofjr.popularmovies.util.Util;
 
 /**
  * Popular Movies
@@ -50,8 +48,10 @@ import br.com.adalbertofjr.popularmovies.util.Util;
  * Copyright © 2016 - Adalberto Fernandes Júnior. All rights reserved.
  */
 
-public class DetailMovieFragment extends Fragment {
+public class DetailMovieFragment extends Fragment
+        implements LoaderManager.LoaderCallbacks<Cursor> {
     public static final String DETAIL_MOVIE_FRAGMENT_TAG = "DMFTAG";
+    private static final int DETAIL_LOADER = 0;
     private Movies mMovie;
     private ProgressBar mProgressBar;
     private RecyclerView mTrailersListRecyclerView;
@@ -61,14 +61,16 @@ public class DetailMovieFragment extends Fragment {
     private TextView mContextReviewTwo;
     private TextView mReadMoreView;
     private View mContainerReview;
+    private String LOG_TAG = DetailMovieFragment.class.getSimpleName();
+    private String mMovieUri;
 
     public DetailMovieFragment() {
     }
 
-    public static DetailMovieFragment newInstance(Movies movie) {
+    public static DetailMovieFragment newInstance(String uri) {
         DetailMovieFragment dmf = new DetailMovieFragment();
         Bundle bundle = new Bundle();
-        bundle.putParcelable(Constants.MOVIE_DETAIL_EXTRA, movie);
+        bundle.putString(Intent.EXTRA_TEXT, uri);
         dmf.setArguments(bundle);
 
         return dmf;
@@ -80,8 +82,15 @@ public class DetailMovieFragment extends Fragment {
         Bundle arguments = getArguments();
 
         if (arguments != null) {
-            mMovie = arguments.getParcelable(Constants.MOVIE_DETAIL_EXTRA);
+//            mMovie = arguments.getParcelable(Constants.MOVIE_DETAIL_EXTRA);
+            mMovieUri = arguments.getString(Intent.EXTRA_TEXT);
         }
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        getLoaderManager().initLoader(DETAIL_LOADER, null, this);
     }
 
     @Nullable
@@ -89,7 +98,7 @@ public class DetailMovieFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_detail_movie, container, false);
 
-        mProgressBar = (ProgressBar) rootView.findViewById(R.id.pb_detail_progress);
+      /*  mProgressBar = (ProgressBar) rootView.findViewById(R.id.pb_detail_progress);
         mAuthorReviewOne = (TextView) rootView.findViewById(R.id.tv_detail_reviews_author_one);
         mContextReviewOne = (TextView) rootView.findViewById(R.id.tv_detail_reviews_content_one);
         mAuthorReviewTwo = (TextView) rootView.findViewById(R.id.tv_detail_reviews_author_two);
@@ -127,8 +136,8 @@ public class DetailMovieFragment extends Fragment {
                                 ((TextView) rootView.findViewById(R.id.tv_detail_vote_average)).setText(mMovie.getVote_average());
                                 ((TextView) rootView.findViewById(R.id.tv_detail_overview)).setText(mMovie.getOverview());
 
-                                new FetchTrailersTask().execute();
-                                new FetchReviewsTask().execute();
+                               // new FetchTrailersTask().execute();
+                               // new FetchReviewsTask().execute();
                             }
 
                             @Override
@@ -140,7 +149,7 @@ public class DetailMovieFragment extends Fragment {
                 hideProgressBar();
                 errorMessage.setVisibility(View.VISIBLE);
             }
-        }
+        }*/
 
         return rootView;
     }
@@ -162,6 +171,30 @@ public class DetailMovieFragment extends Fragment {
         if (mProgressBar != null && mProgressBar.getVisibility() == View.VISIBLE) {
             mProgressBar.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new CursorLoader(
+                getActivity(),
+                Uri.parse(mMovieUri),
+                null,
+                null,
+                null,
+                null
+        );
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        Log.v(LOG_TAG, "In onLoadFinished");
+
+        if (!cursor.moveToNext()) return;
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
     }
 
     private class FetchTrailersTask extends AsyncTask<Void, Void, ArrayList<Trailers>> {
