@@ -31,7 +31,7 @@ public class TestFetchMoviesTask extends AndroidTestCase {
                 MoviesContract.PopularEntry._ID + " = ?",
                 new String[]{ADD_ID});
 
-        FetchMoviesTask fwt = new FetchMoviesTask(getContext(), null);
+        FetchMoviesTask fwt = new FetchMoviesTask(getContext());
         long movieId = fwt.addMovie(ADD_ID, ADD_BACKDROP_PATH,
                 ADD_POSTER_PATH, ADD_VOTE_AVERAGE, ADD_ORIGINAL_TITLE,
                 ADD_RELEASE_DATE, ADD_OVERVIEW);
