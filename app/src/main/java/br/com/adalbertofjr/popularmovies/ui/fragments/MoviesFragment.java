@@ -216,9 +216,17 @@ public class MoviesFragment extends Fragment
     }
 
     @Override
-    public void onMovieSelected(Movies movie) {
+    public void onMovieSelected(Movies movie, Uri uri) {
+        Uri contentUri;
+
+        if (mFetchOption.equals(Constants.MOVIES_POPULAR_PATH)) {
+            contentUri = MoviesContract.PopularEntry.CONTENT_URI;
+        } else {
+            contentUri = MoviesContract.TopRatedEntry.CONTENT_URI;
+        }
+
         ((MoviesGridAdapter.OnMovieSelectedListener) getActivity())
-                .onMovieSelected(movie);
+                .onMovieSelected(movie, contentUri);
     }
 
     private void updateMoviesAdapter() {
@@ -228,7 +236,15 @@ public class MoviesFragment extends Fragment
         mGridMoviesRecyclerView.setAdapter(mMoviesAdapter);
 
         if (mTwoPane) {
-            onMovieSelected(mMovies.get(0));
+            Uri contentUri;
+
+            if (mFetchOption.equals(Constants.MOVIES_POPULAR_PATH)) {
+                contentUri = MoviesContract.PopularEntry.CONTENT_URI;
+            } else {
+                contentUri = MoviesContract.TopRatedEntry.CONTENT_URI;
+            }
+
+            onMovieSelected(mMovies.get(0), contentUri);
         }
     }
 

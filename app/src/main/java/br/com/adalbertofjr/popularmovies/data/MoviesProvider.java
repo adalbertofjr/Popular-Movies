@@ -1,6 +1,7 @@
 package br.com.adalbertofjr.popularmovies.data;
 
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
@@ -27,18 +28,22 @@ public class MoviesProvider extends ContentProvider {
     // The URI Matcher used by this content provider.
     private static final UriMatcher sUriMatcher = buildUriMatcher();
 
-    private static final int POPULAR = 100;
-    private static final int TOP_RATED = 200;
-    private static final int TRAILERS = 300;
-    private static final int REVIEWS = 400;
+    static final int POPULAR = 100;
+    static final int POPULAR_WITH_MOVIE = 101;
+    static final int TOP_RATED = 200;
+    static final int TOP_RATED_WITH_MOVIE = 201;
+    static final int TRAILERS = 300;
+    static final int REVIEWS = 400;
     private SQLiteOpenHelper mOpenHelper;
 
-    private static UriMatcher buildUriMatcher() {
+    public static UriMatcher buildUriMatcher() {
         UriMatcher uriMatcherMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
         String authority = MoviesContract.CONTENT_AUTHORITY;
         uriMatcherMatcher.addURI(authority, MoviesContract.PATH_POPULAR, POPULAR);
+        uriMatcherMatcher.addURI(authority, MoviesContract.PATH_POPULAR + "/#", POPULAR_WITH_MOVIE);
         uriMatcherMatcher.addURI(authority, MoviesContract.PATH_TOP_RATED, TOP_RATED);
+        uriMatcherMatcher.addURI(authority, MoviesContract.PATH_TOP_RATED + "/#", TOP_RATED_WITH_MOVIE);
         uriMatcherMatcher.addURI(authority, MoviesContract.PATH_TRAILERS, TRAILERS);
         uriMatcherMatcher.addURI(authority, MoviesContract.PATH_REVIEWS, REVIEWS);
 
@@ -58,6 +63,20 @@ public class MoviesProvider extends ContentProvider {
         Cursor retCursor;
         switch (match) {
             case POPULAR: {
+                retCursor = mOpenHelper.getWritableDatabase().query(
+                        PopularEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
+            case POPULAR_WITH_MOVIE: {
+                selection = "_id = ?";
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 retCursor = mOpenHelper.getWritableDatabase().query(
                         PopularEntry.TABLE_NAME,
                         projection,
@@ -122,6 +141,9 @@ public class MoviesProvider extends ContentProvider {
         switch (match) {
             case POPULAR: {
                 return PopularEntry.CONTENT_TYPE;
+            }
+            case POPULAR_WITH_MOVIE: {
+                return PopularEntry.CONTENT_ITEM_TYPE;
             }
             case TOP_RATED: {
                 return TopRatedEntry.CONTENT_TYPE;

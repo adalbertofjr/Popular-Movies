@@ -1,9 +1,15 @@
 package br.com.adalbertofjr.popularmovies.ui.fragments;
 
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,7 +22,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -40,7 +45,6 @@ import br.com.adalbertofjr.popularmovies.model.Reviews;
 import br.com.adalbertofjr.popularmovies.model.Trailers;
 import br.com.adalbertofjr.popularmovies.ui.adapters.TrailersAdapter;
 import br.com.adalbertofjr.popularmovies.util.Constants;
-import br.com.adalbertofjr.popularmovies.util.Util;
 
 /**
  * Popular Movies
@@ -50,8 +54,10 @@ import br.com.adalbertofjr.popularmovies.util.Util;
  * Copyright © 2016 - Adalberto Fernandes Júnior. All rights reserved.
  */
 
-public class DetailMovieFragment extends Fragment {
+public class DetailMovieFragment extends Fragment
+        implements LoaderManager.LoaderCallbacks<Cursor> {
     public static final String DETAIL_MOVIE_FRAGMENT_TAG = "DMFTAG";
+    private static final int DETAIL_LOADER = 0;
     private Movies mMovie;
     private ProgressBar mProgressBar;
     private RecyclerView mTrailersListRecyclerView;
@@ -61,14 +67,21 @@ public class DetailMovieFragment extends Fragment {
     private TextView mContextReviewTwo;
     private TextView mReadMoreView;
     private View mContainerReview;
+    private String LOG_TAG = DetailMovieFragment.class.getSimpleName();
+    private String mMovieUri;
+    private ImageView mPosterImage;
+    private TextView mTitle;
+    private TextView mDateRelease;
+    private TextView mVoteAverage;
+    private TextView mOverview;
 
     public DetailMovieFragment() {
     }
 
-    public static DetailMovieFragment newInstance(Movies movie) {
+    public static DetailMovieFragment newInstance(String uri) {
         DetailMovieFragment dmf = new DetailMovieFragment();
         Bundle bundle = new Bundle();
-        bundle.putParcelable(Constants.MOVIE_DETAIL_EXTRA, movie);
+        bundle.putString(Intent.EXTRA_TEXT, uri);
         dmf.setArguments(bundle);
 
         return dmf;
@@ -80,14 +93,29 @@ public class DetailMovieFragment extends Fragment {
         Bundle arguments = getArguments();
 
         if (arguments != null) {
-            mMovie = arguments.getParcelable(Constants.MOVIE_DETAIL_EXTRA);
+//            mMovie = arguments.getParcelable(Constants.MOVIE_DETAIL_EXTRA);
+            mMovieUri = arguments.getString(Intent.EXTRA_TEXT);
         }
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        getLoaderManager().initLoader(DETAIL_LOADER, null, this);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_detail_movie, container, false);
+
+        mProgressBar = (ProgressBar) rootView.findViewById(R.id.pb_detail_progress);
+        ((ImageView) rootView.findViewById(R.id.iv_detail_star)).setImageResource(R.drawable.ic_star);
+        mPosterImage = (ImageView) rootView.findViewById(R.id.iv_detail_poster);
+        mTitle = (TextView) rootView.findViewById(R.id.tv_detail_title);
+        mDateRelease = (TextView) rootView.findViewById(R.id.tv_detail_dt_release);
+        mVoteAverage = (TextView) rootView.findViewById(R.id.tv_detail_vote_average);
+        mOverview = (TextView) rootView.findViewById(R.id.tv_detail_overview);
 
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.pb_detail_progress);
         mAuthorReviewOne = (TextView) rootView.findViewById(R.id.tv_detail_reviews_author_one);
@@ -97,50 +125,10 @@ public class DetailMovieFragment extends Fragment {
         mReadMoreView = (TextView) rootView.findViewById(R.id.tv_detail_reviews_more);
 
         mContainerReview = rootView.findViewById(R.id.ll_detail_reviews);
-
         mTrailersListRecyclerView = (RecyclerView) rootView.findViewById(R.id.rv_detail_trailers);
 
         mTrailersListRecyclerView.setHasFixedSize(true);
         mTrailersListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-
-        TextView errorMessage = (TextView) rootView.findViewById(R.id.tv_detail_error_message);
-
-        if (mMovie != null) {
-            ActionBar supportActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-
-            if (supportActionBar != null) {
-                supportActionBar.setTitle(mMovie.getOriginal_title());
-            }
-
-
-            if (Util.isConnected(getActivity())) {
-                Picasso.with(getContext())
-                        .load(mMovie.getPosterUrlPath())
-                        .into((ImageView) rootView.findViewById(R.id.iv_detail_poster), new Callback() {
-                            @Override
-                            public void onSuccess() {
-                                hideProgressBar();
-                                String dtRelease = formatDate(mMovie.getRelease_date());
-                                ((TextView) rootView.findViewById(R.id.tv_detail_title)).setText(mMovie.getOriginal_title());
-                                ((TextView) rootView.findViewById(R.id.tv_detail_dt_release)).setText(dtRelease);
-                                ((ImageView) rootView.findViewById(R.id.iv_detail_star)).setImageResource(R.drawable.ic_star);
-                                ((TextView) rootView.findViewById(R.id.tv_detail_vote_average)).setText(mMovie.getVote_average());
-                                ((TextView) rootView.findViewById(R.id.tv_detail_overview)).setText(mMovie.getOverview());
-
-                                new FetchTrailersTask().execute();
-                                new FetchReviewsTask().execute();
-                            }
-
-                            @Override
-                            public void onError() {
-
-                            }
-                        });
-            } else {
-                hideProgressBar();
-                errorMessage.setVisibility(View.VISIBLE);
-            }
-        }
 
         return rootView;
     }
@@ -162,6 +150,62 @@ public class DetailMovieFragment extends Fragment {
         if (mProgressBar != null && mProgressBar.getVisibility() == View.VISIBLE) {
             mProgressBar.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new CursorLoader(
+                getActivity(),
+                Uri.parse(mMovieUri),
+                null,
+                null,
+                null,
+                null
+        );
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        Log.v(LOG_TAG, "In onLoadFinished");
+
+        if (!cursor.moveToNext()) return;
+
+        hideProgressBar();
+
+        Movies movie = new Movies();
+        movie.setId(cursor.getString(0));
+        movie.setOriginal_title(cursor.getString(1));
+        movie.setPoster_path(cursor.getString(2));
+        movie.setRelease_date(cursor.getString(3));
+        movie.setVote_average(cursor.getString(4));
+        movie.setOverview(cursor.getString(5));
+        movie.setBackdrop_path(cursor.getString(6));
+
+        mMovie = movie;
+
+        ActionBar supportActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+
+        if (supportActionBar != null) {
+            supportActionBar.setTitle(movie.getOriginal_title());
+        }
+
+        Picasso.with(getContext())
+                .load(movie.getPosterUrlPath())
+                .into(mPosterImage);
+
+        String dtRelease = formatDate(movie.getRelease_date());
+        mTitle.setText(movie.getOriginal_title());
+        mDateRelease.setText(dtRelease);
+        mVoteAverage.setText(movie.getVote_average());
+        mOverview.setText(movie.getOverview());
+
+        new FetchTrailersTask().execute();
+        new FetchReviewsTask().execute();
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
     }
 
     private class FetchTrailersTask extends AsyncTask<Void, Void, ArrayList<Trailers>> {

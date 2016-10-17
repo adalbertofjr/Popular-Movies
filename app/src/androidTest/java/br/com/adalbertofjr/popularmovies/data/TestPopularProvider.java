@@ -92,6 +92,14 @@ public class TestPopularProvider extends AndroidTestCase {
         // vnd.android.cursor.dir/br.com.adalbertofjr.popularmovies/popular
         assertEquals("Error: the PopularEntry CONTENT_URI should return PopularEntry.CONTENT_TYPE",
                 PopularEntry.CONTENT_TYPE, type);
+
+        long idMovie = 43074L; // December 21st, 2014
+        // content://br.com.adalbertofjr.popularmovies/popular/43074
+        type = mContext.getContentResolver().getType(
+                PopularEntry.buildPopularMovieUri(idMovie));
+        // vnd.android.cursor.item/br.com.adalbertofjr.popularmovies/popular/43074
+        assertEquals("Error: the PopularEntry CONTENT_URI with movie id should return PopularEntry.CONTENT_ITEM_TYPE",
+                PopularEntry.CONTENT_ITEM_TYPE, type);
     }
 
     /*
@@ -123,6 +131,19 @@ public class TestPopularProvider extends AndroidTestCase {
 
         // Make sure we get the correct cursor out of the database
         TestUtilities.validateCursor("testBasicPopularQuery", popularCursor, movieValues);
+
+        Uri uriPopularWithMovie = PopularEntry.buildPopularMovieUri(271110);
+
+        Cursor popularWithMovieCursor = mContext.getContentResolver().query(
+                uriPopularWithMovie,
+                null,
+                null,
+                null,
+                null
+        );
+
+        // Make sure we get the correct cursor out of the database
+        TestUtilities.validateCursor("testBasicPopularQueryWithMovie", popularWithMovieCursor, movieValues);
     }
 
     // Make sure we can still delete after adding/updating stuff
