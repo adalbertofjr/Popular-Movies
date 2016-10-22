@@ -121,12 +121,6 @@ public class FetchMoviesTask extends AsyncTask<String, Void, ArrayList<Movies>> 
         return null;
     }
 
-    @Override
-    protected void onPostExecute(ArrayList<Movies> movies) {
-        super.onPostExecute(movies);
-//        updateMoviesAdapter(movies);
-    }
-
     private void getMoviesDataFromJson(String moviesJsonString)
             throws JSONException {
 
@@ -167,9 +161,9 @@ public class FetchMoviesTask extends AsyncTask<String, Void, ArrayList<Movies>> 
     }
 
 
-    public long addMovie(String id, String backdropPath, String posterPath, String voteAverage,
+    private long addMovie(String id, String backdropPath, String posterPath, String voteAverage,
                          String originalTitle, String releaseDate, String overview) {
-        long popularId;
+        long movieId;
 
         String[] projection = {MoviesContract.PopularEntry._ID};
         String selection = MoviesContract.PopularEntry._ID + " = ?";
@@ -192,7 +186,7 @@ public class FetchMoviesTask extends AsyncTask<String, Void, ArrayList<Movies>> 
 
         if (cursor.moveToNext()) {
             int idIndex = cursor.getColumnIndex("_id");
-            popularId = cursor.getLong(idIndex);
+            movieId = cursor.getLong(idIndex);
         } else {
             ContentValues values = new ContentValues();
             values.put(MoviesContract.PopularEntry._ID, id);
@@ -206,12 +200,16 @@ public class FetchMoviesTask extends AsyncTask<String, Void, ArrayList<Movies>> 
             Uri uri = mContext.getContentResolver().insert(contentUri,
                     values);
 
-            popularId = ContentUris.parseId(uri);
+            movieId = ContentUris.parseId(uri);
 
+            // Buscando trailers e reviews
+            Movies movie = new Movies();
+            movie.setId(Long.toString(movieId));
+            new FetchTrailersTask(mContext).execute(movie);
         }
 
         cursor.close();
 
-        return popularId;
+        return movieId;
     }
 }

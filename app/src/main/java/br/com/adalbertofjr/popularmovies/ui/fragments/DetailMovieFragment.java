@@ -181,7 +181,7 @@ public class DetailMovieFragment extends Fragment
         movie.setOverview(cursor.getString(5));
         movie.setBackdrop_path(cursor.getString(6));
 
-        mMovie = movie;
+//        mMovie = movie;
 
         ActionBar supportActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
 
@@ -199,8 +199,8 @@ public class DetailMovieFragment extends Fragment
         mVoteAverage.setText(movie.getVote_average());
         mOverview.setText(movie.getOverview());
 
-        new FetchTrailersTask().execute();
-        new FetchReviewsTask().execute();
+//        new FetchTrailersTask(getActivity()).execute(movie);
+//        new FetchReviewsTask().execute();
     }
 
     @Override
@@ -208,120 +208,9 @@ public class DetailMovieFragment extends Fragment
 
     }
 
-    private class FetchTrailersTask extends AsyncTask<Void, Void, ArrayList<Trailers>> {
-        private final String LOG_TAG = FetchTrailersTask.class.getSimpleName();
-
-        @Override
-        protected ArrayList<Trailers> doInBackground(Void... voids) {
-
-            HttpURLConnection urlConnection = null;
-            BufferedReader reader = null;
-
-            String trailersJsonString;
-
-            try {
-                if (mMovie == null)
-                    return null;
-
-                String pathTrailer = String.format(Constants.MOVIE_TRAILERS_URL, mMovie.getId());
-
-                URL url = new URL(pathTrailer);
-
-                // Create the request to OpenWeatherMap, and open the connection
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.connect();
-
-                // Read the input stream into a String
-                InputStream inputStream = urlConnection.getInputStream();
-                StringBuilder buffer = new StringBuilder();
-                if (inputStream == null) {
-                    // Nothing to do.
-                    return null;
-                }
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    buffer.append(line).append("\n");
-                }
-
-                if (buffer.length() == 0) {
-                    return null;
-                }
-
-                trailersJsonString = buffer.toString();
-
-                try {
-                    return getMoviesDataFromJson(trailersJsonString);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            } catch (IOException e) {
-                Log.e(LOG_TAG, "Error ", e);
-                // If the code didn't successfully get the weather data, there's no point in attemping
-                // to parse it.
-                return null;
-            } finally {
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (final IOException e) {
-                        Log.e(LOG_TAG, "Error closing stream", e);
-                    }
-                }
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<Trailers> trailers) {
-            super.onPostExecute(trailers);
-
-            for (Trailers t : trailers) {
-                Log.i("Trailer", t.getTrailerUrlPath());
-            }
-            updateTrailersAdapter(trailers);
-        }
-    }
-
     private void updateTrailersAdapter(ArrayList<Trailers> trailers) {
         TrailersAdapter trailersAdapter = new TrailersAdapter(getActivity(), trailers);
         mTrailersListRecyclerView.setAdapter(trailersAdapter);
-    }
-
-    private ArrayList<Trailers> getMoviesDataFromJson(String trailersJsonString)
-            throws JSONException {
-
-        JSONObject trailersJson = new JSONObject(trailersJsonString);
-        JSONArray trailersArray = trailersJson.getJSONArray(Constants.TRAILERS_VIDEOS_LIST_KEY);
-
-        ArrayList<Trailers> trailers = new ArrayList<>();
-
-        for (int i = 0; i < trailersArray.length(); i++) {
-            String key;
-            String name;
-            String site;
-
-            JSONObject trailerData = trailersArray.getJSONObject(i);
-
-            key = trailerData.getString(Constants.TRAILERS_VIDEO_KEY);
-            name = trailerData.getString(Constants.TRAILERS_VIDEO_NAME);
-            site = trailerData.getString(Constants.TRAILERS_VIDEO_SITE);
-
-            Trailers trailer = new Trailers(
-                    key,
-                    name,
-                    site
-            );
-
-            trailers.add(trailer);
-        }
-
-        return trailers;
     }
 
     private class FetchReviewsTask extends AsyncTask<Void, Void, ArrayList<Reviews>> {
