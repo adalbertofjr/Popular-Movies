@@ -220,7 +220,6 @@ public class DetailMovieFragment extends Fragment
             String trailersJsonString;
 
             try {
-
                 if (mMovie == null)
                     return null;
 

@@ -100,6 +100,20 @@ public class MoviesProvider extends ContentProvider {
                 );
                 break;
             }
+            case TOP_RATED_WITH_MOVIE: {
+                selection = "_id = ?";
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+                retCursor = mOpenHelper.getWritableDatabase().query(
+                        TopRatedEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
             case TRAILERS: {
                 retCursor = mOpenHelper.getWritableDatabase().query(
                         TrailersEntry.TABLE_NAME,
@@ -147,6 +161,9 @@ public class MoviesProvider extends ContentProvider {
             }
             case TOP_RATED: {
                 return TopRatedEntry.CONTENT_TYPE;
+            }
+            case TOP_RATED_WITH_MOVIE: {
+                return TopRatedEntry.CONTENT_ITEM_TYPE;
             }
             case TRAILERS: {
                 return TrailersEntry.CONTENT_TYPE;
