@@ -11,14 +11,34 @@ import br.com.adalbertofjr.popularmovies.util.Constants;
  */
 
 public class Trailers {
+    private String id;
+    private String idMovie;
     private String key;
     private String name;
     private String site;
 
-    public Trailers(String key, String name, String site) {
+    public Trailers(String id, String idMovie, String key, String name, String site) {
+        this.id = id;
+        this.idMovie = idMovie;
         this.key = key;
         this.name = name;
         this.site = site;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getIdMovie() {
+        return idMovie;
+    }
+
+    public void setIdMovie(String idMovie) {
+        this.idMovie = idMovie;
     }
 
     public String getKey() {
@@ -48,4 +68,5 @@ public class Trailers {
     public String getTrailerUrlPath() {
         return Constants.YOUTUBE_BASE_URL + this.key;
     }
+
 }

@@ -52,7 +52,8 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 
         final String SQL_CREATE_TRAILERS_TABLE = "CREATE TABLE " +
                 TrailersEntry.TABLE_NAME + " (" +
-                TrailersEntry._ID + " INTEGER NOT NULL, " +
+                TrailersEntry._ID + " TEXT PRIMARY KEY, " +
+                TrailersEntry.COLUMN_MOVIE_ID + " INTEGER NOT NULL, " +
                 TrailersEntry.COLUMN_KEY + " TEXT NOT NULL, " +
                 TrailersEntry.COLUMN_NAME + " TEXT NOT NULL, " +
                 TrailersEntry.COLUMN_SITE + " TEXT NOT NULL " +

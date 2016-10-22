@@ -96,8 +96,12 @@ public class MoviesContract {
         public static final String CONTENT_TYPE =
                 ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_TRAILERS;
 
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_TRAILERS;
+
         // Trailer table db
         public static final String TABLE_NAME = "trailers";
+        public static final String COLUMN_MOVIE_ID = "id_movie";
         public static final String COLUMN_KEY = "key";
         public static final String COLUMN_NAME = "name";
         public static final String COLUMN_SITE = "site";
