@@ -60,6 +60,7 @@ public class Constants {
 
     //Json reviews objects names
     public static final String REVIEWS_VIDEOS_LIST_KEY = "results";
+    public static final String REVIEWS_VIDEO_ID = "id";
     public static final String REVIEWS_VIDEOS_AUTHOR = "author";
     public static final String REVIEWS_VIDEOS_CONTENT = "content";
 

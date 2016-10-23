@@ -18,48 +18,49 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 import br.com.adalbertofjr.popularmovies.data.MoviesContract;
 import br.com.adalbertofjr.popularmovies.model.Movie;
-import br.com.adalbertofjr.popularmovies.model.Trailer;
+import br.com.adalbertofjr.popularmovies.model.Review;
 import br.com.adalbertofjr.popularmovies.util.Constants;
 
 /**
  * PopularMovies
- * FetchTrailersTask
+ * FetchReviewsTask
  * <p>
- * Created by Adalberto Fernandes Júnior on 22/10/2016.
+ * Created by Adalberto Fernandes Júnior on 23/10/2016.
  * Copyright © 2016 - Adalberto Fernandes Júnior. All rights reserved.
  */
 
 
-public class FetchTrailersTask extends AsyncTask<Movie, Void, Void> {
-    private final String LOG_TAG = FetchTrailersTask.class.getSimpleName();
+public class FetchReviewsTask extends AsyncTask<Movie, Void, Void> {
+    private final String LOG_TAG = FetchReviewsTask.class.getSimpleName();
     private Movie mMovie;
     private Context mContext;
 
-    public FetchTrailersTask(Context context) {
-        this.mContext = context;
+    public FetchReviewsTask(Context mContext) {
+        this.mMovie = mMovie;
+        this.mContext = mContext;
     }
 
     @Override
-    protected Void doInBackground(Movie... movie) {
+    protected Void doInBackground(Movie... movies) {
 
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
 
-        String trailersJsonString;
+        String reviewsJsonString;
 
         try {
-
-            mMovie = movie[0];
+            mMovie = movies[0];
 
             if (mMovie == null)
                 return null;
 
-            String pathTrailer = String.format(Constants.MOVIE_TRAILERS_URL, mMovie.getId());
+            String pathReview = String.format(Constants.MOVIE_REVIEWS_URL, mMovie.getId());
 
-            URL url = new URL(pathTrailer);
+            URL url = new URL(pathReview);
 
             // Create the request to OpenWeatherMap, and open the connection
             urlConnection = (HttpURLConnection) url.openConnection();
@@ -84,10 +85,10 @@ public class FetchTrailersTask extends AsyncTask<Movie, Void, Void> {
                 return null;
             }
 
-            trailersJsonString = buffer.toString();
+            reviewsJsonString = buffer.toString();
 
             try {
-                getTrailersDataFromJson(trailersJsonString);
+                getReviewsDataFromJson(reviewsJsonString);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -111,46 +112,45 @@ public class FetchTrailersTask extends AsyncTask<Movie, Void, Void> {
         return null;
     }
 
-    private void getTrailersDataFromJson(String trailersJsonString)
+    private void getReviewsDataFromJson(String reviewsJsonString)
             throws JSONException {
 
-        JSONObject trailersJson = new JSONObject(trailersJsonString);
-        JSONArray trailersArray = trailersJson.getJSONArray(Constants.TRAILERS_VIDEOS_LIST_KEY);
+        JSONObject reviewsJson = new JSONObject(reviewsJsonString);
+        JSONArray reviewsArray = reviewsJson.getJSONArray(Constants.REVIEWS_VIDEOS_LIST_KEY);
 
-        for (int i = 0; i < trailersArray.length(); i++) {
+        ArrayList<Review> reviews = new ArrayList<>();
+
+        for (int i = 0; i < reviewsArray.length(); i++) {
             String id;
-            String movieId;
-            String key;
+            String idMovie;
             String name;
-            String site;
+            String content;
 
-            JSONObject trailerData = trailersArray.getJSONObject(i);
+            JSONObject reviewData = reviewsArray.getJSONObject(i);
 
-            movieId = mMovie.getId();
-            id = trailerData.getString(Constants.TRAILERS_VIDEO_ID);
-            key = trailerData.getString(Constants.TRAILERS_VIDEO_KEY);
-            name = trailerData.getString(Constants.TRAILERS_VIDEO_NAME);
-            site = trailerData.getString(Constants.TRAILERS_VIDEO_SITE);
+            idMovie = mMovie.getId();
+            id = reviewData.getString(Constants.REVIEWS_VIDEO_ID);
+            name = reviewData.getString(Constants.REVIEWS_VIDEOS_AUTHOR);
+            content = reviewData.getString(Constants.REVIEWS_VIDEOS_CONTENT);
 
-            Trailer trailer = new Trailer(
+            Review review = new Review(
                     id,
-                    movieId,
-                    key,
+                    idMovie,
                     name,
-                    site
+                    content
             );
 
-            addTrailer(trailer);
+            addReview(review);
         }
     }
 
-    private long addTrailer(Trailer trailer) {
-        long trailerId;
-        Uri contentUri = MoviesContract.TrailersEntry.CONTENT_URI;
+    private long addReview(Review review) {
+        long reviewId;
+        Uri contentUri = MoviesContract.ReviewsEntry.CONTENT_URI;
 
         String[] projection = {MoviesContract.TrailersEntry._ID};
         String selection = MoviesContract.TrailersEntry._ID + " = ?";
-        String[] selectionArgs = new String[]{trailer.getId()};
+        String[] selectionArgs = new String[]{review.getId()};
 
         Cursor cursor = mContext.getContentResolver().query(
                 contentUri,
@@ -161,23 +161,23 @@ public class FetchTrailersTask extends AsyncTask<Movie, Void, Void> {
 
         if (cursor.moveToNext()) {
             int idIndex = cursor.getColumnIndex("_id");
-            trailerId = cursor.getLong(idIndex);
+            reviewId = cursor.getLong(idIndex);
         } else {
+
             ContentValues values = new ContentValues();
-            values.put(MoviesContract.TrailersEntry._ID, trailer.getId());
-            values.put(MoviesContract.TrailersEntry.COLUMN_MOVIE_ID, trailer.getIdMovie());
-            values.put(MoviesContract.TrailersEntry.COLUMN_KEY, trailer.getKey());
-            values.put(MoviesContract.TrailersEntry.COLUMN_NAME, trailer.getName());
-            values.put(MoviesContract.TrailersEntry.COLUMN_SITE, trailer.getSite());
+            values.put(MoviesContract.ReviewsEntry._ID, review.getId());
+            values.put(MoviesContract.ReviewsEntry.COLUMN_MOVIE_ID, review.getIdMovie());
+            values.put(MoviesContract.ReviewsEntry.COLUMN_AUTHOR, review.getAuthor());
+            values.put(MoviesContract.ReviewsEntry.COLUMN_CONTENT, review.getContent());
 
             Uri uri = mContext.getContentResolver().insert(contentUri,
                     values);
 
-            trailerId = ContentUris.parseId(uri);
+            reviewId = ContentUris.parseId(uri);
         }
 
         cursor.close();
 
-        return trailerId;
+        return reviewId;
     }
 }

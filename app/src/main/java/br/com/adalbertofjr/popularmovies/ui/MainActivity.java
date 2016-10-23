@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import br.com.adalbertofjr.popularmovies.R;
-import br.com.adalbertofjr.popularmovies.model.Movies;
+import br.com.adalbertofjr.popularmovies.model.Movie;
 import br.com.adalbertofjr.popularmovies.ui.adapters.MoviesGridAdapter;
 import br.com.adalbertofjr.popularmovies.ui.fragments.DetailMovieFragment;
 
@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onMovieSelected(Movies movie, Uri uri) {
+    public void onMovieSelected(Movie movie, Uri uri) {
         String uriMovie = uri.buildUpon().appendPath(movie.getId()).toString();
 
         if (mTwoPane) {

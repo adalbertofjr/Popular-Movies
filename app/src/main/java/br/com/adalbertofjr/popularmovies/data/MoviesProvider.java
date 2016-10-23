@@ -211,7 +211,7 @@ public class MoviesProvider extends ContentProvider {
             case REVIEWS: {
                 long _id = db.insert(ReviewsEntry.TABLE_NAME, null, values);
                 if (_id > 0)
-                    returnUri = ReviewsEntry.buildReviewsMovieUri(values.getAsLong(ReviewsEntry._ID));
+                    returnUri = ReviewsEntry.buildReviewsMovieUri(values.getAsLong(ReviewsEntry.COLUMN_MOVIE_ID));
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;

@@ -30,7 +30,7 @@ import java.util.ArrayList;
 
 import br.com.adalbertofjr.popularmovies.R;
 import br.com.adalbertofjr.popularmovies.data.MoviesContract;
-import br.com.adalbertofjr.popularmovies.model.Movies;
+import br.com.adalbertofjr.popularmovies.model.Movie;
 import br.com.adalbertofjr.popularmovies.tasks.FetchMoviesTask;
 import br.com.adalbertofjr.popularmovies.ui.adapters.MoviesGridAdapter;
 import br.com.adalbertofjr.popularmovies.util.Constants;
@@ -51,7 +51,7 @@ public class MoviesFragment extends Fragment
     public static final String MOVIE_FRAGMENT_TAG = "MFTAG";
     private static final int MOVIES_LOADER = 0;
     private MoviesGridAdapter mMoviesAdapter;
-    private ArrayList<Movies> mMovies;
+    private ArrayList<Movie> mMovies;
     private ProgressBar mMoviesProgressBar;
     private TextView mErrorMessage;
     private ActionBar mToolbar;
@@ -216,7 +216,7 @@ public class MoviesFragment extends Fragment
     }
 
     @Override
-    public void onMovieSelected(Movies movie, Uri uri) {
+    public void onMovieSelected(Movie movie, Uri uri) {
         Uri contentUri;
 
         if (mFetchOption.equals(Constants.MOVIES_POPULAR_PATH)) {
