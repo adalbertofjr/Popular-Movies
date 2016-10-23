@@ -13,7 +13,7 @@ import android.widget.ImageView;
 import com.squareup.picasso.Picasso;
 
 import br.com.adalbertofjr.popularmovies.R;
-import br.com.adalbertofjr.popularmovies.model.Movies;
+import br.com.adalbertofjr.popularmovies.model.Movie;
 import br.com.adalbertofjr.popularmovies.util.Constants;
 
 /**
@@ -37,7 +37,7 @@ public class MoviesGridAdapter extends CursorRecyclerViewAdapter<MoviesGridAdapt
 
     @Override
     public void onBindViewHolder(ViewHolder holder, Cursor cursor) {
-        final Movies movie = new Movies();
+        final Movie movie = new Movie();
 
         if (cursor.moveToNext()) {
             movie.setId(cursor.getString(0));
@@ -80,7 +80,7 @@ public class MoviesGridAdapter extends CursorRecyclerViewAdapter<MoviesGridAdapt
     }
 
     public interface OnMovieSelectedListener {
-        void onMovieSelected(Movies movie, Uri uri);
+        void onMovieSelected(Movie movie, Uri uri);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

@@ -10,14 +10,14 @@ import br.com.adalbertofjr.popularmovies.util.Constants;
  * Copyright © 2016 - Adalberto Fernandes Júnior. All rights reserved.
  */
 
-public class Trailers {
+public class Trailer {
     private String id;
     private String idMovie;
     private String key;
     private String name;
     private String site;
 
-    public Trailers(String id, String idMovie, String key, String name, String site) {
+    public Trailer(String id, String idMovie, String key, String name, String site) {
         this.id = id;
         this.idMovie = idMovie;
         this.key = key;

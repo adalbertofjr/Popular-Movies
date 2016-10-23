@@ -21,7 +21,7 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import br.com.adalbertofjr.popularmovies.data.MoviesContract;
-import br.com.adalbertofjr.popularmovies.model.Movies;
+import br.com.adalbertofjr.popularmovies.model.Movie;
 import br.com.adalbertofjr.popularmovies.util.Constants;
 
 /**
@@ -33,7 +33,7 @@ import br.com.adalbertofjr.popularmovies.util.Constants;
  */
 
 
-public class FetchMoviesTask extends AsyncTask<String, Void, ArrayList<Movies>> {
+public class FetchMoviesTask extends AsyncTask<String, Void, ArrayList<Movie>> {
     private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
     private final Context mContext;
     private String mFetchOption;
@@ -43,7 +43,7 @@ public class FetchMoviesTask extends AsyncTask<String, Void, ArrayList<Movies>> 
     }
 
     @Override
-    protected ArrayList<Movies> doInBackground(String... strings) {
+    protected ArrayList<Movie> doInBackground(String... strings) {
 
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
@@ -146,7 +146,7 @@ public class FetchMoviesTask extends AsyncTask<String, Void, ArrayList<Movies>> 
             release_date = movieData.getString(Constants.MOVIES_RELEASE_DATE_KEY);
             overview = movieData.getString(Constants.MOVIES_OVERVIEW_KEY);
 
-            Movies movie = new Movies(id, backdrop_path,
+            Movie movie = new Movie(id, backdrop_path,
                     poster_path,
                     vote_average,
                     original_title,
@@ -203,9 +203,10 @@ public class FetchMoviesTask extends AsyncTask<String, Void, ArrayList<Movies>> 
             movieId = ContentUris.parseId(uri);
 
             // Buscando trailers e reviews
-            Movies movie = new Movies();
+            Movie movie = new Movie();
             movie.setId(Long.toString(movieId));
             new FetchTrailersTask(mContext).execute(movie);
+            new FetchReviewsTask(mContext).execute(movie);
         }
 
         cursor.close();

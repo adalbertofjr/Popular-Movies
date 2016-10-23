@@ -10,7 +10,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import br.com.adalbertofjr.popularmovies.R;
-import br.com.adalbertofjr.popularmovies.model.Reviews;
+import br.com.adalbertofjr.popularmovies.model.Review;
 
 /**
  * Popular Movies
@@ -22,9 +22,9 @@ import br.com.adalbertofjr.popularmovies.model.Reviews;
 
 public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ViewHolder> {
     private final Context mContext;
-    private final List<Reviews> mReviews;
+    private final List<Review> mReviews;
 
-    public ReviewsAdapter(Context mContext, List<Reviews> mReviews) {
+    public ReviewsAdapter(Context mContext, List<Review> mReviews) {
         this.mContext = mContext;
         this.mReviews = mReviews;
     }
@@ -37,7 +37,7 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Reviews reviews = mReviews.get(position);
+        Review reviews = mReviews.get(position);
 
         if (position > 0) {
             holder.mDivider.setVisibility(View.VISIBLE);

@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.adalbertofjr.popularmovies.R;
-import br.com.adalbertofjr.popularmovies.model.Reviews;
+import br.com.adalbertofjr.popularmovies.model.Review;
 import br.com.adalbertofjr.popularmovies.ui.adapters.ReviewsAdapter;
 import br.com.adalbertofjr.popularmovies.util.Constants;
 
@@ -28,11 +28,11 @@ import br.com.adalbertofjr.popularmovies.util.Constants;
 public class ReviewsDialogFragment extends DialogFragment {
 
     private static final String DIALOG_TAG = "reviews_dialog_tag";
-    private List<Reviews> mReviews;
+    private List<Review> mReviews;
 
-    public static ReviewsDialogFragment novaInstancia(List<Reviews> reviews) {
+    public static ReviewsDialogFragment novaInstancia(List<Review> reviews) {
         Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(Constants.EXTRA_REVIEWS, (ArrayList<Reviews>) reviews);
+        bundle.putParcelableArrayList(Constants.EXTRA_REVIEWS, (ArrayList<Review>) reviews);
 
         ReviewsDialogFragment dialog = new ReviewsDialogFragment();
         dialog.setArguments(bundle);

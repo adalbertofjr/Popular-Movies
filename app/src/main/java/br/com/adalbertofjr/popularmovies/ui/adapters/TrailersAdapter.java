@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import br.com.adalbertofjr.popularmovies.R;
-import br.com.adalbertofjr.popularmovies.model.Trailers;
+import br.com.adalbertofjr.popularmovies.model.Trailer;
 
 /**
  * Popular Movies
@@ -25,9 +25,9 @@ import br.com.adalbertofjr.popularmovies.model.Trailers;
 public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.ViewHolder> {
     private static final String LOG_TAG = TrailersAdapter.class.getSimpleName();
     private Context mContext;
-    private List<Trailers> mTrailer;
+    private List<Trailer> mTrailer;
 
-    public TrailersAdapter(Context mContext, List<Trailers> mTrailer) {
+    public TrailersAdapter(Context mContext, List<Trailer> mTrailer) {
         this.mContext = mContext;
         this.mTrailer = mTrailer;
     }
@@ -40,7 +40,7 @@ public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        final Trailers trailer = mTrailer.get(position);
+        final Trailer trailer = mTrailer.get(position);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -49,7 +49,7 @@ public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.ViewHo
         });
     }
 
-    private void playTrailer(Trailers trailer) {
+    private void playTrailer(Trailer trailer) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setPackage("com.google.android.youtube");
         intent.setData(Uri.parse(trailer.getTrailerUrlPath()));

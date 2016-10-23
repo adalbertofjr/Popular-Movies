@@ -11,31 +11,53 @@ import android.os.Parcelable;
  * Copyright © 2016 - Adalberto Fernandes Júnior. All rights reserved.
  */
 
-public class Reviews implements Parcelable {
+public class Review implements Parcelable {
+    private String id;
+    private String idMovie;
     private String author;
     private String content;
 
-    public Reviews(String author, String content) {
+    public Review(String id, String idMovie, String author, String content) {
+        this.id = id;
+        this.idMovie = idMovie;
         this.author = author;
         this.content = content;
     }
 
-    protected Reviews(Parcel in) {
+    protected Review(Parcel in) {
+        id = in.readString();
+        idMovie = in.readString();
         author = in.readString();
         content = in.readString();
     }
 
-    public static final Creator<Reviews> CREATOR = new Creator<Reviews>() {
+    public static final Creator<Review> CREATOR = new Creator<Review>() {
         @Override
-        public Reviews createFromParcel(Parcel in) {
-            return new Reviews(in);
+        public Review createFromParcel(Parcel in) {
+            return new Review(in);
         }
 
         @Override
-        public Reviews[] newArray(int size) {
-            return new Reviews[size];
+        public Review[] newArray(int size) {
+            return new Review[size];
         }
     };
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getIdMovie() {
+        return idMovie;
+    }
+
+    public void setIdMovie(String idMovie) {
+        this.idMovie = idMovie;
+    }
 
     public String getAuthor() {
         return author;
@@ -60,6 +82,8 @@ public class Reviews implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(id);
+        parcel.writeString(idMovie);
         parcel.writeString(author);
         parcel.writeString(content);
     }
