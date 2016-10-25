@@ -44,7 +44,7 @@ public class MoviesProvider extends ContentProvider {
         uriMatcherMatcher.addURI(authority, MoviesContract.PATH_POPULAR + "/#", POPULAR_WITH_MOVIE);
         uriMatcherMatcher.addURI(authority, MoviesContract.PATH_TOP_RATED, TOP_RATED);
         uriMatcherMatcher.addURI(authority, MoviesContract.PATH_TOP_RATED + "/#", TOP_RATED_WITH_MOVIE);
-        uriMatcherMatcher.addURI(authority, MoviesContract.PATH_TRAILERS, TRAILERS);
+        uriMatcherMatcher.addURI(authority, MoviesContract.PATH_TRAILERS + "/#", TRAILERS);
         uriMatcherMatcher.addURI(authority, MoviesContract.PATH_REVIEWS, REVIEWS);
 
         return uriMatcherMatcher;
@@ -115,6 +115,8 @@ public class MoviesProvider extends ContentProvider {
                 break;
             }
             case TRAILERS: {
+                selection = "id_movie = ?";
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 retCursor = mOpenHelper.getWritableDatabase().query(
                         TrailersEntry.TABLE_NAME,
                         projection,

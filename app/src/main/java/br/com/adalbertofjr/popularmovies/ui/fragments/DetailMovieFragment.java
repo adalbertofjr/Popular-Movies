@@ -27,6 +27,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import br.com.adalbertofjr.popularmovies.R;
+import br.com.adalbertofjr.popularmovies.data.MoviesContract;
 import br.com.adalbertofjr.popularmovies.model.Movie;
 
 /**
@@ -177,6 +178,24 @@ public class DetailMovieFragment extends Fragment
         mDateRelease.setText(dtRelease);
         mVoteAverage.setText(movie.getVote_average());
         mOverview.setText(movie.getOverview());
+
+        Cursor cursorTrailers = getActivity().getContentResolver()
+                .query(
+                        MoviesContract.TrailersEntry.buildTrailersMovieUri(Long.valueOf(movie.getId())),
+                        null,
+                        null,
+                        null,
+                        null
+                );
+
+        while (cursorTrailers.moveToNext()) {
+            Log.i("Trailer", cursorTrailers.getString(cursorTrailers.getColumnIndex("key")));
+        }
+
+        if (cursorTrailers != null) {
+            cursorTrailers.close();
+        }
+
     }
 
     @Override
