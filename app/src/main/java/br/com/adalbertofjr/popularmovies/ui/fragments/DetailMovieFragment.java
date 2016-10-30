@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -25,9 +26,14 @@ import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import br.com.adalbertofjr.popularmovies.R;
+import br.com.adalbertofjr.popularmovies.data.MoviesContract;
 import br.com.adalbertofjr.popularmovies.model.Movie;
+import br.com.adalbertofjr.popularmovies.model.Trailer;
+import br.com.adalbertofjr.popularmovies.ui.adapters.TrailersAdapter;
 
 /**
  * Popular Movies
@@ -177,10 +183,49 @@ public class DetailMovieFragment extends Fragment
         mDateRelease.setText(dtRelease);
         mVoteAverage.setText(movie.getVote_average());
         mOverview.setText(movie.getOverview());
+
+        List<Trailer> trailers = getTrailers(movie);
+        updateTrailersAdapter(trailers);
+
+    }
+
+    @NonNull
+    private List<Trailer> getTrailers(Movie movie) {
+        Cursor cursorTrailers = getActivity().getContentResolver()
+                .query(
+                        MoviesContract.TrailersEntry.buildTrailersMovieUri(Long.valueOf(movie.getId())),
+                        null,
+                        null,
+                        null,
+                        null
+                );
+
+        List<Trailer> trailers = new ArrayList<>();
+
+        while (cursorTrailers.moveToNext()) {
+            String id = cursorTrailers.getString(cursorTrailers.getColumnIndex("_id"));
+            String idMovie = cursorTrailers.getString(cursorTrailers.getColumnIndex("id_movie"));
+            String key = cursorTrailers.getString(cursorTrailers.getColumnIndex("key"));
+            String name = cursorTrailers.getString(cursorTrailers.getColumnIndex("name"));
+            String site = cursorTrailers.getString(cursorTrailers.getColumnIndex("site"));
+
+            Trailer trailer = new Trailer(id, idMovie, key, name, site);
+            trailers.add(trailer);
+        }
+
+        if (cursorTrailers != null) {
+            cursorTrailers.close();
+        }
+        return trailers;
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
 
+    }
+
+    private void updateTrailersAdapter(List<Trailer> trailers) {
+        TrailersAdapter trailersAdapter = new TrailersAdapter(getActivity(), trailers);
+        mTrailersListRecyclerView.setAdapter(trailersAdapter);
     }
 }

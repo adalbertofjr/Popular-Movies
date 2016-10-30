@@ -148,7 +148,8 @@ public class FetchTrailersTask extends AsyncTask<Movie, Void, Void> {
         long trailerId;
         Uri contentUri = MoviesContract.TrailersEntry.CONTENT_URI;
 
-        String[] projection = {MoviesContract.TrailersEntry._ID};
+//        String[] projection = {MoviesContract.TrailersEntry._ID};
+        String[] projection = null;
         String selection = MoviesContract.TrailersEntry._ID + " = ?";
         String[] selectionArgs = new String[]{trailer.getId()};
 

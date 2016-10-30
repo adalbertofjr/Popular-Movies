@@ -33,6 +33,7 @@ public class MoviesProvider extends ContentProvider {
     static final int TOP_RATED = 200;
     static final int TOP_RATED_WITH_MOVIE = 201;
     static final int TRAILERS = 300;
+    static final int TRAILERS_WITH_MOVIE = 301;
     static final int REVIEWS = 400;
     private SQLiteOpenHelper mOpenHelper;
 
@@ -45,6 +46,7 @@ public class MoviesProvider extends ContentProvider {
         uriMatcherMatcher.addURI(authority, MoviesContract.PATH_TOP_RATED, TOP_RATED);
         uriMatcherMatcher.addURI(authority, MoviesContract.PATH_TOP_RATED + "/#", TOP_RATED_WITH_MOVIE);
         uriMatcherMatcher.addURI(authority, MoviesContract.PATH_TRAILERS, TRAILERS);
+        uriMatcherMatcher.addURI(authority, MoviesContract.PATH_TRAILERS + "/#", TRAILERS_WITH_MOVIE);
         uriMatcherMatcher.addURI(authority, MoviesContract.PATH_REVIEWS, REVIEWS);
 
         return uriMatcherMatcher;
@@ -126,6 +128,20 @@ public class MoviesProvider extends ContentProvider {
                 );
                 break;
             }
+            case TRAILERS_WITH_MOVIE: {
+                selection = "id_movie = ?";
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+                retCursor = mOpenHelper.getWritableDatabase().query(
+                        TrailersEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
             case REVIEWS: {
                 retCursor = mOpenHelper.getWritableDatabase().query(
                         ReviewsEntry.TABLE_NAME,
@@ -167,6 +183,9 @@ public class MoviesProvider extends ContentProvider {
             }
             case TRAILERS: {
                 return TrailersEntry.CONTENT_TYPE;
+            }
+            case TRAILERS_WITH_MOVIE: {
+                return TrailersEntry.CONTENT_ITEM_TYPE;
             }
             case REVIEWS: {
                 return ReviewsEntry.CONTENT_TYPE;
