@@ -35,6 +35,7 @@ public class MoviesProvider extends ContentProvider {
     static final int TRAILERS = 300;
     static final int TRAILERS_WITH_MOVIE = 301;
     static final int REVIEWS = 400;
+    static final int REVIEWS_WITH_MOVIE = 401;
     private SQLiteOpenHelper mOpenHelper;
 
     public static UriMatcher buildUriMatcher() {
@@ -48,6 +49,7 @@ public class MoviesProvider extends ContentProvider {
         uriMatcherMatcher.addURI(authority, MoviesContract.PATH_TRAILERS, TRAILERS);
         uriMatcherMatcher.addURI(authority, MoviesContract.PATH_TRAILERS + "/#", TRAILERS_WITH_MOVIE);
         uriMatcherMatcher.addURI(authority, MoviesContract.PATH_REVIEWS, REVIEWS);
+        uriMatcherMatcher.addURI(authority, MoviesContract.PATH_REVIEWS + "/#", REVIEWS_WITH_MOVIE);
 
         return uriMatcherMatcher;
     }
@@ -143,6 +145,20 @@ public class MoviesProvider extends ContentProvider {
                 break;
             }
             case REVIEWS: {
+                retCursor = mOpenHelper.getWritableDatabase().query(
+                        ReviewsEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
+            case REVIEWS_WITH_MOVIE: {
+                selection = "id_movie = ?";
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 retCursor = mOpenHelper.getWritableDatabase().query(
                         ReviewsEntry.TABLE_NAME,
                         projection,

@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -32,6 +31,7 @@ import java.util.List;
 import br.com.adalbertofjr.popularmovies.R;
 import br.com.adalbertofjr.popularmovies.data.MoviesContract;
 import br.com.adalbertofjr.popularmovies.model.Movie;
+import br.com.adalbertofjr.popularmovies.model.Review;
 import br.com.adalbertofjr.popularmovies.model.Trailer;
 import br.com.adalbertofjr.popularmovies.ui.adapters.TrailersAdapter;
 
@@ -187,9 +187,74 @@ public class DetailMovieFragment extends Fragment
         List<Trailer> trailers = getTrailers(movie);
         updateTrailersAdapter(trailers);
 
+        List<Review> reviews = getReviews(movie);
+        updateReviewsAdapter(reviews);
+
     }
 
-    @NonNull
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
+    }
+
+    private void updateReviewsAdapter(final List<Review> reviews) {
+        if (reviews == null || reviews.size() == 0) {
+            return;
+        }
+
+        if (reviews.size() > 0) {
+            mAuthorReviewOne.setVisibility(View.VISIBLE);
+            mContextReviewOne.setVisibility(View.VISIBLE);
+            mAuthorReviewOne.setText(reviews.get(0).getAuthor());
+            mContextReviewOne.setText(reviews.get(0).getContent());
+        }
+
+        if (reviews.size() > 1) {
+            mAuthorReviewTwo.setVisibility(View.VISIBLE);
+            mContextReviewTwo.setVisibility(View.VISIBLE);
+            mAuthorReviewTwo.setText(reviews.get(1).getAuthor());
+            mContextReviewTwo.setText(reviews.get(1).getContent());
+        }
+
+        mContainerReview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ReviewsDialogFragment reviewsDialog = ReviewsDialogFragment.novaInstancia(reviews);
+                reviewsDialog.abrir(getActivity().getFragmentManager());
+            }
+        });
+
+        mReadMoreView.setVisibility(View.VISIBLE);
+    }
+
+    private List<Review> getReviews(Movie movie) {
+        Cursor cursorReviews = getActivity().getContentResolver()
+                .query(
+                        MoviesContract.ReviewsEntry.buildReviewsMovieUri(Long.valueOf(movie.getId())),
+                        null,
+                        null,
+                        null,
+                        null
+                );
+
+        List<Review> reviews = new ArrayList<>();
+
+        while (cursorReviews.moveToNext()) {
+            String id = cursorReviews.getString(cursorReviews.getColumnIndex("_id"));
+            String idMovie = cursorReviews.getString(cursorReviews.getColumnIndex("id_movie"));
+            String author = cursorReviews.getString(cursorReviews.getColumnIndex("author"));
+            String content = cursorReviews.getString(cursorReviews.getColumnIndex("content"));
+
+            Review review = new Review(id, idMovie, author, content);
+            reviews.add(review);
+        }
+
+        if (cursorReviews != null) {
+            cursorReviews.close();
+        }
+        return reviews;
+    }
+
     private List<Trailer> getTrailers(Movie movie) {
         Cursor cursorTrailers = getActivity().getContentResolver()
                 .query(
@@ -217,11 +282,6 @@ public class DetailMovieFragment extends Fragment
             cursorTrailers.close();
         }
         return trailers;
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
     }
 
     private void updateTrailersAdapter(List<Trailer> trailers) {
