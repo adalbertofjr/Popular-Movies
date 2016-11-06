@@ -180,7 +180,7 @@ public class MoviesFragment extends Fragment
                     mFetchOption = Constants.MOVIES_TOP_RATED_PATH;
                 }
 
-//                startFetchMoviesTask();
+                getLoaderManager().restartLoader(MOVIES_LOADER, null, MoviesFragment.this);
             }
 
             @Override
