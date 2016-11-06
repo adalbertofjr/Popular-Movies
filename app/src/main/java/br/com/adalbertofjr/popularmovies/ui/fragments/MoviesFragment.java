@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import br.com.adalbertofjr.popularmovies.R;
 import br.com.adalbertofjr.popularmovies.data.MoviesContract;
 import br.com.adalbertofjr.popularmovies.model.Movie;
-import br.com.adalbertofjr.popularmovies.tasks.FetchMoviesTask;
 import br.com.adalbertofjr.popularmovies.ui.adapters.MoviesGridAdapter;
 import br.com.adalbertofjr.popularmovies.util.Constants;
 import br.com.adalbertofjr.popularmovies.util.Util;
@@ -138,17 +137,17 @@ public class MoviesFragment extends Fragment
         updateMoviesAdapter();
     }
 
-    private void startFetchMoviesTask() {
-        if (Util.isConnected(getActivity())) {
-            FetchMoviesTask moviesTask = new FetchMoviesTask(getActivity());
-            moviesTask.execute(mFetchOption);
-            getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
-        } else {
-            hideProgressBar();
-            // Todo - Corrigir mensagens de erro de conexão.
-            //mGridMoviesRecyclerView.setEmptyView(mErrorMessage);
-        }
-    }
+//    private void startFetchMoviesTask() {
+//        if (Util.isConnected(getActivity())) {
+//            FetchMoviesTask moviesTask = new FetchMoviesTask(getActivity());
+//            moviesTask.execute(mFetchOption);
+//            getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
+//        } else {
+//            hideProgressBar();
+//            // Todo - Corrigir mensagens de erro de conexão.
+//            //mGridMoviesRecyclerView.setEmptyView(mErrorMessage);
+//        }
+//    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -181,7 +180,7 @@ public class MoviesFragment extends Fragment
                     mFetchOption = Constants.MOVIES_TOP_RATED_PATH;
                 }
 
-                startFetchMoviesTask();
+//                startFetchMoviesTask();
             }
 
             @Override

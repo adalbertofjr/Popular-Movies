@@ -13,5 +13,8 @@
     <string name="star_rating_description">Star rating</string>
 
     <!--Content Provider -->
+    <!-- Account type (for sync-adapter authenticator) -->
+    <!-- SyncAdapter related -->
+    <string name="sync_account_type">popularmovies.example.com</string>
     <string name="content_authority" translatable="false">br.com.adalbertofjr.popularmovies</string>
 </resources>

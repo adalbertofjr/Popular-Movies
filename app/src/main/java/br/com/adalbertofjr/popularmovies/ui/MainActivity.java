@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import br.com.adalbertofjr.popularmovies.R;
 import br.com.adalbertofjr.popularmovies.model.Movie;
+import br.com.adalbertofjr.popularmovies.sync.PopularMoviesSyncAdapter;
 import br.com.adalbertofjr.popularmovies.ui.adapters.MoviesGridAdapter;
 import br.com.adalbertofjr.popularmovies.ui.fragments.DetailMovieFragment;
 
@@ -29,6 +30,8 @@ public class MainActivity extends AppCompatActivity
                         .commit();
             }
         }
+
+        PopularMoviesSyncAdapter.initializeSyncAdapter(this);
     }
 
     @Override
