@@ -5,7 +5,6 @@ import android.accounts.AccountManager;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SyncRequest;
@@ -26,6 +25,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Vector;
 
 import br.com.adalbertofjr.popularmovies.R;
 import br.com.adalbertofjr.popularmovies.data.MoviesContract;
@@ -44,12 +44,14 @@ import br.com.adalbertofjr.popularmovies.util.Constants;
 
 public class PopularMoviesSyncAdapter extends AbstractThreadedSyncAdapter {
     public final String LOG_TAG = PopularMoviesSyncAdapter.class.getSimpleName();
-    // Interval at which to sync with the weather, in seconds.
+    // Interval at which to sync with the movies, in seconds.
     // 60 seconds (1 minute) * 180 = 3 hours
     public static final int SYNC_INTERVAL = 60 * 180;
     public static final int SYNC_FLEXTIME = SYNC_INTERVAL / 3;
     private static final long DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
     private static final int POPULAR_NOTIFICATION_ID = 3004;
+    public static final String COLUMN_ID_MOVIE = "id_movie";
+    private int COLUMN_MOVIE_ID = 0;
 
 
     public PopularMoviesSyncAdapter(Context context, boolean autoInitialize) {
@@ -143,48 +145,44 @@ public class PopularMoviesSyncAdapter extends AbstractThreadedSyncAdapter {
         JSONObject moviesJson = new JSONObject(moviesJsonString);
         JSONArray moviesArray = moviesJson.getJSONArray(Constants.MOVIES_LIST_KEY);
 
+        // Insert the new weather information into the database
+        Vector<ContentValues> cVVector = new Vector<>(moviesArray.length());
+
         for (int i = 0; i < moviesArray.length(); i++) {
             String id;
-            String backdrop_path;
-            String poster_path;
-            String vote_average;
-            String original_title;
-            String release_date;
+            String backdropPath;
+            String posterPath;
+            String voteAverage;
+            String originalTitle;
+            String releaseDate;
             String overview;
 
             JSONObject movieData = moviesArray.getJSONObject(i);
 
             id = movieData.getString(Constants.MOVIES_ID);
-            backdrop_path = movieData.getString(Constants.MOVIES_BACKGROUND_KEY);
-            poster_path = movieData.getString(Constants.MOVIES_POSTER_KEY);
-            vote_average = movieData.getString(Constants.MOVIES_VOTE_AVERAGE_KEY);
-            original_title = movieData.getString(Constants.MOVIES_TITLE_KEY);
-            release_date = movieData.getString(Constants.MOVIES_RELEASE_DATE_KEY);
+            backdropPath = movieData.getString(Constants.MOVIES_BACKGROUND_KEY);
+            posterPath = movieData.getString(Constants.MOVIES_POSTER_KEY);
+            voteAverage = movieData.getString(Constants.MOVIES_VOTE_AVERAGE_KEY);
+            originalTitle = movieData.getString(Constants.MOVIES_TITLE_KEY);
+            releaseDate = movieData.getString(Constants.MOVIES_RELEASE_DATE_KEY);
             overview = movieData.getString(Constants.MOVIES_OVERVIEW_KEY);
 
-            Movie movie = new Movie(id, backdrop_path,
-                    poster_path,
-                    vote_average,
-                    original_title,
-                    release_date,
-                    overview);
+            ContentValues movieValues = new ContentValues();
+            movieValues.put(MoviesContract.PopularEntry._ID, id);
+            movieValues.put(MoviesContract.PopularEntry.COLUMN_ORIGINAL_TITLE, originalTitle);
+            movieValues.put(MoviesContract.PopularEntry.COLUMN_POSTER_PATH, posterPath);
+            movieValues.put(MoviesContract.PopularEntry.COLUMN_RELEASE_DATE, releaseDate);
+            movieValues.put(MoviesContract.PopularEntry.COLUMN_VOTE_AVERAGE, voteAverage);
+            movieValues.put(MoviesContract.PopularEntry.COLUMN_OVERVIEW, overview);
+            movieValues.put(MoviesContract.PopularEntry.COLUMN_BACKDROP_PATH, backdropPath);
 
-            addMovie(path, movie.getId(), movie.getBackDropUrlPath(), movie.getPoster_path(),
-                    movie.getVote_average(), movie.getOriginal_title(), movie.getRelease_date(),
-                    movie.getOverview());
+            cVVector.add(movieValues);
         }
 
+        bulkInsertMovies(path, cVVector);
     }
 
-
-    private long addMovie(String path, String id, String backdropPath, String posterPath, String voteAverage,
-                          String originalTitle, String releaseDate, String overview) {
-        long movieId;
-
-        String[] projection = {MoviesContract.PopularEntry._ID};
-        String selection = MoviesContract.PopularEntry._ID + " = ?";
-        String[] selectionArgs = new String[]{id};
-
+    private void bulkInsertMovies(String path, Vector<ContentValues> cVVector) {
         Uri contentUri;
 
         if (path.equals(Constants.MOVIES_POPULAR_PATH)) {
@@ -193,41 +191,77 @@ public class PopularMoviesSyncAdapter extends AbstractThreadedSyncAdapter {
             contentUri = MoviesContract.TopRatedEntry.CONTENT_URI;
         }
 
+        // add to database
+        if (cVVector.size() > 0) {
+            cleanDatabase(contentUri);
+
+            ContentValues[] cvArray = new ContentValues[cVVector.size()];
+            cVVector.toArray(cvArray);
+            int i = getContext().getContentResolver().bulkInsert(contentUri, cvArray);
+            if (i > 0) {
+                fetchMoviesTrailerAndReviews(contentUri);
+            }
+        }
+
+        Log.d(LOG_TAG, "Sync Complete. " + cVVector.size() + " Inserted");
+    }
+
+    private void cleanDatabase(Uri contentUri) {
+
+        String[] projection = new String[]{"_id"};
+        Cursor cursorMovies = getContext().getContentResolver().query(
+                contentUri,
+                projection,
+                null,
+                null,
+                null);
+
+        // Delete trailers or reviews for movies from content uri
+        while (cursorMovies.moveToNext()) {
+            String movieId = cursorMovies.getString(COLUMN_MOVIE_ID);
+            String selection = COLUMN_ID_MOVIE + " = ?";
+            String[] selectionArgs = new String[]{movieId};
+
+            getContext().getContentResolver().delete(
+                    MoviesContract.ReviewsEntry.CONTENT_URI,
+                    selection,
+                    selectionArgs);
+
+            getContext().getContentResolver().delete(
+                    MoviesContract.TrailersEntry.CONTENT_URI,
+                    selection,
+                    selectionArgs);
+        }
+
+        cursorMovies.close();
+
+        // Delete table popular or top_rated
+        getContext().getContentResolver().delete(
+                contentUri
+                , null
+                , null);
+    }
+
+
+    private void fetchMoviesTrailerAndReviews(Uri contentUri) {
+        String[] projection = {"_id"};
         Cursor cursor = getContext().getContentResolver().query(
                 contentUri,
                 projection,
-                selection,
-                selectionArgs,
+                null,
+                null,
                 null);
 
-        if (cursor.moveToNext()) {
-            int idIndex = cursor.getColumnIndex("_id");
-            movieId = cursor.getLong(idIndex);
-        } else {
-            ContentValues values = new ContentValues();
-            values.put(MoviesContract.PopularEntry._ID, id);
-            values.put(MoviesContract.PopularEntry.COLUMN_ORIGINAL_TITLE, originalTitle);
-            values.put(MoviesContract.PopularEntry.COLUMN_POSTER_PATH, posterPath);
-            values.put(MoviesContract.PopularEntry.COLUMN_RELEASE_DATE, releaseDate);
-            values.put(MoviesContract.PopularEntry.COLUMN_VOTE_AVERAGE, voteAverage);
-            values.put(MoviesContract.PopularEntry.COLUMN_OVERVIEW, overview);
-            values.put(MoviesContract.PopularEntry.COLUMN_BACKDROP_PATH, backdropPath);
-
-            Uri uri = getContext().getContentResolver().insert(contentUri,
-                    values);
-
-            movieId = ContentUris.parseId(uri);
-
-            // Buscando trailers e reviews
+        while (cursor.moveToNext()) {
+            String idMovie = cursor.getString(COLUMN_MOVIE_ID);
             Movie movie = new Movie();
-            movie.setId(Long.toString(movieId));
+            movie.setId(idMovie);
             new FetchTrailersTask(getContext()).execute(movie);
             new FetchReviewsTask(getContext()).execute(movie);
+            Log.d(LOG_TAG, "Fetch Trailers e Reviews to movie id: " + idMovie);
         }
 
         cursor.close();
-
-        return movieId;
     }
 
     /**
