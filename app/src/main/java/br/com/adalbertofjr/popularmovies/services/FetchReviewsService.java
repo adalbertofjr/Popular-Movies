@@ -1,11 +1,9 @@
-package br.com.adalbertofjr.popularmovies.tasks;
+package br.com.adalbertofjr.popularmovies.services;
 
-import android.content.ContentUris;
+import android.app.IntentService;
 import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
+import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -18,47 +16,45 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.Vector;
 
 import br.com.adalbertofjr.popularmovies.data.MoviesContract;
-import br.com.adalbertofjr.popularmovies.model.Movie;
-import br.com.adalbertofjr.popularmovies.model.Review;
 import br.com.adalbertofjr.popularmovies.util.Constants;
 
 /**
  * PopularMovies
- * FetchReviewsTask
+ * FetchReviewsService
  * <p>
- * Created by Adalberto Fernandes Júnior on 23/10/2016.
+ * Created by Adalberto Fernandes Júnior on 13/11/2016.
  * Copyright © 2016 - Adalberto Fernandes Júnior. All rights reserved.
  */
 
 
-public class FetchReviewsTask extends AsyncTask<Movie, Void, Void> {
-    private final String LOG_TAG = FetchReviewsTask.class.getSimpleName();
-    private Movie mMovie;
-    private Context mContext;
+public class FetchReviewsService extends IntentService {
+    private static final String LOG_TAG = FetchReviewsService.class.getSimpleName();
+    private String mMovieId;
 
-    public FetchReviewsTask(Context mContext) {
-        this.mMovie = mMovie;
-        this.mContext = mContext;
+    public FetchReviewsService(String name) {
+        super(name);
+    }
+
+    public FetchReviewsService() {
+        super("FetchReviewsService");
     }
 
     @Override
-    protected Void doInBackground(Movie... movies) {
-
+    protected void onHandleIntent(Intent intent) {
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
 
         String reviewsJsonString;
 
         try {
-            mMovie = movies[0];
+            mMovieId = intent.getStringExtra(Intent.EXTRA_TEXT);
+            if (mMovieId == null)
+                return;
 
-            if (mMovie == null)
-                return null;
-
-            String pathReview = String.format(Constants.MOVIE_REVIEWS_URL, mMovie.getId());
+            String pathReview = String.format(Constants.MOVIE_REVIEWS_URL, mMovieId);
 
             URL url = new URL(pathReview);
 
@@ -72,7 +68,7 @@ public class FetchReviewsTask extends AsyncTask<Movie, Void, Void> {
             StringBuilder buffer = new StringBuilder();
             if (inputStream == null) {
                 // Nothing to do.
-                return null;
+                return;
             }
             reader = new BufferedReader(new InputStreamReader(inputStream));
 
@@ -82,7 +78,7 @@ public class FetchReviewsTask extends AsyncTask<Movie, Void, Void> {
             }
 
             if (buffer.length() == 0) {
-                return null;
+                return;
             }
 
             reviewsJsonString = buffer.toString();
@@ -94,9 +90,7 @@ public class FetchReviewsTask extends AsyncTask<Movie, Void, Void> {
             }
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error ", e);
-            // If the code didn't successfully get the weather data, there's no point in attemping
-            // to parse it.
-            return null;
+            return;
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -109,7 +103,6 @@ public class FetchReviewsTask extends AsyncTask<Movie, Void, Void> {
                 }
             }
         }
-        return null;
     }
 
     private void getReviewsDataFromJson(String reviewsJsonString)
@@ -118,7 +111,8 @@ public class FetchReviewsTask extends AsyncTask<Movie, Void, Void> {
         JSONObject reviewsJson = new JSONObject(reviewsJsonString);
         JSONArray reviewsArray = reviewsJson.getJSONArray(Constants.REVIEWS_VIDEOS_LIST_KEY);
 
-        ArrayList<Review> reviews = new ArrayList<>();
+        // Insert the new weather information into the database
+        Vector<ContentValues> cVVector = new Vector<>(reviewsArray.length());
 
         for (int i = 0; i < reviewsArray.length(); i++) {
             String id;
@@ -128,56 +122,33 @@ public class FetchReviewsTask extends AsyncTask<Movie, Void, Void> {
 
             JSONObject reviewData = reviewsArray.getJSONObject(i);
 
-            idMovie = mMovie.getId();
+            idMovie = mMovieId;
             id = reviewData.getString(Constants.REVIEWS_VIDEO_ID);
             name = reviewData.getString(Constants.REVIEWS_VIDEOS_AUTHOR);
             content = reviewData.getString(Constants.REVIEWS_VIDEOS_CONTENT);
 
-            Review review = new Review(
-                    id,
-                    idMovie,
-                    name,
-                    content
-            );
+            ContentValues reviewsValues = new ContentValues();
+            reviewsValues.put(MoviesContract.ReviewsEntry._ID, id);
+            reviewsValues.put(MoviesContract.ReviewsEntry.COLUMN_MOVIE_ID, idMovie);
+            reviewsValues.put(MoviesContract.ReviewsEntry.COLUMN_AUTHOR, name);
+            reviewsValues.put(MoviesContract.ReviewsEntry.COLUMN_CONTENT, content);
 
-            addReview(review);
+            cVVector.add(reviewsValues);
         }
+
+        bulkInsertReviews(cVVector);
     }
 
-    private long addReview(Review review) {
-        long reviewId;
+    private void bulkInsertReviews(Vector<ContentValues> cVVector) {
         Uri contentUri = MoviesContract.ReviewsEntry.CONTENT_URI;
 
-        String[] projection = {MoviesContract.TrailersEntry._ID};
-        String selection = MoviesContract.TrailersEntry._ID + " = ?";
-        String[] selectionArgs = new String[]{review.getId()};
-
-        Cursor cursor = mContext.getContentResolver().query(
-                contentUri,
-                projection,
-                selection,
-                selectionArgs,
-                null);
-
-        if (cursor.moveToNext()) {
-            int idIndex = cursor.getColumnIndex("_id");
-            reviewId = cursor.getLong(idIndex);
-        } else {
-
-            ContentValues values = new ContentValues();
-            values.put(MoviesContract.ReviewsEntry._ID, review.getId());
-            values.put(MoviesContract.ReviewsEntry.COLUMN_MOVIE_ID, review.getIdMovie());
-            values.put(MoviesContract.ReviewsEntry.COLUMN_AUTHOR, review.getAuthor());
-            values.put(MoviesContract.ReviewsEntry.COLUMN_CONTENT, review.getContent());
-
-            Uri uri = mContext.getContentResolver().insert(contentUri,
-                    values);
-
-            reviewId = ContentUris.parseId(uri);
+        // add to database
+        if (cVVector.size() > 0) {
+            ContentValues[] cvArray = new ContentValues[cVVector.size()];
+            cVVector.toArray(cvArray);
+            this.getContentResolver().bulkInsert(contentUri, cvArray);
+            Log.d(LOG_TAG, "Reviews " + cVVector.size() + " inserted.");
         }
 
-        cursor.close();
-
-        return reviewId;
     }
 }

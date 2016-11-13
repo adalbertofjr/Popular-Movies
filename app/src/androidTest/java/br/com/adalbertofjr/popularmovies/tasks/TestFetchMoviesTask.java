@@ -1,10 +1,6 @@
 package br.com.adalbertofjr.popularmovies.tasks;
 
-import android.annotation.TargetApi;
-import android.database.Cursor;
 import android.test.AndroidTestCase;
-
-import br.com.adalbertofjr.popularmovies.data.MoviesContract;
 
 /**
  * PopularMovies
@@ -24,7 +20,7 @@ public class TestFetchMoviesTask extends AndroidTestCase {
     private static final String ADD_RELEASE_DATE = "2016-04-27";
     private static final String ADD_OVERVIEW = "Following the events of Age of Ultron, the collective governments of the world pass an act designed to regulate all superhuman activity. This polarizes opinion amongst the Avengers, causing two factions to side with Iron Man or Captain America, which causes an epic battle between former allies.";
 
-    @TargetApi(11)
+  /*  @TargetApi(11)
     public void testAddMovie() {
         // start from a clean state
         getContext().getContentResolver().delete(MoviesContract.PopularEntry.CONTENT_URI,
@@ -102,5 +98,5 @@ public class TestFetchMoviesTask extends AndroidTestCase {
         getContext().getContentResolver().
                 acquireContentProviderClient(MoviesContract.PopularEntry.CONTENT_URI).
                 getLocalContentProvider().shutdown();
-    }
+    }*/
 }
