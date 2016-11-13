@@ -120,6 +120,7 @@ public class MoviesFragment extends Fragment
         mToolbar.setLogo(R.mipmap.ic_pm_logo);
         mToolbar.setDisplayUseLogoEnabled(true);
         mToolbar.setDisplayShowHomeEnabled(true);
+        mToolbar.setElevation(0f);
     }
 
     private String getTitleToolbar() {
