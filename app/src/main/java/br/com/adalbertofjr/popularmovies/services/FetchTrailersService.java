@@ -1,11 +1,9 @@
-package br.com.adalbertofjr.popularmovies.tasks;
+package br.com.adalbertofjr.popularmovies.services;
 
-import android.content.ContentUris;
+import android.app.IntentService;
 import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
+import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -18,33 +16,33 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Vector;
 
 import br.com.adalbertofjr.popularmovies.data.MoviesContract;
-import br.com.adalbertofjr.popularmovies.model.Movie;
-import br.com.adalbertofjr.popularmovies.model.Trailer;
 import br.com.adalbertofjr.popularmovies.util.Constants;
 
 /**
  * PopularMovies
- * FetchTrailersTask
+ * FetchTrailersService
  * <p>
- * Created by Adalberto Fernandes Júnior on 22/10/2016.
+ * Created by Adalberto Fernandes Júnior on 13/11/2016.
  * Copyright © 2016 - Adalberto Fernandes Júnior. All rights reserved.
  */
 
+public class FetchTrailersService extends IntentService {
+    private String LOG_TAG = FetchTrailersService.class.getSimpleName();
+    private String mMovie;
 
-public class FetchTrailersTask extends AsyncTask<Movie, Void, Void> {
-    private final String LOG_TAG = FetchTrailersTask.class.getSimpleName();
-    private Movie mMovie;
-    private Context mContext;
+    public FetchTrailersService(String name) {
+        super(name);
+    }
 
-    public FetchTrailersTask(Context context) {
-        this.mContext = context;
+    public FetchTrailersService() {
+        super("FetchTrailersService");
     }
 
     @Override
-    protected Void doInBackground(Movie... movie) {
-
+    protected void onHandleIntent(Intent intent) {
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
 
@@ -52,12 +50,12 @@ public class FetchTrailersTask extends AsyncTask<Movie, Void, Void> {
 
         try {
 
-            mMovie = movie[0];
+            mMovie = intent.getStringExtra(Intent.EXTRA_TEXT);
 
             if (mMovie == null)
-                return null;
+                return;
 
-            String pathTrailer = String.format(Constants.MOVIE_TRAILERS_URL, mMovie.getId());
+            String pathTrailer = String.format(Constants.MOVIE_TRAILERS_URL, mMovie);
 
             URL url = new URL(pathTrailer);
 
@@ -71,7 +69,7 @@ public class FetchTrailersTask extends AsyncTask<Movie, Void, Void> {
             StringBuilder buffer = new StringBuilder();
             if (inputStream == null) {
                 // Nothing to do.
-                return null;
+                return;
             }
             reader = new BufferedReader(new InputStreamReader(inputStream));
 
@@ -81,7 +79,7 @@ public class FetchTrailersTask extends AsyncTask<Movie, Void, Void> {
             }
 
             if (buffer.length() == 0) {
-                return null;
+                return;
             }
 
             trailersJsonString = buffer.toString();
@@ -95,7 +93,7 @@ public class FetchTrailersTask extends AsyncTask<Movie, Void, Void> {
             Log.e(LOG_TAG, "Error ", e);
             // If the code didn't successfully get the weather data, there's no point in attemping
             // to parse it.
-            return null;
+            return;
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -108,7 +106,6 @@ public class FetchTrailersTask extends AsyncTask<Movie, Void, Void> {
                 }
             }
         }
-        return null;
     }
 
     private void getTrailersDataFromJson(String trailersJsonString)
@@ -116,6 +113,9 @@ public class FetchTrailersTask extends AsyncTask<Movie, Void, Void> {
 
         JSONObject trailersJson = new JSONObject(trailersJsonString);
         JSONArray trailersArray = trailersJson.getJSONArray(Constants.TRAILERS_VIDEOS_LIST_KEY);
+
+        // Insert the new weather information into the database
+        Vector<ContentValues> cVVector = new Vector<>(trailersArray.length());
 
         for (int i = 0; i < trailersArray.length(); i++) {
             String id;
@@ -126,59 +126,35 @@ public class FetchTrailersTask extends AsyncTask<Movie, Void, Void> {
 
             JSONObject trailerData = trailersArray.getJSONObject(i);
 
-            movieId = mMovie.getId();
+            movieId = mMovie;
             id = trailerData.getString(Constants.TRAILERS_VIDEO_ID);
             key = trailerData.getString(Constants.TRAILERS_VIDEO_KEY);
             name = trailerData.getString(Constants.TRAILERS_VIDEO_NAME);
             site = trailerData.getString(Constants.TRAILERS_VIDEO_SITE);
 
-            Trailer trailer = new Trailer(
-                    id,
-                    movieId,
-                    key,
-                    name,
-                    site
-            );
+            ContentValues trailerValues = new ContentValues();
+            trailerValues.put(MoviesContract.TrailersEntry._ID, id);
+            trailerValues.put(MoviesContract.TrailersEntry.COLUMN_MOVIE_ID, movieId);
+            trailerValues.put(MoviesContract.TrailersEntry.COLUMN_KEY, key);
+            trailerValues.put(MoviesContract.TrailersEntry.COLUMN_NAME, name);
+            trailerValues.put(MoviesContract.TrailersEntry.COLUMN_SITE, site);
 
-            addTrailer(trailer);
+            cVVector.add(trailerValues);
         }
+
+        bulkInsertTrailers(cVVector);
     }
 
-    private long addTrailer(Trailer trailer) {
-        long trailerId;
+    private void bulkInsertTrailers(Vector<ContentValues> cVVector) {
         Uri contentUri = MoviesContract.TrailersEntry.CONTENT_URI;
 
-//        String[] projection = {MoviesContract.TrailersEntry._ID};
-        String[] projection = null;
-        String selection = MoviesContract.TrailersEntry._ID + " = ?";
-        String[] selectionArgs = new String[]{trailer.getId()};
-
-        Cursor cursor = mContext.getContentResolver().query(
-                contentUri,
-                projection,
-                selection,
-                selectionArgs,
-                null);
-
-        if (cursor.moveToNext()) {
-            int idIndex = cursor.getColumnIndex("_id");
-            trailerId = cursor.getLong(idIndex);
-        } else {
-            ContentValues values = new ContentValues();
-            values.put(MoviesContract.TrailersEntry._ID, trailer.getId());
-            values.put(MoviesContract.TrailersEntry.COLUMN_MOVIE_ID, trailer.getIdMovie());
-            values.put(MoviesContract.TrailersEntry.COLUMN_KEY, trailer.getKey());
-            values.put(MoviesContract.TrailersEntry.COLUMN_NAME, trailer.getName());
-            values.put(MoviesContract.TrailersEntry.COLUMN_SITE, trailer.getSite());
-
-            Uri uri = mContext.getContentResolver().insert(contentUri,
-                    values);
-
-            trailerId = ContentUris.parseId(uri);
+        // add to database
+        if (cVVector.size() > 0) {
+            ContentValues[] cvArray = new ContentValues[cVVector.size()];
+            cVVector.toArray(cvArray);
+            this.getContentResolver().bulkInsert(contentUri, cvArray);
+            Log.d(LOG_TAG, "Trailers " + cVVector.size() + " inserted.");
         }
 
-        cursor.close();
-
-        return trailerId;
     }
 }

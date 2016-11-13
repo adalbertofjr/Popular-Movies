@@ -35,6 +35,9 @@
             android:label="@string/detail_movie_label"
             android:parentActivityName=".ui.MainActivity" />
 
+        <service android:name=".services.FetchReviewsService" />
+        <service android:name=".services.FetchTrailersService" />
+
         <!-- Registrando Content Provider -->
         <provider
             android:name=".data.MoviesProvider"

@@ -7,6 +7,7 @@ import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SyncRequest;
 import android.content.SyncResult;
 import android.database.Cursor;
@@ -30,8 +31,8 @@ import java.util.Vector;
 import br.com.adalbertofjr.popularmovies.R;
 import br.com.adalbertofjr.popularmovies.data.MoviesContract;
 import br.com.adalbertofjr.popularmovies.model.Movie;
-import br.com.adalbertofjr.popularmovies.tasks.FetchReviewsTask;
-import br.com.adalbertofjr.popularmovies.tasks.FetchTrailersTask;
+import br.com.adalbertofjr.popularmovies.services.FetchReviewsService;
+import br.com.adalbertofjr.popularmovies.services.FetchTrailersService;
 import br.com.adalbertofjr.popularmovies.util.Constants;
 
 /**
@@ -256,8 +257,14 @@ public class PopularMoviesSyncAdapter extends AbstractThreadedSyncAdapter {
             String idMovie = cursor.getString(COLUMN_MOVIE_ID);
             Movie movie = new Movie();
             movie.setId(idMovie);
-            new FetchTrailersTask(getContext()).execute(movie);
-            new FetchReviewsTask(getContext()).execute(movie);
+
+            Intent trailersSevice = new Intent(getContext(), FetchTrailersService.class);
+            trailersSevice.putExtra(Intent.EXTRA_TEXT, idMovie);
+            getContext().startService(trailersSevice);
+
+            Intent reviewsSevice = new Intent(getContext(), FetchReviewsService.class);
+            reviewsSevice.putExtra(Intent.EXTRA_TEXT, idMovie);
+            getContext().startService(reviewsSevice);
             Log.d(LOG_TAG, "Fetch Trailers e Reviews to movie id: " + idMovie);
         }
 
