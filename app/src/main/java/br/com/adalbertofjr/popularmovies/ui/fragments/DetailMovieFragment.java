@@ -138,14 +138,6 @@ public class DetailMovieFragment extends Fragment
 
         mActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-
-//        if (mCollapsingToolbarLayout != null) {
-//            mActivity.getSupportActionBar().setDisplayShowTitleEnabled(true);
-////            mCollapsingToolbarLayout.setTitle("Teste");
-//        } else {
-//            mActivity.getSupportActionBar().setDisplayShowTitleEnabled(false);
-//        }
-
         mTrailersListRecyclerView.setHasFixedSize(true);
         mTrailersListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
 
@@ -200,11 +192,10 @@ public class DetailMovieFragment extends Fragment
         movie.setOverview(cursor.getString(5));
         movie.setBackdrop_path(cursor.getString(6));
 
-//        ActionBar supportActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-//
-//        if (supportActionBar != null) {
-//            supportActionBar.setTitle(movie.getOriginal_title());
-//        }
+        if (mCollapsingToolbarLayout != null) {
+            mActivity.getSupportActionBar().setDisplayShowTitleEnabled(true);
+            mCollapsingToolbarLayout.setTitle(movie.getOriginal_title());
+        }
 
         Picasso.with(getContext())
                 .load(movie.getBackDropUrlPath())

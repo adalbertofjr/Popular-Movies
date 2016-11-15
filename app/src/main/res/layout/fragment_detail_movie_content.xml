@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:background="@color/colorPrimaryDark">
 
     <ProgressBar
@@ -22,26 +22,25 @@
         android:text="@string/msg_no_network_connection"
         android:visibility="gone" />
 
-    <!--<ImageView-->
-    <!--android:id="@+id/iv_detail_poster"-->
-    <!--android:layout_width="@dimen/poster_detail_width"-->
-    <!--android:layout_height="@dimen/poster_detail_height"-->
-    <!--android:layout_alignParentLeft="true"-->
-    <!--android:layout_alignParentTop="true"-->
-    <!--android:layout_margin="@dimen/activity_vertical_margin"-->
-    <!--android:contentDescription="@string/movie_poster_description"-->
-    <!--android:scaleType="fitXY" />-->
+    <ImageView
+        android:id="@+id/iv_detail_poster"
+        android:layout_width="@dimen/poster_detail_width"
+        android:layout_height="@dimen/poster_detail_height"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="@dimen/activity_vertical_margin"
+        android:contentDescription="@string/movie_poster_description"
+        android:scaleType="fitCenter" />
 
     <TextView
         android:id="@+id/tv_detail_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
         android:layout_alignTop="@+id/iv_detail_poster"
         android:layout_marginLeft="@dimen/activity_vertical_margin"
         android:layout_marginRight="@dimen/activity_vertical_margin"
-        android:layout_marginTop="90dp"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_toRightOf="@+id/iv_detail_poster"
         android:textColor="@color/colorPrimaryText"
         android:textSize="@dimen/title_size" />
 
@@ -61,7 +60,7 @@
         android:layout_width="@dimen/star_detail_length"
         android:layout_height="@dimen/star_detail_length"
         android:layout_below="@id/tv_detail_dt_release"
-        android:layout_marginLeft="@dimen/activity_vertical_margin"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_toRightOf="@id/iv_detail_poster"
         android:contentDescription="@string/star_rating_description"
         android:scaleType="fitXY" />
@@ -83,7 +82,7 @@
         android:id="@+id/tv_detail_overview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/iv_detail_star"
+        android:layout_below="@+id/iv_detail_poster"
         android:layout_margin="@dimen/activity_vertical_margin"
         android:fontFamily="sans-serif-light"
         android:textColor="@color/colorPrimaryText"
