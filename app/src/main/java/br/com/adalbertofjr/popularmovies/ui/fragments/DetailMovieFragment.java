@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -129,11 +128,11 @@ public class DetailMovieFragment extends Fragment
         mAppBar = (AppBarLayout) rootView.findViewById(R.id.appBar);
 
         if (mAppBar != null) {
-            if (mAppBar.getLayoutParams() instanceof CoordinatorLayout.LayoutParams) {
-                CoordinatorLayout.LayoutParams lp =
-                        (CoordinatorLayout.LayoutParams) mAppBar.getLayoutParams();
-                lp.height = getResources().getDisplayMetrics().widthPixels;
-            }
+//            if (mAppBar.getLayoutParams() instanceof CoordinatorLayout.LayoutParams) {
+//                CoordinatorLayout.LayoutParams lp =
+//                        (CoordinatorLayout.LayoutParams) mAppBar.getLayoutParams();
+//                lp.height = getResources().getDisplayMetrics().widthPixels;
+//            }
         }
 
         mActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
