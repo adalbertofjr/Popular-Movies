@@ -1,6 +1,7 @@
 package br.com.adalbertofjr.popularmovies.ui.fragments;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -125,17 +126,8 @@ public class DetailMovieFragment extends Fragment
         mTrailersListRecyclerView = (RecyclerView) rootView.findViewById(R.id.rv_detail_trailers);
 
         mActivity.setSupportActionBar(mToolbar);
-        mAppBar = (AppBarLayout) rootView.findViewById(R.id.appBar);
-
-        if (mAppBar != null) {
-//            if (mAppBar.getLayoutParams() instanceof CoordinatorLayout.LayoutParams) {
-//                CoordinatorLayout.LayoutParams lp =
-//                        (CoordinatorLayout.LayoutParams) mAppBar.getLayoutParams();
-//                lp.height = getResources().getDisplayMetrics().widthPixels;
-//            }
-        }
-
         mActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mActivity.getSupportActionBar().setDisplayShowTitleEnabled(true);
 
         mTrailersListRecyclerView.setHasFixedSize(true);
         mTrailersListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
@@ -191,9 +183,11 @@ public class DetailMovieFragment extends Fragment
         movie.setOverview(cursor.getString(5));
         movie.setBackdrop_path(cursor.getString(6));
 
-        if (mCollapsingToolbarLayout != null) {
-            mActivity.getSupportActionBar().setDisplayShowTitleEnabled(true);
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             mCollapsingToolbarLayout.setTitle(movie.getOriginal_title());
+        } else {
+            mCollapsingToolbarLayout.setTitleEnabled(false);
+            mActivity.getSupportActionBar().setTitle(movie.getOriginal_title());
         }
 
         Picasso.with(getContext())
