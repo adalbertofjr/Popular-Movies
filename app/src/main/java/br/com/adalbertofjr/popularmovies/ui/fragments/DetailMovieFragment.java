@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -36,6 +35,7 @@ import br.com.adalbertofjr.popularmovies.data.MoviesContract;
 import br.com.adalbertofjr.popularmovies.model.Movie;
 import br.com.adalbertofjr.popularmovies.model.Review;
 import br.com.adalbertofjr.popularmovies.model.Trailer;
+import br.com.adalbertofjr.popularmovies.ui.DetailActivity;
 import br.com.adalbertofjr.popularmovies.ui.adapters.TrailersAdapter;
 
 /**
@@ -68,7 +68,6 @@ public class DetailMovieFragment extends Fragment
     private AppCompatActivity mActivity;
     private ImageView mPosterImageBack;
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
-    private AppBarLayout mAppBar;
 
     public DetailMovieFragment() {
     }
@@ -89,6 +88,9 @@ public class DetailMovieFragment extends Fragment
 
         if (arguments != null) {
             mMovieUri = arguments.getString(Intent.EXTRA_TEXT);
+        } else {
+            // Todo - Corrigir filme inicial
+            mMovieUri = MoviesContract.PopularEntry.buildPopularMovieUri(131631).toString();
         }
     }
 
@@ -108,11 +110,11 @@ public class DetailMovieFragment extends Fragment
         mPosterImageBack = (ImageView) rootView.findViewById(R.id.iv_detail_poster_back);
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.pb_detail_progress);
         mPosterImage = (ImageView) rootView.findViewById(R.id.iv_detail_poster);
-        ((ImageView) rootView.findViewById(R.id.iv_detail_star)).setImageResource(R.drawable.ic_star);
         mTitle = (TextView) rootView.findViewById(R.id.tv_detail_title);
         mDateRelease = (TextView) rootView.findViewById(R.id.tv_detail_dt_release);
         mVoteAverage = (TextView) rootView.findViewById(R.id.tv_detail_vote_average);
         mOverview = (TextView) rootView.findViewById(R.id.tv_detail_overview);
+        ((ImageView) rootView.findViewById(R.id.iv_detail_star)).setImageResource(R.drawable.ic_star);
 
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.pb_detail_progress);
         mAuthorReviewOne = (TextView) rootView.findViewById(R.id.tv_detail_reviews_author_one);
@@ -126,8 +128,18 @@ public class DetailMovieFragment extends Fragment
         mTrailersListRecyclerView = (RecyclerView) rootView.findViewById(R.id.rv_detail_trailers);
 
         mActivity.setSupportActionBar(mToolbar);
-        mActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mActivity.getSupportActionBar().setDisplayShowTitleEnabled(true);
+
+        boolean mTwoPane = getActivity().getResources().getBoolean(R.bool.has_two_panes);
+        boolean isDetailActivity = getActivity() instanceof DetailActivity;
+
+        if (mTwoPane && !isDetailActivity) {
+            mActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            mActivity.getSupportActionBar().setDisplayShowTitleEnabled(false);
+            mCollapsingToolbarLayout.setVisibility(View.GONE);
+        } else {
+            mActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            mActivity.getSupportActionBar().setDisplayShowTitleEnabled(true);
+        }
 
         mTrailersListRecyclerView.setHasFixedSize(true);
         mTrailersListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
