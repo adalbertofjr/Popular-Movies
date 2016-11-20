@@ -10,4 +10,5 @@
     <string name="star_rating_description">Estrela de classificação</string>
     <string name="title_most_popular">Filmes Populares</string>
     <string name="title_top_rated">Melhor Avaliados</string>
+    <string name="title_favorite">Favoritos</string>
 </resources>

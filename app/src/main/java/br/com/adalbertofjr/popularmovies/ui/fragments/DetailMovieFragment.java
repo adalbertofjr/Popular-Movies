@@ -1,18 +1,20 @@
 package br.com.adalbertofjr.popularmovies.ui.fragments;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +35,7 @@ import br.com.adalbertofjr.popularmovies.data.MoviesContract;
 import br.com.adalbertofjr.popularmovies.model.Movie;
 import br.com.adalbertofjr.popularmovies.model.Review;
 import br.com.adalbertofjr.popularmovies.model.Trailer;
+import br.com.adalbertofjr.popularmovies.ui.DetailActivity;
 import br.com.adalbertofjr.popularmovies.ui.adapters.TrailersAdapter;
 
 /**
@@ -62,6 +65,9 @@ public class DetailMovieFragment extends Fragment
     private TextView mDateRelease;
     private TextView mVoteAverage;
     private TextView mOverview;
+    private AppCompatActivity mActivity;
+    private ImageView mPosterImageBack;
+    private CollapsingToolbarLayout mCollapsingToolbarLayout;
 
     public DetailMovieFragment() {
     }
@@ -82,6 +88,9 @@ public class DetailMovieFragment extends Fragment
 
         if (arguments != null) {
             mMovieUri = arguments.getString(Intent.EXTRA_TEXT);
+        } else {
+            // Todo - Corrigir filme inicial
+            mMovieUri = MoviesContract.PopularEntry.buildPopularMovieUri(131631).toString();
         }
     }
 
@@ -94,15 +103,18 @@ public class DetailMovieFragment extends Fragment
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.fragment_detail_movie, container, false);
+        mActivity = ((AppCompatActivity) getActivity());
 
+        View rootView = inflater.inflate(R.layout.fragment_detail_movie, container, false);
+        Toolbar mToolbar = (Toolbar) rootView.findViewById(R.id.novo_interesse_toolbar);
+        mPosterImageBack = (ImageView) rootView.findViewById(R.id.iv_detail_poster_back);
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.pb_detail_progress);
-        ((ImageView) rootView.findViewById(R.id.iv_detail_star)).setImageResource(R.drawable.ic_star);
         mPosterImage = (ImageView) rootView.findViewById(R.id.iv_detail_poster);
         mTitle = (TextView) rootView.findViewById(R.id.tv_detail_title);
         mDateRelease = (TextView) rootView.findViewById(R.id.tv_detail_dt_release);
         mVoteAverage = (TextView) rootView.findViewById(R.id.tv_detail_vote_average);
         mOverview = (TextView) rootView.findViewById(R.id.tv_detail_overview);
+        ((ImageView) rootView.findViewById(R.id.iv_detail_star)).setImageResource(R.drawable.ic_star);
 
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.pb_detail_progress);
         mAuthorReviewOne = (TextView) rootView.findViewById(R.id.tv_detail_reviews_author_one);
@@ -111,8 +123,23 @@ public class DetailMovieFragment extends Fragment
         mContextReviewTwo = (TextView) rootView.findViewById(R.id.tv_detail_reviews_content_two);
         mReadMoreView = (TextView) rootView.findViewById(R.id.tv_detail_reviews_more);
 
+        mCollapsingToolbarLayout = (CollapsingToolbarLayout) rootView.findViewById(R.id.coolapseToolbar);
         mContainerReview = rootView.findViewById(R.id.ll_detail_reviews);
         mTrailersListRecyclerView = (RecyclerView) rootView.findViewById(R.id.rv_detail_trailers);
+
+        mActivity.setSupportActionBar(mToolbar);
+
+        boolean mTwoPane = getActivity().getResources().getBoolean(R.bool.has_two_panes);
+        boolean isDetailActivity = getActivity() instanceof DetailActivity;
+
+        if (mTwoPane && !isDetailActivity) {
+            mActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            mActivity.getSupportActionBar().setDisplayShowTitleEnabled(false);
+            mCollapsingToolbarLayout.setVisibility(View.GONE);
+        } else {
+            mActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            mActivity.getSupportActionBar().setDisplayShowTitleEnabled(true);
+        }
 
         mTrailersListRecyclerView.setHasFixedSize(true);
         mTrailersListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
@@ -168,11 +195,16 @@ public class DetailMovieFragment extends Fragment
         movie.setOverview(cursor.getString(5));
         movie.setBackdrop_path(cursor.getString(6));
 
-        ActionBar supportActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-
-        if (supportActionBar != null) {
-            supportActionBar.setTitle(movie.getOriginal_title());
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            mCollapsingToolbarLayout.setTitle(movie.getOriginal_title());
+        } else {
+            mCollapsingToolbarLayout.setTitleEnabled(false);
+            mActivity.getSupportActionBar().setTitle(movie.getOriginal_title());
         }
+
+        Picasso.with(getContext())
+                .load(movie.getBackDropUrlPath())
+                .into(mPosterImageBack);
 
         Picasso.with(getContext())
                 .load(movie.getPosterUrlPath())
