@@ -106,7 +106,7 @@ public class DetailMovieFragment extends Fragment
         mActivity = ((AppCompatActivity) getActivity());
 
         View rootView = inflater.inflate(R.layout.fragment_detail_movie, container, false);
-        Toolbar mToolbar = (Toolbar) rootView.findViewById(R.id.novo_interesse_toolbar);
+        Toolbar mToolbar = (Toolbar) rootView.findViewById(R.id.tb_detail);
         mPosterImageBack = (ImageView) rootView.findViewById(R.id.iv_detail_poster_back);
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.pb_detail_progress);
         mPosterImage = (ImageView) rootView.findViewById(R.id.iv_detail_poster);
@@ -123,7 +123,7 @@ public class DetailMovieFragment extends Fragment
         mContextReviewTwo = (TextView) rootView.findViewById(R.id.tv_detail_reviews_content_two);
         mReadMoreView = (TextView) rootView.findViewById(R.id.tv_detail_reviews_more);
 
-        mCollapsingToolbarLayout = (CollapsingToolbarLayout) rootView.findViewById(R.id.coolapseToolbar);
+        mCollapsingToolbarLayout = (CollapsingToolbarLayout) rootView.findViewById(R.id.ct_detail);
         mContainerReview = rootView.findViewById(R.id.ll_detail_reviews);
         mTrailersListRecyclerView = (RecyclerView) rootView.findViewById(R.id.rv_detail_trailers);
 
