@@ -12,7 +12,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <android.support.design.widget.AppBarLayout
-        android:id="@+id/appBar"
+        android:id="@+id/ab_detail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:elevation="4dp">

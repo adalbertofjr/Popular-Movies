@@ -96,7 +96,7 @@ public class FavoritesMoviesFragment extends Fragment
 
     @Override
     public void onMovieSelected(Movie movie, Uri uri) {
-        Uri contentUri = MoviesContract.PopularEntry.CONTENT_URI;
+        Uri contentUri = MoviesContract.FavoritesEntry.CONTENT_URI;
 
         ((MoviesGridAdapter.OnMovieSelectedListener) getActivity())
                 .onMovieSelected(movie, contentUri);
@@ -122,7 +122,7 @@ public class FavoritesMoviesFragment extends Fragment
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Uri contentUri = MoviesContract.PopularEntry.CONTENT_URI;
+        Uri contentUri = MoviesContract.FavoritesEntry.CONTENT_URI;
 
         return new CursorLoader(getActivity(),
                 contentUri,

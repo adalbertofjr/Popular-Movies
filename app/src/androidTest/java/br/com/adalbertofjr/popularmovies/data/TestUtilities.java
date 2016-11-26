@@ -58,7 +58,7 @@ public class TestUtilities extends AndroidTestCase {
 
     public static ContentValues createTrailerValues() {
         ContentValues testValues = new ContentValues();
-        testValues.put(MoviesContract.TrailersEntry._ID, 271110);
+        testValues.put(MoviesContract.TrailersEntry.COLUMN_MOVIE_ID, 271110);
         testValues.put(MoviesContract.TrailersEntry.COLUMN_KEY, "43NWzay3W4s");
         testValues.put(MoviesContract.TrailersEntry.COLUMN_NAME, "Official Trailer #1");
         testValues.put(MoviesContract.TrailersEntry.COLUMN_SITE, "YouTube");
@@ -67,7 +67,7 @@ public class TestUtilities extends AndroidTestCase {
 
     public static ContentValues createReviewsValues() {
         ContentValues testValues = new ContentValues();
-        testValues.put(MoviesContract.ReviewsEntry._ID, 271110);
+        testValues.put(MoviesContract.ReviewsEntry.COLUMN_MOVIE_ID, 271110);
         testValues.put(MoviesContract.ReviewsEntry.COLUMN_AUTHOR, "Frank Ochieng");
         testValues.put(MoviesContract.ReviewsEntry.COLUMN_CONTENT, "Well another super-sized Marvel Comics superhero saga hits the big screen with the selected savior Captain America taking the top billing on the marquee. Thus, the pulsating popcorn pleaser **Captain America: Civil War**");
         return testValues;
