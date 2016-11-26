@@ -36,6 +36,7 @@ import java.util.List;
 
 import br.com.adalbertofjr.popularmovies.R;
 import br.com.adalbertofjr.popularmovies.data.MoviesContract;
+import br.com.adalbertofjr.popularmovies.data.MoviesContract.FavoritesEntry;
 import br.com.adalbertofjr.popularmovies.model.Movie;
 import br.com.adalbertofjr.popularmovies.model.Review;
 import br.com.adalbertofjr.popularmovies.model.Trailer;
@@ -211,6 +212,10 @@ public class DetailMovieFragment extends Fragment
             mActivity.getSupportActionBar().setTitle(mMovie.getOriginal_title());
         }
 
+        if (isFavorito(mMovie.getId())) {
+            mFavorito.setBackgroundTintList(getFabBackground(true));
+        }
+
         Picasso.with(getContext())
                 .load(mMovie.getBackDropUrlPath())
                 .into(mPosterImageBack);
@@ -336,17 +341,55 @@ public class DetailMovieFragment extends Fragment
 
         if (id == R.id.fb_detail_favorito) {
             if (mMovie != null) {
-                Uri insert = getActivity().getContentResolver().insert(MoviesContract.FavoritesEntry.CONTENT_URI,
-                        getMovieContentValues(mMovie));
-
-                Long idMovie = ContentUris.parseId(insert);
-
-                if (idMovie != -1) {
-                    Log.i(LOG_TAG, "Favorito inserido");
-                    mFavorito.setBackgroundTintList(getFabBackground(true));
-                }
+                setFavorito();
             }
         }
+    }
+
+    private void setFavorito() {
+        if (isFavorito(mMovie.getId())) {
+            String selection = FavoritesEntry._ID + "= ?";
+            String[] selectionArgs = new String[]{mMovie.getId()};
+            int delete = getActivity().getContentResolver().delete(FavoritesEntry.CONTENT_URI,
+                    selection,
+                    selectionArgs
+            );
+
+            if (delete != -1) {
+                Log.i(LOG_TAG, "Favorito removido");
+                mFavorito.setBackgroundTintList(getFabBackground(false));
+            }
+        } else {
+            Uri insert = getActivity().getContentResolver().insert(FavoritesEntry.CONTENT_URI,
+                    getMovieContentValues(mMovie));
+
+            Long idMovie = ContentUris.parseId(insert);
+
+            if (idMovie != -1) {
+                Log.i(LOG_TAG, "Favorito inserido");
+                mFavorito.setBackgroundTintList(getFabBackground(true));
+            }
+        }
+    }
+
+    private boolean isFavorito(String id) {
+        String[] projection = {FavoritesEntry._ID};
+        String selection = FavoritesEntry._ID + "= ?";
+        String[] selectionArgs = new String[]{id};
+
+        Cursor cursor = getActivity().getContentResolver().query(
+                FavoritesEntry.CONTENT_URI,
+                projection,
+                selection,
+                selectionArgs,
+                null
+        );
+
+        if (cursor.moveToNext()) {
+            return true;
+        }
+
+        return false;
     }
 
     private ColorStateList getFabBackground(boolean favorito) {
@@ -356,13 +399,13 @@ public class DetailMovieFragment extends Fragment
 
     private ContentValues getMovieContentValues(Movie movie) {
         ContentValues movieValues = new ContentValues();
-        movieValues.put(MoviesContract.FavoritesEntry._ID, movie.getId());
-        movieValues.put(MoviesContract.FavoritesEntry.COLUMN_ORIGINAL_TITLE, movie.getOriginal_title());
-        movieValues.put(MoviesContract.FavoritesEntry.COLUMN_POSTER_PATH, movie.getPoster_path());
-        movieValues.put(MoviesContract.FavoritesEntry.COLUMN_RELEASE_DATE, movie.getRelease_date());
-        movieValues.put(MoviesContract.FavoritesEntry.COLUMN_VOTE_AVERAGE, movie.getVote_average());
-        movieValues.put(MoviesContract.FavoritesEntry.COLUMN_OVERVIEW, movie.getOverview());
-        movieValues.put(MoviesContract.FavoritesEntry.COLUMN_BACKDROP_PATH, movie.getBackDropUrlPath());
+        movieValues.put(FavoritesEntry._ID, movie.getId());
+        movieValues.put(FavoritesEntry.COLUMN_ORIGINAL_TITLE, movie.getOriginal_title());
+        movieValues.put(FavoritesEntry.COLUMN_POSTER_PATH, movie.getPoster_path());
+        movieValues.put(FavoritesEntry.COLUMN_RELEASE_DATE, movie.getRelease_date());
+        movieValues.put(FavoritesEntry.COLUMN_VOTE_AVERAGE, movie.getVote_average());
+        movieValues.put(FavoritesEntry.COLUMN_OVERVIEW, movie.getOverview());
+        movieValues.put(FavoritesEntry.COLUMN_BACKDROP_PATH, movie.getBackDropUrlPath());
         return movieValues;
     }
 }
