@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import br.com.adalbertofjr.popularmovies.data.MoviesContract.FavoritesEntry;
 import br.com.adalbertofjr.popularmovies.data.MoviesContract.PopularEntry;
 import br.com.adalbertofjr.popularmovies.data.MoviesContract.ReviewsEntry;
 import br.com.adalbertofjr.popularmovies.data.MoviesContract.TopRatedEntry;
@@ -50,6 +51,17 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
                 TopRatedEntry.COLUMN_BACKDROP_PATH + " TEXT NOT NULL " +
                 ");";
 
+        final String SQL_CREATE_FAVORITES_TABLE = "CREATE TABLE " +
+                FavoritesEntry.TABLE_NAME + " (" +
+                FavoritesEntry._ID + " INTEGER PRIMARY KEY, " +
+                FavoritesEntry.COLUMN_ORIGINAL_TITLE + " TEXT UNIQUE NOT NULL, " +
+                FavoritesEntry.COLUMN_POSTER_PATH + " TEXT NOT NULL, " +
+                FavoritesEntry.COLUMN_RELEASE_DATE + " TEXT NOT NULL, " +
+                FavoritesEntry.COLUMN_VOTE_AVERAGE + " REAL NOT NULL, " +
+                FavoritesEntry.COLUMN_OVERVIEW + " TEXT NOT NULL, " +
+                FavoritesEntry.COLUMN_BACKDROP_PATH + " TEXT NOT NULL " +
+                ");";
+
         final String SQL_CREATE_TRAILERS_TABLE = "CREATE TABLE " +
                 TrailersEntry.TABLE_NAME + " (" +
                 TrailersEntry._ID + " TEXT PRIMARY KEY, " +
@@ -69,6 +81,7 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 
         sqLiteDatabase.execSQL(SQL_CREATE_POPULAR_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_TOP_RATED_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_FAVORITES_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_TRAILERS_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_REVIEWS_TABLE);
     }
@@ -77,6 +90,7 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
         sqLiteDatabase.execSQL("DROP DATABASE IF EXISTS " + PopularEntry.TABLE_NAME);
         sqLiteDatabase.execSQL("DROP DATABASE IF EXISTS " + TopRatedEntry.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP DATABASE IF EXISTS " + FavoritesEntry.TABLE_NAME);
         sqLiteDatabase.execSQL("DROP DATABASE IF EXISTS " + TrailersEntry.TABLE_NAME);
         sqLiteDatabase.execSQL("DROP DATABASE IF EXISTS " + ReviewsEntry.TABLE_NAME);
     }

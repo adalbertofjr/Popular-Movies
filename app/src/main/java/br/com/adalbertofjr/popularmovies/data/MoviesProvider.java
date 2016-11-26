@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 
+import br.com.adalbertofjr.popularmovies.data.MoviesContract.FavoritesEntry;
 import br.com.adalbertofjr.popularmovies.data.MoviesContract.PopularEntry;
 import br.com.adalbertofjr.popularmovies.data.MoviesContract.ReviewsEntry;
 import br.com.adalbertofjr.popularmovies.data.MoviesContract.TopRatedEntry;
@@ -36,6 +37,8 @@ public class MoviesProvider extends ContentProvider {
     static final int TRAILERS_WITH_MOVIE = 301;
     static final int REVIEWS = 400;
     static final int REVIEWS_WITH_MOVIE = 401;
+    static final int FAVORITES = 500;
+    static final int FAVORITES_WITH_MOVIE = 501;
     private SQLiteOpenHelper mOpenHelper;
 
     public static UriMatcher buildUriMatcher() {
@@ -46,6 +49,8 @@ public class MoviesProvider extends ContentProvider {
         uriMatcherMatcher.addURI(authority, MoviesContract.PATH_POPULAR + "/#", POPULAR_WITH_MOVIE);
         uriMatcherMatcher.addURI(authority, MoviesContract.PATH_TOP_RATED, TOP_RATED);
         uriMatcherMatcher.addURI(authority, MoviesContract.PATH_TOP_RATED + "/#", TOP_RATED_WITH_MOVIE);
+        uriMatcherMatcher.addURI(authority, MoviesContract.PATH_FAVORITES, FAVORITES);
+        uriMatcherMatcher.addURI(authority, MoviesContract.PATH_FAVORITES + "/#", FAVORITES_WITH_MOVIE);
         uriMatcherMatcher.addURI(authority, MoviesContract.PATH_TRAILERS, TRAILERS);
         uriMatcherMatcher.addURI(authority, MoviesContract.PATH_TRAILERS + "/#", TRAILERS_WITH_MOVIE);
         uriMatcherMatcher.addURI(authority, MoviesContract.PATH_REVIEWS, REVIEWS);
@@ -109,6 +114,32 @@ public class MoviesProvider extends ContentProvider {
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 retCursor = mOpenHelper.getWritableDatabase().query(
                         TopRatedEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
+            case FAVORITES: {
+                retCursor = mOpenHelper.getWritableDatabase().query(
+                        FavoritesEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
+            case FAVORITES_WITH_MOVIE: {
+                selection = "_id = ?";
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+                retCursor = mOpenHelper.getWritableDatabase().query(
+                        FavoritesEntry.TABLE_NAME,
                         projection,
                         selection,
                         selectionArgs,
@@ -197,6 +228,12 @@ public class MoviesProvider extends ContentProvider {
             case TOP_RATED_WITH_MOVIE: {
                 return TopRatedEntry.CONTENT_ITEM_TYPE;
             }
+            case FAVORITES: {
+                return FavoritesEntry.CONTENT_TYPE;
+            }
+            case FAVORITES_WITH_MOVIE: {
+                return FavoritesEntry.CONTENT_ITEM_TYPE;
+            }
             case TRAILERS: {
                 return TrailersEntry.CONTENT_TYPE;
             }
@@ -231,6 +268,14 @@ public class MoviesProvider extends ContentProvider {
                 long _id = db.insert(TopRatedEntry.TABLE_NAME, null, values);
                 if (_id > 0)
                     returnUri = TopRatedEntry.buildTopRatedMovieUri(values.getAsLong(TopRatedEntry._ID));
+                else
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
+            }
+            case FAVORITES: {
+                long _id = db.insert(FavoritesEntry.TABLE_NAME, null, values);
+                if (_id > 0)
+                    returnUri = FavoritesEntry.buildFavoritesMovieUri(values.getAsLong(TopRatedEntry._ID));
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
@@ -274,6 +319,10 @@ public class MoviesProvider extends ContentProvider {
                 rowsDeleted = db.delete(TopRatedEntry.TABLE_NAME, selection, selectionArgs);
                 break;
             }
+            case FAVORITES: {
+                rowsDeleted = db.delete(FavoritesEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            }
             case TRAILERS: {
                 rowsDeleted = db.delete(TrailersEntry.TABLE_NAME, selection, selectionArgs);
                 break;
@@ -305,6 +354,10 @@ public class MoviesProvider extends ContentProvider {
             }
             case TOP_RATED: {
                 rowsUpdate = db.update(MoviesContract.TopRatedEntry.TABLE_NAME, values, selection, selectionArgs);
+                break;
+            }
+            case FAVORITES: {
+                rowsUpdate = db.update(MoviesContract.FavoritesEntry.TABLE_NAME, values, selection, selectionArgs);
                 break;
             }
             case TRAILERS: {

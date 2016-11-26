@@ -7,6 +7,7 @@ import android.test.AndroidTestCase;
 
 import java.util.HashSet;
 
+import br.com.adalbertofjr.popularmovies.data.MoviesContract.FavoritesEntry;
 import br.com.adalbertofjr.popularmovies.data.MoviesContract.PopularEntry;
 import br.com.adalbertofjr.popularmovies.data.MoviesContract.ReviewsEntry;
 import br.com.adalbertofjr.popularmovies.data.MoviesContract.TopRatedEntry;
@@ -43,6 +44,7 @@ public class TesteDb extends AndroidTestCase {
         tableNameHashSet.add(TopRatedEntry.TABLE_NAME);
         tableNameHashSet.add(TrailersEntry.TABLE_NAME);
         tableNameHashSet.add(ReviewsEntry.TABLE_NAME);
+        tableNameHashSet.add(FavoritesEntry.TABLE_NAME);
 
         this.mContext.deleteDatabase(MoviesDbHelper.DATABASE_NAME);
 
@@ -241,6 +243,41 @@ public class TesteDb extends AndroidTestCase {
         // (you can use the validateCurrentRecord function in TestUtilities to validate the
         // query if you like)
         TestUtilities.validateCurrentRecord("Error: Top Rated Query Validation Failed",
+                cursor, testValues);
+
+
+        // Finally, close the cursor and database
+        cursor.close();
+        db.close();
+    }
+
+    public void testFavoritesTable() {
+        // Get reference database
+        SQLiteDatabase db = new MoviesDbHelper(this.mContext).getWritableDatabase();
+
+        // Create values to insert
+        ContentValues testValues = TestUtilities.createCaptainAmericaValues();
+
+        // Insert values into database and get row id get back
+        db.insert(FavoritesEntry.TABLE_NAME, null, testValues);
+
+        // Query the database and receive cursor back
+        Cursor cursor = db.query(FavoritesEntry.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+
+        // Move the cursor to a valid database row
+        assertTrue("Error: This means that the database has not been created correctly",
+                cursor.moveToFirst());
+
+        // Validate data in resulting Cursor with the original ContentValues
+        // (you can use the validateCurrentRecord function in TestUtilities to validate the
+        // query if you like)
+        TestUtilities.validateCurrentRecord("Error: Favorites Query Validation Failed",
                 cursor, testValues);
 
 

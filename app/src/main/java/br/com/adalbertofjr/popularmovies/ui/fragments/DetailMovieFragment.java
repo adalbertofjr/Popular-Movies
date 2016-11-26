@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -22,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -47,7 +49,7 @@ import br.com.adalbertofjr.popularmovies.ui.adapters.TrailersAdapter;
  */
 
 public class DetailMovieFragment extends Fragment
-        implements LoaderManager.LoaderCallbacks<Cursor> {
+        implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
     public static final String DETAIL_MOVIE_FRAGMENT_TAG = "DMFTAG";
     private static final int DETAIL_LOADER = 0;
     private ProgressBar mProgressBar;
@@ -68,6 +70,8 @@ public class DetailMovieFragment extends Fragment
     private AppCompatActivity mActivity;
     private ImageView mPosterImageBack;
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
+    private FloatingActionButton mFavorito;
+    private Movie mMovie;
 
     public DetailMovieFragment() {
     }
@@ -106,6 +110,7 @@ public class DetailMovieFragment extends Fragment
         mActivity = ((AppCompatActivity) getActivity());
 
         View rootView = inflater.inflate(R.layout.fragment_detail_movie, container, false);
+        mFavorito = (FloatingActionButton) rootView.findViewById(R.id.fb_detail_favorito);
         Toolbar mToolbar = (Toolbar) rootView.findViewById(R.id.tb_detail);
         mPosterImageBack = (ImageView) rootView.findViewById(R.id.iv_detail_poster_back);
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.pb_detail_progress);
@@ -143,6 +148,8 @@ public class DetailMovieFragment extends Fragment
 
         mTrailersListRecyclerView.setHasFixedSize(true);
         mTrailersListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+
+        mFavorito.setOnClickListener(this);
 
         return rootView;
     }
@@ -186,40 +193,40 @@ public class DetailMovieFragment extends Fragment
 
         hideProgressBar();
 
-        Movie movie = new Movie();
-        movie.setId(cursor.getString(0));
-        movie.setOriginal_title(cursor.getString(1));
-        movie.setPoster_path(cursor.getString(2));
-        movie.setRelease_date(cursor.getString(3));
-        movie.setVote_average(cursor.getString(4));
-        movie.setOverview(cursor.getString(5));
-        movie.setBackdrop_path(cursor.getString(6));
+        mMovie = new Movie();
+        mMovie.setId(cursor.getString(0));
+        mMovie.setOriginal_title(cursor.getString(1));
+        mMovie.setPoster_path(cursor.getString(2));
+        mMovie.setRelease_date(cursor.getString(3));
+        mMovie.setVote_average(cursor.getString(4));
+        mMovie.setOverview(cursor.getString(5));
+        mMovie.setBackdrop_path(cursor.getString(6));
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            mCollapsingToolbarLayout.setTitle(movie.getOriginal_title());
+            mCollapsingToolbarLayout.setTitle(mMovie.getOriginal_title());
         } else {
             mCollapsingToolbarLayout.setTitleEnabled(false);
-            mActivity.getSupportActionBar().setTitle(movie.getOriginal_title());
+            mActivity.getSupportActionBar().setTitle(mMovie.getOriginal_title());
         }
 
         Picasso.with(getContext())
-                .load(movie.getBackDropUrlPath())
+                .load(mMovie.getBackDropUrlPath())
                 .into(mPosterImageBack);
 
         Picasso.with(getContext())
-                .load(movie.getPosterUrlPath())
+                .load(mMovie.getPosterUrlPath())
                 .into(mPosterImage);
 
-        String dtRelease = formatDate(movie.getRelease_date());
-        mTitle.setText(movie.getOriginal_title());
+        String dtRelease = formatDate(mMovie.getRelease_date());
+        mTitle.setText(mMovie.getOriginal_title());
         mDateRelease.setText(dtRelease);
-        mVoteAverage.setText(movie.getVote_average());
-        mOverview.setText(movie.getOverview());
+        mVoteAverage.setText(mMovie.getVote_average());
+        mOverview.setText(mMovie.getOverview());
 
-        List<Trailer> trailers = getTrailers(movie);
+        List<Trailer> trailers = getTrailers(mMovie);
         updateTrailersAdapter(trailers);
 
-        List<Review> reviews = getReviews(movie);
+        List<Review> reviews = getReviews(mMovie);
         updateReviewsAdapter(reviews);
 
     }
@@ -319,5 +326,14 @@ public class DetailMovieFragment extends Fragment
     private void updateTrailersAdapter(List<Trailer> trailers) {
         TrailersAdapter trailersAdapter = new TrailersAdapter(getActivity(), trailers);
         mTrailersListRecyclerView.setAdapter(trailersAdapter);
+    }
+
+    @Override
+    public void onClick(View view) {
+        int id = view.getId();
+
+        if (id == R.id.fb_detail_favorito) {
+            Toast.makeText(getActivity(), "Favorito", Toast.LENGTH_SHORT).show();
+        }
     }
 }
