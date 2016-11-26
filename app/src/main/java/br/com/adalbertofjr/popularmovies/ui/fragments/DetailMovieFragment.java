@@ -55,6 +55,13 @@ public class DetailMovieFragment extends Fragment
         implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
     public static final String DETAIL_MOVIE_FRAGMENT_TAG = "DMFTAG";
     private static final int DETAIL_LOADER = 0;
+    public static final int COLUMN_ID = 0;
+    public static final int COLUMN_TITLE = 1;
+    public static final int COLUMN_POSTER = 2;
+    public static final int COLUMN_RELEASE_DATE = 3;
+    public static final int COLUMN_VOTE_AVERAGE = 4;
+    public static final int COLUMN_OVERVIEW = 5;
+    public static final int COLUMN_BACKDROP_PATH = 6;
     private ProgressBar mProgressBar;
     private RecyclerView mTrailersListRecyclerView;
     private TextView mContextReviewOne;
@@ -197,13 +204,13 @@ public class DetailMovieFragment extends Fragment
         hideProgressBar();
 
         mMovie = new Movie();
-        mMovie.setId(cursor.getString(0));
-        mMovie.setOriginal_title(cursor.getString(1));
-        mMovie.setPoster_path(cursor.getString(2));
-        mMovie.setRelease_date(cursor.getString(3));
-        mMovie.setVote_average(cursor.getString(4));
-        mMovie.setOverview(cursor.getString(5));
-        mMovie.setBackdrop_path(cursor.getString(6));
+        mMovie.setId(cursor.getString(COLUMN_ID));
+        mMovie.setOriginal_title(cursor.getString(COLUMN_TITLE));
+        mMovie.setPoster_path(cursor.getString(COLUMN_POSTER));
+        mMovie.setRelease_date(cursor.getString(COLUMN_RELEASE_DATE));
+        mMovie.setVote_average(cursor.getString(COLUMN_VOTE_AVERAGE));
+        mMovie.setOverview(cursor.getString(COLUMN_OVERVIEW));
+        mMovie.setBackdrop_path(cursor.getString(COLUMN_BACKDROP_PATH));
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             mCollapsingToolbarLayout.setTitle(mMovie.getOriginal_title());
@@ -405,7 +412,7 @@ public class DetailMovieFragment extends Fragment
         movieValues.put(FavoritesEntry.COLUMN_RELEASE_DATE, movie.getRelease_date());
         movieValues.put(FavoritesEntry.COLUMN_VOTE_AVERAGE, movie.getVote_average());
         movieValues.put(FavoritesEntry.COLUMN_OVERVIEW, movie.getOverview());
-        movieValues.put(FavoritesEntry.COLUMN_BACKDROP_PATH, movie.getBackDropUrlPath());
+        movieValues.put(FavoritesEntry.COLUMN_BACKDROP_PATH, movie.getBackdrop_path());
         return movieValues;
     }
 }

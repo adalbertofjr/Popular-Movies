@@ -71,7 +71,7 @@ public class Movie implements Parcelable {
         this.id = id;
     }
 
-    private String getBackdrop_path() {
+    public String getBackdrop_path() {
         return backdrop_path;
     }
 
