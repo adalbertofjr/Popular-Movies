@@ -165,10 +165,8 @@ public class MoviesContract {
         public static final String COLUMN_RELEASE_DATE = "release_date";
         public static final String COLUMN_OVERVIEW = "overview";
 
-        public static Uri buildFavoritesMovieUri(long idMovie) {
-            return ContentUris.withAppendedId(CONTENT_URI, idMovie);
+        public static Uri buildFavoritesMovieUri(Long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
         }
-
-
     }
 }
