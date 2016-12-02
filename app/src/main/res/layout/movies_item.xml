@@ -38,6 +38,7 @@
         android:layout_marginLeft="@dimen/poster_card_margin"
         android:layout_marginRight="@dimen/poster_card_margin"
         android:layout_marginTop="6dp"
+        android:visibility="invisible"
         android:background="@color/colorAccent" />
 
 </LinearLayout>
