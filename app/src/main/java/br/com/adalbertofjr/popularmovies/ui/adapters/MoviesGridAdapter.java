@@ -72,10 +72,6 @@ public class MoviesGridAdapter extends CursorRecyclerViewAdapter<MoviesGridAdapt
             @Override
             public void onClick(View view) {
                 if (mListener != null) {
-                    if (mMovieSelected != null && movie.getId().equals(mMovieSelected.getId())) {
-                        return;
-                    }
-
                     mListener.onMovieSelected(movie, null);
                     mMovieSelected = movie;
 
