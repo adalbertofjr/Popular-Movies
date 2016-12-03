@@ -111,6 +111,11 @@ public class DetailMovieFragment extends Fragment
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        if (savedInstanceState != null && savedInstanceState.getBoolean("destroy_loader") == true) {
+            getLoaderManager().destroyLoader(DETAIL_LOADER);
+        }
+
         getLoaderManager().initLoader(DETAIL_LOADER, null, this);
     }
 
@@ -162,6 +167,12 @@ public class DetailMovieFragment extends Fragment
         mFavorito.setOnClickListener(this);
 
         return rootView;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean("destroy_loader", true);
+        super.onSaveInstanceState(outState);
     }
 
     private String formatDate(String date) {
