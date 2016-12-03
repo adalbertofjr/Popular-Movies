@@ -28,6 +28,8 @@ public class MoviesGridAdapter extends CursorRecyclerViewAdapter<MoviesGridAdapt
     private static final String LOG_TAG = MoviesGridAdapter.class.getSimpleName();
     private final Context mContext;
     private final OnMovieSelectedListener mListener;
+    private View mOldMovieSelectedView;
+    private Movie mMovieSelected;
 
     public MoviesGridAdapter(Context mContext, Cursor cursor, OnMovieSelectedListener mListener) {
         super(mContext, cursor);
@@ -36,7 +38,7 @@ public class MoviesGridAdapter extends CursorRecyclerViewAdapter<MoviesGridAdapt
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, Cursor cursor) {
+    public void onBindViewHolder(final ViewHolder holder, Cursor cursor) {
         final Movie movie = new Movie();
 
         if (cursor.moveToNext()) {
@@ -59,11 +61,26 @@ public class MoviesGridAdapter extends CursorRecyclerViewAdapter<MoviesGridAdapt
 
         Picasso.with(mContext).load(urlPoster).into(holder.posterImageView);
 
+        if (mMovieSelected != null && mMovieSelected.getId().equals(movie.getId())) {
+            mOldMovieSelectedView = holder.movieSelectedView;
+            holder.movieSelectedView.setVisibility(View.VISIBLE);
+        } else {
+            holder.movieSelectedView.setVisibility(View.INVISIBLE);
+        }
+
         holder.posterImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (mListener != null) {
                     mListener.onMovieSelected(movie, null);
+                    mMovieSelected = movie;
+
+                    if (mOldMovieSelectedView != null) {
+                        mOldMovieSelectedView.setVisibility(View.INVISIBLE);
+                    }
+
+                    holder.movieSelectedView.setVisibility(View.VISIBLE);
+                    mOldMovieSelectedView = holder.movieSelectedView;
                 } else {
                     Log.d(LOG_TAG, "You need MoviesFragment.OnMovieSelectedListener callback.");
                 }
@@ -85,10 +102,12 @@ public class MoviesGridAdapter extends CursorRecyclerViewAdapter<MoviesGridAdapt
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private final ImageView posterImageView;
+        private final View movieSelectedView;
 
         public ViewHolder(View itemView) {
             super(itemView);
             posterImageView = (ImageView) itemView.findViewById(R.id.iv_movies_item_poster);
+            movieSelectedView = itemView.findViewById(R.id.vw_movies_item_selected);
         }
     }
 }

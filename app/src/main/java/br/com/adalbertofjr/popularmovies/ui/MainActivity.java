@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+
     private class PopularMoviesPageAdapter extends FragmentPagerAdapter {
         public PopularMoviesPageAdapter(FragmentManager fm) {
             super(fm);
