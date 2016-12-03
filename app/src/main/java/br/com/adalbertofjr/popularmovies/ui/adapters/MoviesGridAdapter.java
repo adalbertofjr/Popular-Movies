@@ -28,8 +28,8 @@ public class MoviesGridAdapter extends CursorRecyclerViewAdapter<MoviesGridAdapt
     private static final String LOG_TAG = MoviesGridAdapter.class.getSimpleName();
     private final Context mContext;
     private final OnMovieSelectedListener mListener;
-    private int mPosition = RecyclerView.NO_POSITION;
     private View mOldMovieSelectedView;
+    private Movie mMovieSelected;
 
     public MoviesGridAdapter(Context mContext, Cursor cursor, OnMovieSelectedListener mListener) {
         super(mContext, cursor);
@@ -61,21 +61,30 @@ public class MoviesGridAdapter extends CursorRecyclerViewAdapter<MoviesGridAdapt
 
         Picasso.with(mContext).load(urlPoster).into(holder.posterImageView);
 
+        if (mMovieSelected != null && mMovieSelected.getId().equals(movie.getId())) {
+            mOldMovieSelectedView = holder.movieSelectedView;
+            holder.movieSelectedView.setVisibility(View.VISIBLE);
+        } else {
+            holder.movieSelectedView.setVisibility(View.INVISIBLE);
+        }
+
         holder.posterImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (mListener != null) {
-                    mListener.onMovieSelected(movie, null);
-                    int layoutPosition = holder.getLayoutPosition();
-
-                    if (mPosition != layoutPosition) {
-                        if (mOldMovieSelectedView != null) {
-                            mOldMovieSelectedView.setVisibility(View.INVISIBLE);
-                        }
-                        mPosition = layoutPosition;
-                        holder.movieSelectedView.setVisibility(View.VISIBLE);
-                        mOldMovieSelectedView = holder.movieSelectedView;
+                    if (mMovieSelected != null && movie.getId().equals(mMovieSelected.getId())) {
+                        return;
                     }
+
+                    mListener.onMovieSelected(movie, null);
+                    mMovieSelected = movie;
+
+                    if (mOldMovieSelectedView != null) {
+                        mOldMovieSelectedView.setVisibility(View.INVISIBLE);
+                    }
+
+                    holder.movieSelectedView.setVisibility(View.VISIBLE);
+                    mOldMovieSelectedView = holder.movieSelectedView;
                 } else {
                     Log.d(LOG_TAG, "You need MoviesFragment.OnMovieSelectedListener callback.");
                 }
