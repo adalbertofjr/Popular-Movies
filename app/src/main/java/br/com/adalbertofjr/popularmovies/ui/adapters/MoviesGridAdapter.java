@@ -73,6 +73,7 @@ public class MoviesGridAdapter extends CursorRecyclerViewAdapter<MoviesGridAdapt
             public void onClick(View view) {
                 if (mListener != null) {
                     mListener.onMovieSelected(movie, null);
+                    mListener.onMoviePosition(holder.getAdapterPosition());
                     mMovieSelected = movie;
 
                     if (mOldMovieSelectedView != null) {
@@ -96,8 +97,14 @@ public class MoviesGridAdapter extends CursorRecyclerViewAdapter<MoviesGridAdapt
         return new ViewHolder(view);
     }
 
+    public void setMovieSelected(Movie movieSelected) {
+        this.mMovieSelected = movieSelected;
+    }
+
     public interface OnMovieSelectedListener {
         void onMovieSelected(Movie movie, Uri uri);
+
+        void onMoviePosition(int position);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

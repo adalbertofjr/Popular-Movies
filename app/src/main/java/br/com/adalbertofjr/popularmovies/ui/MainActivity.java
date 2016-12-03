@@ -69,6 +69,11 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    public void onMoviePosition(int position) {
+
+    }
+
 
     private class PopularMoviesPageAdapter extends FragmentPagerAdapter {
         public PopularMoviesPageAdapter(FragmentManager fm) {
