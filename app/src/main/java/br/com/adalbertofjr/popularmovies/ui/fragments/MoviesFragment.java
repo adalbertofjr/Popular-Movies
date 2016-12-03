@@ -222,6 +222,11 @@ public class MoviesFragment extends Fragment
                 .onMovieSelected(movie, contentUri);
     }
 
+    @Override
+    public void onMoviePosition(int position) {
+
+    }
+
     private void updateMoviesAdapter() {
         hideProgressBar();
 
@@ -268,6 +273,8 @@ public class MoviesFragment extends Fragment
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         mMoviesAdapter.swapCursor(cursor);
+
+
     }
 
     @Override

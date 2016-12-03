@@ -37,8 +37,8 @@ import br.com.adalbertofjr.popularmovies.util.Util;
 public class FavoritesMoviesFragment extends Fragment
         implements MoviesGridAdapter.OnMovieSelectedListener,
         LoaderManager.LoaderCallbacks<Cursor> {
-    private static final String MOVIES_INSTANCE_STATE = "movies";
-    public static final String MOVIE_FRAGMENT_TAG = "MFTAG";
+    private static final String MOVIE_SELECTED_STATE = "movie_selected";
+    private static final String MOVIE_POSITION_STATE = "movie_position";
     private static final int MOVIES_LOADER = 0;
     private MoviesGridAdapter mMoviesAdapter;
     private ArrayList<Movie> mMovies;
@@ -48,6 +48,8 @@ public class FavoritesMoviesFragment extends Fragment
     private String mFetchOption;
     private RecyclerView mGridMoviesRecyclerView;
     private boolean mTwoPane;
+    private Movie mMovieSelected;
+    private int mPosition = RecyclerView.NO_POSITION;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -65,6 +67,9 @@ public class FavoritesMoviesFragment extends Fragment
         mErrorMessage = (TextView) rootView.findViewById(R.id.tv_movies_error_message);
 
         mMoviesAdapter = new MoviesGridAdapter(getActivity(), null, this);
+
+        getExtrasSavedInstance(savedInstanceState);
+
         mGridMoviesRecyclerView.setAdapter(mMoviesAdapter);
 
         RecyclerView.LayoutManager gridLayout;
@@ -94,12 +99,39 @@ public class FavoritesMoviesFragment extends Fragment
         return rootView;
     }
 
+    private void getExtrasSavedInstance(@Nullable Bundle savedInstanceState) {
+        if (savedInstanceState != null && savedInstanceState.getParcelable(MOVIE_SELECTED_STATE) != null) {
+            mMovieSelected = savedInstanceState.getParcelable(MOVIE_SELECTED_STATE);
+
+            if (mMovieSelected != null) {
+                mMoviesAdapter.setMovieSelected(mMovieSelected);
+            }
+        }
+
+        if (savedInstanceState != null && savedInstanceState.getInt(MOVIE_POSITION_STATE) != RecyclerView.NO_POSITION) {
+            mPosition = savedInstanceState.getInt(MOVIE_POSITION_STATE);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(MOVIE_SELECTED_STATE, mMovieSelected);
+        outState.putInt(MOVIE_POSITION_STATE, mPosition);
+        super.onSaveInstanceState(outState);
+    }
+
     @Override
     public void onMovieSelected(Movie movie, Uri uri) {
         Uri contentUri = MoviesContract.FavoritesEntry.CONTENT_URI;
+        mMovieSelected = movie;
 
         ((MoviesGridAdapter.OnMovieSelectedListener) getActivity())
                 .onMovieSelected(movie, contentUri);
+    }
+
+    @Override
+    public void onMoviePosition(int position) {
+
     }
 
     private void updateMoviesAdapter() {
