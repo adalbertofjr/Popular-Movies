@@ -18,4 +18,8 @@
     <string name="sync_account_type">popularmovies.example.com</string>
     <string name="content_authority" translatable="false">br.com.adalbertofjr.popularmovies</string>
     <string name="title_favorite">favorite</string>
+
+    <string name="title_activity_splash_screen">SplashScreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>
