@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity
         ViewPager mViewPager = (ViewPager) findViewById(R.id.vp_viewPager);
         TabLayout mTabLayout = (TabLayout) findViewById(R.id.tl_tabs);
 
-        mToolbar.setTitle(getString(R.string.app_name));
+//        mToolbar.setTitle(getString(R.string.app_name));
         mToolbar.setTitleTextColor(Color.WHITE);
         mViewPager.setAdapter(new PopularMoviesPageAdapter(getSupportFragmentManager()));
         mTabLayout.setupWithViewPager(mViewPager);
