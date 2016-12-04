@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Filmes Populares</string>
+    <string name="app_name">Pop Movies</string>
     <string name="action_refresh">Atualizar</string>
     <string name="detail_movie_label">Detalhes do Filme</string>
     <string name="movie_poster_description">Poster do Filme</string>
