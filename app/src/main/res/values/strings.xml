@@ -3,14 +3,16 @@
     <string name="settings_label">Settings</string>
     <string name="detail_movie_label">Detail Movie</string>
 
+    <string name="msg_no_favorite">You not have favorite movies added</string>
+    <string name="msg_no_network_connection">No network connection available.</string>
+    <string name="movie_poster_description">Movie Poster</string>
+    <string name="star_rating_description">Star rating</string>
+    <string name="action_refresh">Refresh</string>
+
     <!--Preference-->
     <string name="pref_sort_options_key" translatable="false">sort_options</string>
     <string name="pref_sort_option_label">Sort Options</string>
     <string name="pref_sort_option_default" translatable="false">popular</string>
-    <string name="action_refresh">Refresh</string>
-    <string name="msg_no_network_connection">No network connection available.</string>
-    <string name="movie_poster_description">Movie Poster</string>
-    <string name="star_rating_description">Star rating</string>
 
     <!--Content Provider -->
     <!-- Account type (for sync-adapter authenticator) -->

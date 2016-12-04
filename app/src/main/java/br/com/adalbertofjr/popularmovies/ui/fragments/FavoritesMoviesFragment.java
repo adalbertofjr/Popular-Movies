@@ -183,6 +183,14 @@ public class FavoritesMoviesFragment extends Fragment
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        if (cursor.getCount() == 0) {
+            if (!mErrorMessage.isShown()) {
+                mErrorMessage.setText(R.string.msg_no_favorite);
+                mErrorMessage.setVisibility(View.VISIBLE);
+                mErrorMessage.setCompoundDrawables(null, null, null, null);
+            }
+        }
+
         mMoviesAdapter.swapCursor(cursor);
     }
 
