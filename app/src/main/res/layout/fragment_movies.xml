@@ -19,6 +19,7 @@
         android:layout_gravity="center"
         android:drawableTop="@drawable/ic_wifi_off"
         android:text="@string/msg_no_network_connection"
+        android:textColor="@color/colorSecondaryText"
         android:visibility="gone" />
 
     <android.support.v7.widget.RecyclerView

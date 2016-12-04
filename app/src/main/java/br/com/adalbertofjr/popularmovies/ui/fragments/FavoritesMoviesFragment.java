@@ -99,6 +99,23 @@ public class FavoritesMoviesFragment extends Fragment
         return rootView;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        checkConnection();
+    }
+
+    private void checkConnection() {
+        if (!Util.isConnected(getActivity())) {
+            mErrorMessage.setVisibility(View.VISIBLE);
+            mGridMoviesRecyclerView.setVisibility(View.INVISIBLE);
+        } else {
+            mErrorMessage.setVisibility(View.INVISIBLE);
+            mGridMoviesRecyclerView.setVisibility(View.VISIBLE);
+        }
+    }
+
     private void getExtrasSavedInstance(@Nullable Bundle savedInstanceState) {
         if (savedInstanceState != null && savedInstanceState.getParcelable(MOVIE_SELECTED_STATE) != null) {
             mMovieSelected = savedInstanceState.getParcelable(MOVIE_SELECTED_STATE);
