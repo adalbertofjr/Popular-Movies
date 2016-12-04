@@ -16,6 +16,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -82,6 +83,8 @@ public class DetailMovieFragment extends Fragment
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
     private FloatingActionButton mFavorito;
     private Movie mMovie;
+    private TextView mErrorMessage;
+    private CardView mDetailContainer;
 
     public DetailMovieFragment() {
     }
@@ -102,9 +105,6 @@ public class DetailMovieFragment extends Fragment
 
         if (arguments != null) {
             mMovieUri = arguments.getString(Intent.EXTRA_TEXT);
-        } else {
-            // Todo - Corrigir filme inicial
-            mMovieUri = MoviesContract.PopularEntry.buildPopularMovieUri(131631).toString();
         }
     }
 
@@ -125,6 +125,8 @@ public class DetailMovieFragment extends Fragment
         mActivity = ((AppCompatActivity) getActivity());
 
         View rootView = inflater.inflate(R.layout.fragment_detail_movie, container, false);
+        mDetailContainer = (CardView) rootView.findViewById(R.id.cv_detail_container);
+        mErrorMessage = (TextView) rootView.findViewById(R.id.tv_detail_error_message);
         mFavorito = (FloatingActionButton) rootView.findViewById(R.id.fb_detail_favorito);
         Toolbar mToolbar = (Toolbar) rootView.findViewById(R.id.tb_detail);
         mPosterImageBack = (ImageView) rootView.findViewById(R.id.iv_detail_poster_back);
@@ -210,7 +212,18 @@ public class DetailMovieFragment extends Fragment
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         Log.v(LOG_TAG, "In onLoadFinished");
 
-        if (!cursor.moveToNext()) return;
+        if (!cursor.moveToNext()) {
+            if (mDetailContainer != null) {
+                if (!mErrorMessage.isShown()) {
+                    mDetailContainer.setVisibility(View.INVISIBLE);
+                    mErrorMessage.setText(R.string.msg_no_select_favorite);
+                    mErrorMessage.setVisibility(View.VISIBLE);
+                    mErrorMessage.setCompoundDrawables(null, null, null, null);
+                    mFavorito.setVisibility(View.INVISIBLE);
+                }
+            }
+            return;
+        }
 
         hideProgressBar();
 

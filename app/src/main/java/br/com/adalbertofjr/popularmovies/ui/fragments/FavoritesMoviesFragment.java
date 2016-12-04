@@ -99,6 +99,23 @@ public class FavoritesMoviesFragment extends Fragment
         return rootView;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        checkConnection();
+    }
+
+    private void checkConnection() {
+        if (!Util.isConnected(getActivity())) {
+            mErrorMessage.setVisibility(View.VISIBLE);
+            mGridMoviesRecyclerView.setVisibility(View.INVISIBLE);
+        } else {
+            mErrorMessage.setVisibility(View.INVISIBLE);
+            mGridMoviesRecyclerView.setVisibility(View.VISIBLE);
+        }
+    }
+
     private void getExtrasSavedInstance(@Nullable Bundle savedInstanceState) {
         if (savedInstanceState != null && savedInstanceState.getParcelable(MOVIE_SELECTED_STATE) != null) {
             mMovieSelected = savedInstanceState.getParcelable(MOVIE_SELECTED_STATE);
@@ -155,18 +172,30 @@ public class FavoritesMoviesFragment extends Fragment
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Uri contentUri = MoviesContract.FavoritesEntry.CONTENT_URI;
+        String sortOrder = MoviesContract.FavoritesEntry.COLUMN_VOTE_AVERAGE + " desc";
 
         return new CursorLoader(getActivity(),
                 contentUri,
                 null,
                 null,
                 null,
-                null);
+                sortOrder);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        if (cursor.getCount() == 0) {
+            if (!mErrorMessage.isShown()) {
+                mErrorMessage.setText(R.string.msg_no_favorite);
+                mErrorMessage.setVisibility(View.VISIBLE);
+                mErrorMessage.setCompoundDrawables(null, null, null, null);
+            }
+        } else {
+            if (mErrorMessage.isShown()) mErrorMessage.setVisibility(View.INVISIBLE);
+        }
+
         mMoviesAdapter.swapCursor(cursor);
+
     }
 
     @Override

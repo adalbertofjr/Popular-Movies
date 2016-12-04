@@ -99,6 +99,23 @@ public class TopRatedMoviesFragment extends Fragment implements MoviesGridAdapte
         return rootView;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        checkConnection();
+    }
+
+    private void checkConnection() {
+        if (!Util.isConnected(getActivity())) {
+            mErrorMessage.setVisibility(View.VISIBLE);
+            mGridMoviesRecyclerView.setVisibility(View.INVISIBLE);
+        } else {
+            mErrorMessage.setVisibility(View.INVISIBLE);
+            mGridMoviesRecyclerView.setVisibility(View.VISIBLE);
+        }
+    }
+
     private void getExtrasSavedInstance(@Nullable Bundle savedInstanceState) {
         if (savedInstanceState != null && savedInstanceState.getParcelable(MOVIE_SELECTED_STATE) != null) {
             mMovieSelected = savedInstanceState.getParcelable(MOVIE_SELECTED_STATE);
@@ -155,13 +172,14 @@ public class TopRatedMoviesFragment extends Fragment implements MoviesGridAdapte
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Uri contentUri = MoviesContract.TopRatedEntry.CONTENT_URI;
+        String sortOrder = MoviesContract.TopRatedEntry.COLUMN_VOTE_AVERAGE + " desc";
 
         return new CursorLoader(getActivity(),
                 contentUri,
                 null,
                 null,
                 null,
-                null);
+                sortOrder);
     }
 
     @Override

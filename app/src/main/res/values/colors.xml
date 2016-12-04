@@ -9,4 +9,6 @@
     <color name="colorDivider">#BDBDBD</color>
     <color name="colorFavoriteDark">#388E3C</color>
     <color name="colorFavorite">#4CAF50</color>
+
+    <color name="black_overlay">#66000000</color>
 </resources>

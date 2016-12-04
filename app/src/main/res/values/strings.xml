@@ -1,16 +1,19 @@
 <resources>
-    <string name="app_name">Popular Movies</string>
+    <string name="app_name" translatable="false">Pop Movies</string>
     <string name="settings_label">Settings</string>
     <string name="detail_movie_label">Detail Movie</string>
+
+    <string name="msg_no_favorite">You not have favorite movies added</string>
+    <string name="msg_no_network_connection">No network connection available.</string>
+    <string name="movie_poster_description">Movie Poster</string>
+    <string name="star_rating_description">Star rating</string>
+    <string name="msg_no_select_favorite">You not have favorite movies selected</string>
+    <string name="action_refresh">Refresh</string>
 
     <!--Preference-->
     <string name="pref_sort_options_key" translatable="false">sort_options</string>
     <string name="pref_sort_option_label">Sort Options</string>
     <string name="pref_sort_option_default" translatable="false">popular</string>
-    <string name="action_refresh">Refresh</string>
-    <string name="msg_no_network_connection">No network connection available.</string>
-    <string name="movie_poster_description">Movie Poster</string>
-    <string name="star_rating_description">Star rating</string>
 
     <!--Content Provider -->
     <!-- Account type (for sync-adapter authenticator) -->
@@ -18,4 +21,8 @@
     <string name="sync_account_type">popularmovies.example.com</string>
     <string name="content_authority" translatable="false">br.com.adalbertofjr.popularmovies</string>
     <string name="title_favorite">favorite</string>
+
+    <string name="title_activity_splash_screen">SplashScreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>

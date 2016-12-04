@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -41,6 +42,8 @@ public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.ViewHo
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         final Trailer trailer = mTrailer.get(position);
+        String trailerNumber = String.valueOf(position + 1);
+        holder.trailerNumber.setText(trailerNumber);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -57,6 +60,8 @@ public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.ViewHo
         if (intent.resolveActivity(mContext.getPackageManager()) != null) {
             mContext.startActivity(intent);
         } else {
+            intent = new Intent(Intent.ACTION_VIEW, Uri.parse(trailer.getTrailerUrlPath()));
+            mContext.startActivity(intent);
             Log.d(LOG_TAG, "Couldn't call " + trailer.getTrailerUrlPath() + ", no receiving apps installed!");
         }
     }
@@ -67,9 +72,11 @@ public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.ViewHo
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+        private final TextView trailerNumber;
 
         public ViewHolder(View itemView) {
             super(itemView);
+            trailerNumber = (TextView) itemView.findViewById(R.id.tv_trailer_number);
         }
     }
 }
