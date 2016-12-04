@@ -41,17 +41,13 @@ public class MoviesGridAdapter extends CursorRecyclerViewAdapter<MoviesGridAdapt
     public void onBindViewHolder(final ViewHolder holder, Cursor cursor) {
         final Movie movie = new Movie();
 
-        if (cursor.moveToNext()) {
-            movie.setId(cursor.getString(0));
-            movie.setOriginal_title(cursor.getString(1));
-            movie.setPoster_path(cursor.getString(2));
-            movie.setRelease_date(cursor.getString(3));
-            movie.setVote_average(cursor.getString(4));
-            movie.setOverview(cursor.getString(5));
-            movie.setBackdrop_path(cursor.getString(6));
-        } else {
-            return;
-        }
+        movie.setId(cursor.getString(0));
+        movie.setOriginal_title(cursor.getString(1));
+        movie.setPoster_path(cursor.getString(2));
+        movie.setRelease_date(cursor.getString(3));
+        movie.setVote_average(cursor.getString(4));
+        movie.setOverview(cursor.getString(5));
+        movie.setBackdrop_path(cursor.getString(6));
 
         Uri.Builder uriImage = Uri.parse(Constants.MOVIE_IMAGE_POSTER_URL)
                 .buildUpon()
