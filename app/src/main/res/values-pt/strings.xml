@@ -11,4 +11,5 @@
     <string name="title_top_rated">Melhor Avaliados</string>
     <string name="title_favorite">Favoritos</string>
     <string name="msg_no_favorite">Você não possui filmes favoritos adicionados</string>
+    <string name="msg_no_select_favorite">Você não possui filmes favoritos selecionado</string>
 </resources>

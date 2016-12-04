@@ -172,13 +172,14 @@ public class TopRatedMoviesFragment extends Fragment implements MoviesGridAdapte
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Uri contentUri = MoviesContract.TopRatedEntry.CONTENT_URI;
+        String sortOrder = MoviesContract.TopRatedEntry.COLUMN_VOTE_AVERAGE + " desc";
 
         return new CursorLoader(getActivity(),
                 contentUri,
                 null,
                 null,
                 null,
-                null);
+                sortOrder);
     }
 
     @Override

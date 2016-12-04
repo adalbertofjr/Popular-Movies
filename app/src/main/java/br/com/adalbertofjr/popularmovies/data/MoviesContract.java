@@ -83,7 +83,7 @@ public class MoviesContract {
             return CONTENT_URI.buildUpon().appendPath(testMoviesTopRated).build();
         }
 
-        public static Uri buildTopRatedMovieUri(Long id) {
+        public static Uri buildTopRatedMovieUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
     }
@@ -165,8 +165,12 @@ public class MoviesContract {
         public static final String COLUMN_RELEASE_DATE = "release_date";
         public static final String COLUMN_OVERVIEW = "overview";
 
-        public static Uri buildFavoritesMovieUri(Long id) {
+        public static Uri buildFavoritesMovieUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        public static Uri buildMoviesFavorites(String favoritesMovie) {
+            return CONTENT_URI.buildUpon().appendPath(favoritesMovie).build();
         }
     }
 }

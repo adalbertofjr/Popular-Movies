@@ -7,6 +7,7 @@
     <string name="msg_no_network_connection">No network connection available.</string>
     <string name="movie_poster_description">Movie Poster</string>
     <string name="star_rating_description">Star rating</string>
+    <string name="msg_no_select_favorite">You not have favorite movies selected</string>
     <string name="action_refresh">Refresh</string>
 
     <!--Preference-->

@@ -172,13 +172,14 @@ public class PopularMoviesFragment extends Fragment
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Uri contentUri = MoviesContract.PopularEntry.CONTENT_URI;
+        String sortOrder = MoviesContract.PopularEntry.COLUMN_VOTE_AVERAGE + " desc";
 
         return new CursorLoader(getActivity(),
                 contentUri,
                 null,
                 null,
                 null,
-                null);
+                sortOrder);
     }
 
     @Override

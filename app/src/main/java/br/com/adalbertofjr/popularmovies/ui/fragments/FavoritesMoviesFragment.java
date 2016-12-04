@@ -172,13 +172,14 @@ public class FavoritesMoviesFragment extends Fragment
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Uri contentUri = MoviesContract.FavoritesEntry.CONTENT_URI;
+        String sortOrder = MoviesContract.FavoritesEntry.COLUMN_VOTE_AVERAGE + " desc";
 
         return new CursorLoader(getActivity(),
                 contentUri,
                 null,
                 null,
                 null,
-                null);
+                sortOrder);
     }
 
     @Override
@@ -189,9 +190,12 @@ public class FavoritesMoviesFragment extends Fragment
                 mErrorMessage.setVisibility(View.VISIBLE);
                 mErrorMessage.setCompoundDrawables(null, null, null, null);
             }
+        } else {
+            if (mErrorMessage.isShown()) mErrorMessage.setVisibility(View.INVISIBLE);
         }
 
         mMoviesAdapter.swapCursor(cursor);
+
     }
 
     @Override
