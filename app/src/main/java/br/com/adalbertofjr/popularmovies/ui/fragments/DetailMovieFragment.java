@@ -106,10 +106,6 @@ public class DetailMovieFragment extends Fragment
         if (arguments != null) {
             mMovieUri = arguments.getString(Intent.EXTRA_TEXT);
         }
-//        else {
-//            // Todo - Corrigir filme inicial
-//            mMovieUri = MoviesContract.PopularEntry.buildPopularMovieUri(131631).toString();
-//        }
     }
 
     @Override
