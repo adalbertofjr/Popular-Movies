@@ -15,7 +15,7 @@
         android:id="@+id/ab_detail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:elevation="4dp">
+        app:elevation="@dimen/toolbar_elevation">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/tb_toolbar"
