@@ -21,6 +21,7 @@ public class MoviesContract {
 
     public static final String PATH_POPULAR = "popular";
     public static final String PATH_TOP_RATED = "top_rated";
+    public static final String PATH_FAVORITES = "favorites";
     public static final String PATH_TRAILERS = "trailers";
     public static final String PATH_REVIEWS = "reviews";
 
@@ -82,7 +83,7 @@ public class MoviesContract {
             return CONTENT_URI.buildUpon().appendPath(testMoviesTopRated).build();
         }
 
-        public static Uri buildTopRatedMovieUri(Long id) {
+        public static Uri buildTopRatedMovieUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
     }
@@ -96,8 +97,12 @@ public class MoviesContract {
         public static final String CONTENT_TYPE =
                 ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_TRAILERS;
 
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_TRAILERS;
+
         // Trailer table db
         public static final String TABLE_NAME = "trailers";
+        public static final String COLUMN_MOVIE_ID = "id_movie";
         public static final String COLUMN_KEY = "key";
         public static final String COLUMN_NAME = "name";
         public static final String COLUMN_SITE = "site";
@@ -120,8 +125,12 @@ public class MoviesContract {
         public static final String CONTENT_TYPE =
                 ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_REVIEWS;
 
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_REVIEWS;
+
         // Reviews table db
         public static final String TABLE_NAME = "reviews";
+        public static final String COLUMN_MOVIE_ID = "id_movie";
         public static final String COLUMN_AUTHOR = "author";
         public static final String COLUMN_CONTENT = "content";
 
@@ -131,6 +140,37 @@ public class MoviesContract {
 
         public static Uri buildReviewsMovieUri(Long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+    }
+
+    public static final class FavoritesEntry implements BaseColumns {
+
+        // Content provider
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI
+                .buildUpon()
+                .appendPath(PATH_FAVORITES).build();
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_FAVORITES;
+
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_FAVORITES;
+
+        // Favorite table db
+        public static final String TABLE_NAME = "favorites";
+        public static final String COLUMN_BACKDROP_PATH = "backdrop_path";
+        public static final String COLUMN_POSTER_PATH = "poster_path";
+        public static final String COLUMN_VOTE_AVERAGE = "vote_average";
+        public static final String COLUMN_ORIGINAL_TITLE = "original_title";
+        public static final String COLUMN_RELEASE_DATE = "release_date";
+        public static final String COLUMN_OVERVIEW = "overview";
+
+        public static Uri buildFavoritesMovieUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        public static Uri buildMoviesFavorites(String favoritesMovie) {
+            return CONTENT_URI.buildUpon().appendPath(favoritesMovie).build();
         }
     }
 }

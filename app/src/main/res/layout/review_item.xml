@@ -19,9 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
         android:fontFamily="sans-serif-condensed"
-        android:src="@mipmap/ic_launcher"
-        android:text="Adalberto"
-        android:textColor="@color/colorPrimaryText"
+        android:textColor="@color/colorPrimary"
         android:textSize="@dimen/title_size" />
 
     <TextView
@@ -29,6 +27,5 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-light"
-        android:src="@mipmap/ic_launcher"
-        android:text="blkjbljljljldjlfdljfldjfldjlfjdlfjldfldjfljdlkfdfldlfjldjflkdlfldjflkdjfljdlfjldjfldjlfkjd" />
+       android:textColor="@color/colorSecondaryText"/>
 </LinearLayout>

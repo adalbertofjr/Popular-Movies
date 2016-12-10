@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Filmes Populares</string>
     <string name="action_refresh">Atualizar</string>
     <string name="detail_movie_label">Detalhes do Filme</string>
     <string name="movie_poster_description">Poster do Filme</string>
@@ -10,4 +9,7 @@
     <string name="star_rating_description">Estrela de classificação</string>
     <string name="title_most_popular">Filmes Populares</string>
     <string name="title_top_rated">Melhor Avaliados</string>
+    <string name="title_favorite">Favoritos</string>
+    <string name="msg_no_favorite">Você não possui filmes favoritos adicionados</string>
+    <string name="msg_no_select_favorite">Você não possui filmes favoritos selecionado</string>
 </resources>

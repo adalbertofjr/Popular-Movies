@@ -13,7 +13,7 @@ import br.com.adalbertofjr.popularmovies.util.Constants;
  * Copyright © 2016 - Adalberto Fernandes Júnior. All rights reserved.
  */
 
-public class Movies implements Parcelable {
+public class Movie implements Parcelable {
     private String id;
     private String backdrop_path;
     private String poster_path;
@@ -22,16 +22,16 @@ public class Movies implements Parcelable {
     private String release_date;
     private String overview;
 
-    public Movies() {
+    public Movie() {
     }
 
-    public Movies(String id,
-                  String backdrop_path,
-                  String poster_path,
-                  String vote_average,
-                  String original_title,
-                  String release_date,
-                  String overview) {
+    public Movie(String id,
+                 String backdrop_path,
+                 String poster_path,
+                 String vote_average,
+                 String original_title,
+                 String release_date,
+                 String overview) {
         this.id = id;
         this.backdrop_path = backdrop_path;
         this.poster_path = poster_path;
@@ -41,7 +41,7 @@ public class Movies implements Parcelable {
         this.overview = overview;
     }
 
-    private Movies(Parcel in) {
+    private Movie(Parcel in) {
         id = in.readString();
         backdrop_path = in.readString();
         poster_path = in.readString();
@@ -51,15 +51,15 @@ public class Movies implements Parcelable {
         overview = in.readString();
     }
 
-    public static final Creator<Movies> CREATOR = new Creator<Movies>() {
+    public static final Creator<Movie> CREATOR = new Creator<Movie>() {
         @Override
-        public Movies createFromParcel(Parcel in) {
-            return new Movies(in);
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
         }
 
         @Override
-        public Movies[] newArray(int size) {
-            return new Movies[size];
+        public Movie[] newArray(int size) {
+            return new Movie[size];
         }
     };
 
@@ -71,7 +71,7 @@ public class Movies implements Parcelable {
         this.id = id;
     }
 
-    private String getBackdrop_path() {
+    public String getBackdrop_path() {
         return backdrop_path;
     }
 

@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 
+import br.com.adalbertofjr.popularmovies.data.MoviesContract.FavoritesEntry;
 import br.com.adalbertofjr.popularmovies.data.MoviesContract.PopularEntry;
 import br.com.adalbertofjr.popularmovies.data.MoviesContract.ReviewsEntry;
 import br.com.adalbertofjr.popularmovies.data.MoviesContract.TopRatedEntry;
@@ -33,7 +34,11 @@ public class MoviesProvider extends ContentProvider {
     static final int TOP_RATED = 200;
     static final int TOP_RATED_WITH_MOVIE = 201;
     static final int TRAILERS = 300;
+    static final int TRAILERS_WITH_MOVIE = 301;
     static final int REVIEWS = 400;
+    static final int REVIEWS_WITH_MOVIE = 401;
+    static final int FAVORITES = 500;
+    static final int FAVORITES_WITH_MOVIE = 501;
     private SQLiteOpenHelper mOpenHelper;
 
     public static UriMatcher buildUriMatcher() {
@@ -44,8 +49,12 @@ public class MoviesProvider extends ContentProvider {
         uriMatcherMatcher.addURI(authority, MoviesContract.PATH_POPULAR + "/#", POPULAR_WITH_MOVIE);
         uriMatcherMatcher.addURI(authority, MoviesContract.PATH_TOP_RATED, TOP_RATED);
         uriMatcherMatcher.addURI(authority, MoviesContract.PATH_TOP_RATED + "/#", TOP_RATED_WITH_MOVIE);
+        uriMatcherMatcher.addURI(authority, MoviesContract.PATH_FAVORITES, FAVORITES);
+        uriMatcherMatcher.addURI(authority, MoviesContract.PATH_FAVORITES + "/#", FAVORITES_WITH_MOVIE);
         uriMatcherMatcher.addURI(authority, MoviesContract.PATH_TRAILERS, TRAILERS);
+        uriMatcherMatcher.addURI(authority, MoviesContract.PATH_TRAILERS + "/#", TRAILERS_WITH_MOVIE);
         uriMatcherMatcher.addURI(authority, MoviesContract.PATH_REVIEWS, REVIEWS);
+        uriMatcherMatcher.addURI(authority, MoviesContract.PATH_REVIEWS + "/#", REVIEWS_WITH_MOVIE);
 
         return uriMatcherMatcher;
     }
@@ -114,6 +123,32 @@ public class MoviesProvider extends ContentProvider {
                 );
                 break;
             }
+            case FAVORITES: {
+                retCursor = mOpenHelper.getWritableDatabase().query(
+                        FavoritesEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
+            case FAVORITES_WITH_MOVIE: {
+                selection = "_id = ?";
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+                retCursor = mOpenHelper.getWritableDatabase().query(
+                        FavoritesEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
             case TRAILERS: {
                 retCursor = mOpenHelper.getWritableDatabase().query(
                         TrailersEntry.TABLE_NAME,
@@ -126,7 +161,35 @@ public class MoviesProvider extends ContentProvider {
                 );
                 break;
             }
+            case TRAILERS_WITH_MOVIE: {
+                selection = "id_movie = ?";
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+                retCursor = mOpenHelper.getWritableDatabase().query(
+                        TrailersEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
             case REVIEWS: {
+                retCursor = mOpenHelper.getWritableDatabase().query(
+                        ReviewsEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
+            case REVIEWS_WITH_MOVIE: {
+                selection = "id_movie = ?";
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 retCursor = mOpenHelper.getWritableDatabase().query(
                         ReviewsEntry.TABLE_NAME,
                         projection,
@@ -165,8 +228,17 @@ public class MoviesProvider extends ContentProvider {
             case TOP_RATED_WITH_MOVIE: {
                 return TopRatedEntry.CONTENT_ITEM_TYPE;
             }
+            case FAVORITES: {
+                return FavoritesEntry.CONTENT_TYPE;
+            }
+            case FAVORITES_WITH_MOVIE: {
+                return FavoritesEntry.CONTENT_ITEM_TYPE;
+            }
             case TRAILERS: {
                 return TrailersEntry.CONTENT_TYPE;
+            }
+            case TRAILERS_WITH_MOVIE: {
+                return TrailersEntry.CONTENT_ITEM_TYPE;
             }
             case REVIEWS: {
                 return ReviewsEntry.CONTENT_TYPE;
@@ -200,10 +272,18 @@ public class MoviesProvider extends ContentProvider {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
             }
+            case FAVORITES: {
+                long _id = db.insert(FavoritesEntry.TABLE_NAME, null, values);
+                if (_id > 0)
+                    returnUri = FavoritesEntry.buildFavoritesMovieUri(values.getAsLong(FavoritesEntry._ID));
+                else
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
+            }
             case TRAILERS: {
                 long _id = db.insert(TrailersEntry.TABLE_NAME, null, values);
                 if (_id > 0)
-                    returnUri = TrailersEntry.buildTrailersMovieUri(values.getAsLong(TrailersEntry._ID));
+                    returnUri = TrailersEntry.buildTrailersMovieUri(values.getAsLong(TrailersEntry.COLUMN_MOVIE_ID));
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
@@ -211,7 +291,7 @@ public class MoviesProvider extends ContentProvider {
             case REVIEWS: {
                 long _id = db.insert(ReviewsEntry.TABLE_NAME, null, values);
                 if (_id > 0)
-                    returnUri = ReviewsEntry.buildReviewsMovieUri(values.getAsLong(ReviewsEntry._ID));
+                    returnUri = ReviewsEntry.buildReviewsMovieUri(values.getAsLong(ReviewsEntry.COLUMN_MOVIE_ID));
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
@@ -237,6 +317,10 @@ public class MoviesProvider extends ContentProvider {
             }
             case TOP_RATED: {
                 rowsDeleted = db.delete(TopRatedEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            }
+            case FAVORITES: {
+                rowsDeleted = db.delete(FavoritesEntry.TABLE_NAME, selection, selectionArgs);
                 break;
             }
             case TRAILERS: {
@@ -272,6 +356,10 @@ public class MoviesProvider extends ContentProvider {
                 rowsUpdate = db.update(MoviesContract.TopRatedEntry.TABLE_NAME, values, selection, selectionArgs);
                 break;
             }
+            case FAVORITES: {
+                rowsUpdate = db.update(MoviesContract.FavoritesEntry.TABLE_NAME, values, selection, selectionArgs);
+                break;
+            }
             case TRAILERS: {
                 rowsUpdate = db.update(MoviesContract.TrailersEntry.TABLE_NAME, values, selection, selectionArgs);
                 break;
@@ -290,5 +378,80 @@ public class MoviesProvider extends ContentProvider {
 
         // Student: return the actual rows updated
         return rowsUpdate;
+    }
+
+    @Override
+    public int bulkInsert(Uri uri, ContentValues[] values) {
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        final int match = sUriMatcher.match(uri);
+        int returnCount;
+        switch (match) {
+            case POPULAR:
+                db.beginTransaction();
+                returnCount = 0;
+                try {
+                    for (ContentValues value : values) {
+                        long _id = db.insert(MoviesContract.PopularEntry.TABLE_NAME, null, value);
+                        if (_id != -1) {
+                            returnCount++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                return returnCount;
+            case TOP_RATED:
+                db.beginTransaction();
+                returnCount = 0;
+                try {
+                    for (ContentValues value : values) {
+                        long _id = db.insert(MoviesContract.TopRatedEntry.TABLE_NAME, null, value);
+                        if (_id != -1) {
+                            returnCount++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                return returnCount;
+            case TRAILERS:
+                db.beginTransaction();
+                returnCount = 0;
+                try {
+                    for (ContentValues value : values) {
+                        long _id = db.insert(MoviesContract.TrailersEntry.TABLE_NAME, null, value);
+                        if (_id != -1) {
+                            returnCount++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                return returnCount;
+            case REVIEWS:
+                db.beginTransaction();
+                returnCount = 0;
+                try {
+                    for (ContentValues value : values) {
+                        long _id = db.insert(MoviesContract.ReviewsEntry.TABLE_NAME, null, value);
+                        if (_id != -1) {
+                            returnCount++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                return returnCount;
+            default:
+                return super.bulkInsert(uri, values);
+        }
     }
 }

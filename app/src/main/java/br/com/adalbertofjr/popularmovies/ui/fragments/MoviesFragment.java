@@ -30,8 +30,7 @@ import java.util.ArrayList;
 
 import br.com.adalbertofjr.popularmovies.R;
 import br.com.adalbertofjr.popularmovies.data.MoviesContract;
-import br.com.adalbertofjr.popularmovies.model.Movies;
-import br.com.adalbertofjr.popularmovies.tasks.FetchMoviesTask;
+import br.com.adalbertofjr.popularmovies.model.Movie;
 import br.com.adalbertofjr.popularmovies.ui.adapters.MoviesGridAdapter;
 import br.com.adalbertofjr.popularmovies.util.Constants;
 import br.com.adalbertofjr.popularmovies.util.Util;
@@ -51,7 +50,7 @@ public class MoviesFragment extends Fragment
     public static final String MOVIE_FRAGMENT_TAG = "MFTAG";
     private static final int MOVIES_LOADER = 0;
     private MoviesGridAdapter mMoviesAdapter;
-    private ArrayList<Movies> mMovies;
+    private ArrayList<Movie> mMovies;
     private ProgressBar mMoviesProgressBar;
     private TextView mErrorMessage;
     private ActionBar mToolbar;
@@ -121,6 +120,7 @@ public class MoviesFragment extends Fragment
         mToolbar.setLogo(R.mipmap.ic_pm_logo);
         mToolbar.setDisplayUseLogoEnabled(true);
         mToolbar.setDisplayShowHomeEnabled(true);
+        mToolbar.setElevation(0f);
     }
 
     private String getTitleToolbar() {
@@ -138,17 +138,17 @@ public class MoviesFragment extends Fragment
         updateMoviesAdapter();
     }
 
-    private void startFetchMoviesTask() {
-        if (Util.isConnected(getActivity())) {
-            FetchMoviesTask moviesTask = new FetchMoviesTask(getActivity());
-            moviesTask.execute(mFetchOption);
-            getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
-        } else {
-            hideProgressBar();
-            // Todo - Corrigir mensagens de erro de conexão.
-            //mGridMoviesRecyclerView.setEmptyView(mErrorMessage);
-        }
-    }
+//    private void startFetchMoviesTask() {
+//        if (Util.isConnected(getActivity())) {
+//            FetchMoviesTask moviesTask = new FetchMoviesTask(getActivity());
+//            moviesTask.execute(mFetchOption);
+//            getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
+//        } else {
+//            hideProgressBar();
+//            // Todo - Corrigir mensagens de erro de conexão.
+//            //mGridMoviesRecyclerView.setEmptyView(mErrorMessage);
+//        }
+//    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -181,7 +181,7 @@ public class MoviesFragment extends Fragment
                     mFetchOption = Constants.MOVIES_TOP_RATED_PATH;
                 }
 
-                startFetchMoviesTask();
+                getLoaderManager().restartLoader(MOVIES_LOADER, null, MoviesFragment.this);
             }
 
             @Override
@@ -194,13 +194,6 @@ public class MoviesFragment extends Fragment
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_refresh) {
-            refreshFetchMovies();
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -216,7 +209,7 @@ public class MoviesFragment extends Fragment
     }
 
     @Override
-    public void onMovieSelected(Movies movie, Uri uri) {
+    public void onMovieSelected(Movie movie, Uri uri) {
         Uri contentUri;
 
         if (mFetchOption.equals(Constants.MOVIES_POPULAR_PATH)) {
@@ -227,6 +220,11 @@ public class MoviesFragment extends Fragment
 
         ((MoviesGridAdapter.OnMovieSelectedListener) getActivity())
                 .onMovieSelected(movie, contentUri);
+    }
+
+    @Override
+    public void onMoviePosition(int position) {
+
     }
 
     private void updateMoviesAdapter() {
@@ -275,6 +273,8 @@ public class MoviesFragment extends Fragment
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         mMoviesAdapter.swapCursor(cursor);
+
+
     }
 
     @Override

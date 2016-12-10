@@ -1,19 +1,25 @@
 package br.com.adalbertofjr.popularmovies.ui.fragments;
 
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,27 +30,19 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import br.com.adalbertofjr.popularmovies.R;
-import br.com.adalbertofjr.popularmovies.model.Movies;
-import br.com.adalbertofjr.popularmovies.model.Reviews;
-import br.com.adalbertofjr.popularmovies.model.Trailers;
+import br.com.adalbertofjr.popularmovies.data.MoviesContract;
+import br.com.adalbertofjr.popularmovies.data.MoviesContract.FavoritesEntry;
+import br.com.adalbertofjr.popularmovies.model.Movie;
+import br.com.adalbertofjr.popularmovies.model.Review;
+import br.com.adalbertofjr.popularmovies.model.Trailer;
+import br.com.adalbertofjr.popularmovies.ui.DetailActivity;
 import br.com.adalbertofjr.popularmovies.ui.adapters.TrailersAdapter;
-import br.com.adalbertofjr.popularmovies.util.Constants;
 
 /**
  * Popular Movies
@@ -55,10 +53,16 @@ import br.com.adalbertofjr.popularmovies.util.Constants;
  */
 
 public class DetailMovieFragment extends Fragment
-        implements LoaderManager.LoaderCallbacks<Cursor> {
+        implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
     public static final String DETAIL_MOVIE_FRAGMENT_TAG = "DMFTAG";
     private static final int DETAIL_LOADER = 0;
-    private Movies mMovie;
+    public static final int COLUMN_ID = 0;
+    public static final int COLUMN_TITLE = 1;
+    public static final int COLUMN_POSTER = 2;
+    public static final int COLUMN_RELEASE_DATE = 3;
+    public static final int COLUMN_VOTE_AVERAGE = 4;
+    public static final int COLUMN_OVERVIEW = 5;
+    public static final int COLUMN_BACKDROP_PATH = 6;
     private ProgressBar mProgressBar;
     private RecyclerView mTrailersListRecyclerView;
     private TextView mContextReviewOne;
@@ -74,6 +78,13 @@ public class DetailMovieFragment extends Fragment
     private TextView mDateRelease;
     private TextView mVoteAverage;
     private TextView mOverview;
+    private AppCompatActivity mActivity;
+    private ImageView mPosterImageBack;
+    private CollapsingToolbarLayout mCollapsingToolbarLayout;
+    private FloatingActionButton mFavorito;
+    private Movie mMovie;
+    private TextView mErrorMessage;
+    private CardView mDetailContainer;
 
     public DetailMovieFragment() {
     }
@@ -93,7 +104,6 @@ public class DetailMovieFragment extends Fragment
         Bundle arguments = getArguments();
 
         if (arguments != null) {
-//            mMovie = arguments.getParcelable(Constants.MOVIE_DETAIL_EXTRA);
             mMovieUri = arguments.getString(Intent.EXTRA_TEXT);
         }
     }
@@ -101,21 +111,32 @@ public class DetailMovieFragment extends Fragment
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        if (savedInstanceState != null && savedInstanceState.getBoolean("destroy_loader") == true) {
+            getLoaderManager().destroyLoader(DETAIL_LOADER);
+        }
+
         getLoaderManager().initLoader(DETAIL_LOADER, null, this);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.fragment_detail_movie, container, false);
+        mActivity = ((AppCompatActivity) getActivity());
 
+        View rootView = inflater.inflate(R.layout.fragment_detail_movie, container, false);
+        mDetailContainer = (CardView) rootView.findViewById(R.id.cv_detail_container);
+        mErrorMessage = (TextView) rootView.findViewById(R.id.tv_detail_error_message);
+        mFavorito = (FloatingActionButton) rootView.findViewById(R.id.fb_detail_favorito);
+        Toolbar mToolbar = (Toolbar) rootView.findViewById(R.id.tb_detail);
+        mPosterImageBack = (ImageView) rootView.findViewById(R.id.iv_detail_poster_back);
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.pb_detail_progress);
-        ((ImageView) rootView.findViewById(R.id.iv_detail_star)).setImageResource(R.drawable.ic_star);
         mPosterImage = (ImageView) rootView.findViewById(R.id.iv_detail_poster);
         mTitle = (TextView) rootView.findViewById(R.id.tv_detail_title);
         mDateRelease = (TextView) rootView.findViewById(R.id.tv_detail_dt_release);
         mVoteAverage = (TextView) rootView.findViewById(R.id.tv_detail_vote_average);
         mOverview = (TextView) rootView.findViewById(R.id.tv_detail_overview);
+        ((ImageView) rootView.findViewById(R.id.iv_detail_star)).setImageResource(R.drawable.ic_star);
 
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.pb_detail_progress);
         mAuthorReviewOne = (TextView) rootView.findViewById(R.id.tv_detail_reviews_author_one);
@@ -124,13 +145,36 @@ public class DetailMovieFragment extends Fragment
         mContextReviewTwo = (TextView) rootView.findViewById(R.id.tv_detail_reviews_content_two);
         mReadMoreView = (TextView) rootView.findViewById(R.id.tv_detail_reviews_more);
 
+        mCollapsingToolbarLayout = (CollapsingToolbarLayout) rootView.findViewById(R.id.ct_detail);
         mContainerReview = rootView.findViewById(R.id.ll_detail_reviews);
         mTrailersListRecyclerView = (RecyclerView) rootView.findViewById(R.id.rv_detail_trailers);
+
+        mActivity.setSupportActionBar(mToolbar);
+
+        boolean mTwoPane = getActivity().getResources().getBoolean(R.bool.has_two_panes);
+        boolean isDetailActivity = getActivity() instanceof DetailActivity;
+
+        if (mTwoPane && !isDetailActivity) {
+            mActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            mActivity.getSupportActionBar().setDisplayShowTitleEnabled(false);
+            mCollapsingToolbarLayout.setVisibility(View.GONE);
+        } else {
+            mActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            mActivity.getSupportActionBar().setDisplayShowTitleEnabled(true);
+        }
 
         mTrailersListRecyclerView.setHasFixedSize(true);
         mTrailersListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
 
+        mFavorito.setOnClickListener(this);
+
         return rootView;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean("destroy_loader", true);
+        super.onSaveInstanceState(outState);
     }
 
     private String formatDate(String date) {
@@ -168,39 +212,61 @@ public class DetailMovieFragment extends Fragment
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         Log.v(LOG_TAG, "In onLoadFinished");
 
-        if (!cursor.moveToNext()) return;
+        if (!cursor.moveToNext()) {
+            if (mDetailContainer != null) {
+                if (!mErrorMessage.isShown()) {
+                    mDetailContainer.setVisibility(View.INVISIBLE);
+                    mErrorMessage.setText(R.string.msg_no_select_favorite);
+                    mErrorMessage.setVisibility(View.VISIBLE);
+                    mErrorMessage.setCompoundDrawables(null, null, null, null);
+                    mFavorito.setVisibility(View.INVISIBLE);
+                }
+            }
+            return;
+        }
 
         hideProgressBar();
 
-        Movies movie = new Movies();
-        movie.setId(cursor.getString(0));
-        movie.setOriginal_title(cursor.getString(1));
-        movie.setPoster_path(cursor.getString(2));
-        movie.setRelease_date(cursor.getString(3));
-        movie.setVote_average(cursor.getString(4));
-        movie.setOverview(cursor.getString(5));
-        movie.setBackdrop_path(cursor.getString(6));
+        mMovie = new Movie();
+        mMovie.setId(cursor.getString(COLUMN_ID));
+        mMovie.setOriginal_title(cursor.getString(COLUMN_TITLE));
+        mMovie.setPoster_path(cursor.getString(COLUMN_POSTER));
+        mMovie.setRelease_date(cursor.getString(COLUMN_RELEASE_DATE));
+        mMovie.setVote_average(cursor.getString(COLUMN_VOTE_AVERAGE));
+        mMovie.setOverview(cursor.getString(COLUMN_OVERVIEW));
+        mMovie.setBackdrop_path(cursor.getString(COLUMN_BACKDROP_PATH));
 
-        mMovie = movie;
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            mCollapsingToolbarLayout.setTitle(mMovie.getOriginal_title());
+        } else {
+            mCollapsingToolbarLayout.setTitleEnabled(false);
+            mActivity.getSupportActionBar().setTitle(mMovie.getOriginal_title());
+        }
 
-        ActionBar supportActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-
-        if (supportActionBar != null) {
-            supportActionBar.setTitle(movie.getOriginal_title());
+        if (isFavorito(mMovie.getId())) {
+            mFavorito.setBackgroundTintList(getFabBackground(true));
         }
 
         Picasso.with(getContext())
-                .load(movie.getPosterUrlPath())
+                .load(mMovie.getBackDropUrlPath())
+                .into(mPosterImageBack);
+
+        Picasso.with(getContext())
+                .load(mMovie.getPosterUrlPath())
                 .into(mPosterImage);
 
-        String dtRelease = formatDate(movie.getRelease_date());
-        mTitle.setText(movie.getOriginal_title());
+        String dtRelease = formatDate(mMovie.getRelease_date());
+        mTitle.setText(mMovie.getOriginal_title());
         mDateRelease.setText(dtRelease);
-        mVoteAverage.setText(movie.getVote_average());
-        mOverview.setText(movie.getOverview());
+        mVoteAverage.setText(mMovie.getVote_average());
+        mOverview.setText(mMovie.getOverview());
 
-        new FetchTrailersTask().execute();
-        new FetchReviewsTask().execute();
+        List<Trailer> trailers = getTrailers(mMovie);
+        updateTrailersAdapter(trailers);
+
+        List<Review> reviews = getReviews(mMovie);
+        updateReviewsAdapter(reviews);
+
     }
 
     @Override
@@ -208,204 +274,7 @@ public class DetailMovieFragment extends Fragment
 
     }
 
-    private class FetchTrailersTask extends AsyncTask<Void, Void, ArrayList<Trailers>> {
-        private final String LOG_TAG = FetchTrailersTask.class.getSimpleName();
-
-        @Override
-        protected ArrayList<Trailers> doInBackground(Void... voids) {
-
-            HttpURLConnection urlConnection = null;
-            BufferedReader reader = null;
-
-            String trailersJsonString;
-
-            try {
-                if (mMovie == null)
-                    return null;
-
-                String pathTrailer = String.format(Constants.MOVIE_TRAILERS_URL, mMovie.getId());
-
-                URL url = new URL(pathTrailer);
-
-                // Create the request to OpenWeatherMap, and open the connection
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.connect();
-
-                // Read the input stream into a String
-                InputStream inputStream = urlConnection.getInputStream();
-                StringBuilder buffer = new StringBuilder();
-                if (inputStream == null) {
-                    // Nothing to do.
-                    return null;
-                }
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    buffer.append(line).append("\n");
-                }
-
-                if (buffer.length() == 0) {
-                    return null;
-                }
-
-                trailersJsonString = buffer.toString();
-
-                try {
-                    return getMoviesDataFromJson(trailersJsonString);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            } catch (IOException e) {
-                Log.e(LOG_TAG, "Error ", e);
-                // If the code didn't successfully get the weather data, there's no point in attemping
-                // to parse it.
-                return null;
-            } finally {
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (final IOException e) {
-                        Log.e(LOG_TAG, "Error closing stream", e);
-                    }
-                }
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<Trailers> trailers) {
-            super.onPostExecute(trailers);
-
-            for (Trailers t : trailers) {
-                Log.i("Trailer", t.getTrailerUrlPath());
-            }
-            updateTrailersAdapter(trailers);
-        }
-    }
-
-    private void updateTrailersAdapter(ArrayList<Trailers> trailers) {
-        TrailersAdapter trailersAdapter = new TrailersAdapter(getActivity(), trailers);
-        mTrailersListRecyclerView.setAdapter(trailersAdapter);
-    }
-
-    private ArrayList<Trailers> getMoviesDataFromJson(String trailersJsonString)
-            throws JSONException {
-
-        JSONObject trailersJson = new JSONObject(trailersJsonString);
-        JSONArray trailersArray = trailersJson.getJSONArray(Constants.TRAILERS_VIDEOS_LIST_KEY);
-
-        ArrayList<Trailers> trailers = new ArrayList<>();
-
-        for (int i = 0; i < trailersArray.length(); i++) {
-            String key;
-            String name;
-            String site;
-
-            JSONObject trailerData = trailersArray.getJSONObject(i);
-
-            key = trailerData.getString(Constants.TRAILERS_VIDEO_KEY);
-            name = trailerData.getString(Constants.TRAILERS_VIDEO_NAME);
-            site = trailerData.getString(Constants.TRAILERS_VIDEO_SITE);
-
-            Trailers trailer = new Trailers(
-                    key,
-                    name,
-                    site
-            );
-
-            trailers.add(trailer);
-        }
-
-        return trailers;
-    }
-
-    private class FetchReviewsTask extends AsyncTask<Void, Void, ArrayList<Reviews>> {
-        private final String LOG_TAG = FetchReviewsTask.class.getSimpleName();
-
-        @Override
-        protected ArrayList<Reviews> doInBackground(Void... voids) {
-
-            HttpURLConnection urlConnection = null;
-            BufferedReader reader = null;
-
-            String reviewsJsonString;
-
-            try {
-
-                if (mMovie == null)
-                    return null;
-
-                String pathReview = String.format(Constants.MOVIE_REVIEWS_URL, mMovie.getId());
-
-                URL url = new URL(pathReview);
-
-                // Create the request to OpenWeatherMap, and open the connection
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.connect();
-
-                // Read the input stream into a String
-                InputStream inputStream = urlConnection.getInputStream();
-                StringBuilder buffer = new StringBuilder();
-                if (inputStream == null) {
-                    // Nothing to do.
-                    return null;
-                }
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    buffer.append(line).append("\n");
-                }
-
-                if (buffer.length() == 0) {
-                    return null;
-                }
-
-                reviewsJsonString = buffer.toString();
-
-                try {
-                    return getReviewsDataFromJson(reviewsJsonString);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            } catch (IOException e) {
-                Log.e(LOG_TAG, "Error ", e);
-                // If the code didn't successfully get the weather data, there's no point in attemping
-                // to parse it.
-                return null;
-            } finally {
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (final IOException e) {
-                        Log.e(LOG_TAG, "Error closing stream", e);
-                    }
-                }
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<Reviews> reviews) {
-            super.onPostExecute(reviews);
-
-            for (Reviews t : reviews) {
-                Log.i("Trailer", t.getAuthor());
-            }
-            updateReviewsAdapter(reviews);
-        }
-    }
-
-    private void updateReviewsAdapter(final List<Reviews> reviews) {
+    private void updateReviewsAdapter(final List<Review> reviews) {
         if (reviews == null || reviews.size() == 0) {
             return;
         }
@@ -435,31 +304,139 @@ public class DetailMovieFragment extends Fragment
         mReadMoreView.setVisibility(View.VISIBLE);
     }
 
-    private ArrayList<Reviews> getReviewsDataFromJson(String reviewsJsonString)
-            throws JSONException {
+    private List<Review> getReviews(Movie movie) {
+        Cursor cursorReviews = getActivity().getContentResolver()
+                .query(
+                        MoviesContract.ReviewsEntry.buildReviewsMovieUri(Long.valueOf(movie.getId())),
+                        null,
+                        null,
+                        null,
+                        null
+                );
 
-        JSONObject reviewsJson = new JSONObject(reviewsJsonString);
-        JSONArray reviewsArray = reviewsJson.getJSONArray(Constants.REVIEWS_VIDEOS_LIST_KEY);
+        List<Review> reviews = new ArrayList<>();
 
-        ArrayList<Reviews> reviews = new ArrayList<>();
+        while (cursorReviews.moveToNext()) {
+            String id = cursorReviews.getString(cursorReviews.getColumnIndex("_id"));
+            String idMovie = cursorReviews.getString(cursorReviews.getColumnIndex("id_movie"));
+            String author = cursorReviews.getString(cursorReviews.getColumnIndex("author"));
+            String content = cursorReviews.getString(cursorReviews.getColumnIndex("content"));
 
-        for (int i = 0; i < reviewsArray.length(); i++) {
-            String name;
-            String content;
-
-            JSONObject reviewData = reviewsArray.getJSONObject(i);
-
-            name = reviewData.getString(Constants.REVIEWS_VIDEOS_AUTHOR);
-            content = reviewData.getString(Constants.REVIEWS_VIDEOS_CONTENT);
-
-            Reviews review = new Reviews(
-                    name,
-                    content
-            );
-
+            Review review = new Review(id, idMovie, author, content);
             reviews.add(review);
         }
 
+        if (cursorReviews != null) {
+            cursorReviews.close();
+        }
         return reviews;
+    }
+
+    private List<Trailer> getTrailers(Movie movie) {
+        Cursor cursorTrailers = getActivity().getContentResolver()
+                .query(
+                        MoviesContract.TrailersEntry.buildTrailersMovieUri(Long.valueOf(movie.getId())),
+                        null,
+                        null,
+                        null,
+                        null
+                );
+
+        List<Trailer> trailers = new ArrayList<>();
+
+        while (cursorTrailers.moveToNext()) {
+            String id = cursorTrailers.getString(cursorTrailers.getColumnIndex("_id"));
+            String idMovie = cursorTrailers.getString(cursorTrailers.getColumnIndex("id_movie"));
+            String key = cursorTrailers.getString(cursorTrailers.getColumnIndex("key"));
+            String name = cursorTrailers.getString(cursorTrailers.getColumnIndex("name"));
+            String site = cursorTrailers.getString(cursorTrailers.getColumnIndex("site"));
+
+            Trailer trailer = new Trailer(id, idMovie, key, name, site);
+            trailers.add(trailer);
+        }
+
+        if (cursorTrailers != null) {
+            cursorTrailers.close();
+        }
+        return trailers;
+    }
+
+    private void updateTrailersAdapter(List<Trailer> trailers) {
+        TrailersAdapter trailersAdapter = new TrailersAdapter(getActivity(), trailers);
+        mTrailersListRecyclerView.setAdapter(trailersAdapter);
+    }
+
+    @Override
+    public void onClick(View view) {
+        int id = view.getId();
+
+        if (id == R.id.fb_detail_favorito) {
+            if (mMovie != null) {
+                setFavorito();
+            }
+        }
+    }
+
+    private void setFavorito() {
+        if (isFavorito(mMovie.getId())) {
+            String selection = FavoritesEntry._ID + "= ?";
+            String[] selectionArgs = new String[]{mMovie.getId()};
+            int delete = getActivity().getContentResolver().delete(FavoritesEntry.CONTENT_URI,
+                    selection,
+                    selectionArgs
+            );
+
+            if (delete != -1) {
+                Log.i(LOG_TAG, "Favorito removido");
+                mFavorito.setBackgroundTintList(getFabBackground(false));
+            }
+        } else {
+            Uri insert = getActivity().getContentResolver().insert(FavoritesEntry.CONTENT_URI,
+                    getMovieContentValues(mMovie));
+
+            Long idMovie = ContentUris.parseId(insert);
+
+            if (idMovie != -1) {
+                Log.i(LOG_TAG, "Favorito inserido");
+                mFavorito.setBackgroundTintList(getFabBackground(true));
+            }
+        }
+    }
+
+    private boolean isFavorito(String id) {
+        String[] projection = {FavoritesEntry._ID};
+        String selection = FavoritesEntry._ID + "= ?";
+        String[] selectionArgs = new String[]{id};
+
+        Cursor cursor = getActivity().getContentResolver().query(
+                FavoritesEntry.CONTENT_URI,
+                projection,
+                selection,
+                selectionArgs,
+                null
+        );
+
+        if (cursor.moveToNext()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private ColorStateList getFabBackground(boolean favorito) {
+        return getResources().getColorStateList(favorito
+                ? R.color.bg_fab_favorito : R.color.bg_fab_cancel);
+    }
+
+    private ContentValues getMovieContentValues(Movie movie) {
+        ContentValues movieValues = new ContentValues();
+        movieValues.put(FavoritesEntry._ID, movie.getId());
+        movieValues.put(FavoritesEntry.COLUMN_ORIGINAL_TITLE, movie.getOriginal_title());
+        movieValues.put(FavoritesEntry.COLUMN_POSTER_PATH, movie.getPoster_path());
+        movieValues.put(FavoritesEntry.COLUMN_RELEASE_DATE, movie.getRelease_date());
+        movieValues.put(FavoritesEntry.COLUMN_VOTE_AVERAGE, movie.getVote_average());
+        movieValues.put(FavoritesEntry.COLUMN_OVERVIEW, movie.getOverview());
+        movieValues.put(FavoritesEntry.COLUMN_BACKDROP_PATH, movie.getBackdrop_path());
+        return movieValues;
     }
 }

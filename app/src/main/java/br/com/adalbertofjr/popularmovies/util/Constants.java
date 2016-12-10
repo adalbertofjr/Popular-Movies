@@ -53,12 +53,14 @@ public class Constants {
 
     //Json trailers objects names
     public static final String TRAILERS_VIDEOS_LIST_KEY = "results";
+    public static final String TRAILERS_VIDEO_ID = "id";
     public static final String TRAILERS_VIDEO_KEY = "key";
     public static final String TRAILERS_VIDEO_NAME = "name";
     public static final String TRAILERS_VIDEO_SITE = "site";
 
     //Json reviews objects names
     public static final String REVIEWS_VIDEOS_LIST_KEY = "results";
+    public static final String REVIEWS_VIDEO_ID = "id";
     public static final String REVIEWS_VIDEOS_AUTHOR = "author";
     public static final String REVIEWS_VIDEOS_CONTENT = "content";
 

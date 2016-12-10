@@ -8,11 +8,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import java.util.List;
 
 import br.com.adalbertofjr.popularmovies.R;
-import br.com.adalbertofjr.popularmovies.model.Trailers;
+import br.com.adalbertofjr.popularmovies.model.Trailer;
 
 /**
  * Popular Movies
@@ -25,9 +26,9 @@ import br.com.adalbertofjr.popularmovies.model.Trailers;
 public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.ViewHolder> {
     private static final String LOG_TAG = TrailersAdapter.class.getSimpleName();
     private Context mContext;
-    private List<Trailers> mTrailer;
+    private List<Trailer> mTrailer;
 
-    public TrailersAdapter(Context mContext, List<Trailers> mTrailer) {
+    public TrailersAdapter(Context mContext, List<Trailer> mTrailer) {
         this.mContext = mContext;
         this.mTrailer = mTrailer;
     }
@@ -40,7 +41,9 @@ public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        final Trailers trailer = mTrailer.get(position);
+        final Trailer trailer = mTrailer.get(position);
+        String trailerNumber = String.valueOf(position + 1);
+        holder.trailerNumber.setText(trailerNumber);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -49,7 +52,7 @@ public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.ViewHo
         });
     }
 
-    private void playTrailer(Trailers trailer) {
+    private void playTrailer(Trailer trailer) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setPackage("com.google.android.youtube");
         intent.setData(Uri.parse(trailer.getTrailerUrlPath()));
@@ -57,6 +60,8 @@ public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.ViewHo
         if (intent.resolveActivity(mContext.getPackageManager()) != null) {
             mContext.startActivity(intent);
         } else {
+            intent = new Intent(Intent.ACTION_VIEW, Uri.parse(trailer.getTrailerUrlPath()));
+            mContext.startActivity(intent);
             Log.d(LOG_TAG, "Couldn't call " + trailer.getTrailerUrlPath() + ", no receiving apps installed!");
         }
     }
@@ -67,9 +72,11 @@ public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.ViewHo
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+        private final TextView trailerNumber;
 
         public ViewHolder(View itemView) {
             super(itemView);
+            trailerNumber = (TextView) itemView.findViewById(R.id.tv_trailer_number);
         }
     }
 }
