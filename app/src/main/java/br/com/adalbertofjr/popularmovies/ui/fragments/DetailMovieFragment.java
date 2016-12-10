@@ -36,8 +36,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.adalbertofjr.popularmovies.R;
-import br.com.adalbertofjr.popularmovies.data.MoviesContract;
 import br.com.adalbertofjr.popularmovies.data.MoviesContract.FavoritesEntry;
+import br.com.adalbertofjr.popularmovies.data.MoviesContract.ReviewsEntry;
+import br.com.adalbertofjr.popularmovies.data.MoviesContract.TrailersEntry;
 import br.com.adalbertofjr.popularmovies.model.Movie;
 import br.com.adalbertofjr.popularmovies.model.Review;
 import br.com.adalbertofjr.popularmovies.model.Trailer;
@@ -307,7 +308,7 @@ public class DetailMovieFragment extends Fragment
     private List<Review> getReviews(Movie movie) {
         Cursor cursorReviews = getActivity().getContentResolver()
                 .query(
-                        MoviesContract.ReviewsEntry.buildReviewsMovieUri(Long.valueOf(movie.getId())),
+                        ReviewsEntry.buildReviewsMovieUri(Long.valueOf(movie.getId())),
                         null,
                         null,
                         null,
@@ -317,10 +318,10 @@ public class DetailMovieFragment extends Fragment
         List<Review> reviews = new ArrayList<>();
 
         while (cursorReviews.moveToNext()) {
-            String id = cursorReviews.getString(cursorReviews.getColumnIndex("_id"));
-            String idMovie = cursorReviews.getString(cursorReviews.getColumnIndex("id_movie"));
-            String author = cursorReviews.getString(cursorReviews.getColumnIndex("author"));
-            String content = cursorReviews.getString(cursorReviews.getColumnIndex("content"));
+            String id = cursorReviews.getString(cursorReviews.getColumnIndex(ReviewsEntry._ID));
+            String idMovie = cursorReviews.getString(cursorReviews.getColumnIndex(ReviewsEntry.COLUMN_MOVIE_ID));
+            String author = cursorReviews.getString(cursorReviews.getColumnIndex(ReviewsEntry.COLUMN_AUTHOR));
+            String content = cursorReviews.getString(cursorReviews.getColumnIndex(ReviewsEntry.COLUMN_CONTENT));
 
             Review review = new Review(id, idMovie, author, content);
             reviews.add(review);
@@ -335,7 +336,7 @@ public class DetailMovieFragment extends Fragment
     private List<Trailer> getTrailers(Movie movie) {
         Cursor cursorTrailers = getActivity().getContentResolver()
                 .query(
-                        MoviesContract.TrailersEntry.buildTrailersMovieUri(Long.valueOf(movie.getId())),
+                        TrailersEntry.buildTrailersMovieUri(Long.valueOf(movie.getId())),
                         null,
                         null,
                         null,
@@ -345,11 +346,11 @@ public class DetailMovieFragment extends Fragment
         List<Trailer> trailers = new ArrayList<>();
 
         while (cursorTrailers.moveToNext()) {
-            String id = cursorTrailers.getString(cursorTrailers.getColumnIndex("_id"));
-            String idMovie = cursorTrailers.getString(cursorTrailers.getColumnIndex("id_movie"));
-            String key = cursorTrailers.getString(cursorTrailers.getColumnIndex("key"));
-            String name = cursorTrailers.getString(cursorTrailers.getColumnIndex("name"));
-            String site = cursorTrailers.getString(cursorTrailers.getColumnIndex("site"));
+            String id = cursorTrailers.getString(cursorTrailers.getColumnIndex(TrailersEntry._ID));
+            String idMovie = cursorTrailers.getString(cursorTrailers.getColumnIndex(TrailersEntry.COLUMN_MOVIE_ID));
+            String key = cursorTrailers.getString(cursorTrailers.getColumnIndex(TrailersEntry.COLUMN_KEY));
+            String name = cursorTrailers.getString(cursorTrailers.getColumnIndex(TrailersEntry.COLUMN_NAME));
+            String site = cursorTrailers.getString(cursorTrailers.getColumnIndex(TrailersEntry.COLUMN_SITE));
 
             Trailer trailer = new Trailer(id, idMovie, key, name, site);
             trailers.add(trailer);

@@ -26,6 +26,15 @@ import br.com.adalbertofjr.popularmovies.util.Constants;
 
 public class MoviesGridAdapter extends CursorRecyclerViewAdapter<MoviesGridAdapter.ViewHolder> {
     private static final String LOG_TAG = MoviesGridAdapter.class.getSimpleName();
+
+    public static final int COLUMN_ID = 0;
+    public static final int COLUMN_TITLE = 1;
+    public static final int COLUMN_POSTER = 2;
+    public static final int COLUMN_RELEASE_DATE = 3;
+    public static final int COLUMN_AVERAGE_VOTE = 4;
+    public static final int COLUMN_OVERVIEW = 5;
+    public static final int COLUMN_BACKDROP = 6;
+
     private final Context mContext;
     private final OnMovieSelectedListener mListener;
     private View mOldMovieSelectedView;
@@ -41,13 +50,13 @@ public class MoviesGridAdapter extends CursorRecyclerViewAdapter<MoviesGridAdapt
     public void onBindViewHolder(final ViewHolder holder, Cursor cursor) {
         final Movie movie = new Movie();
 
-        movie.setId(cursor.getString(0));
-        movie.setOriginal_title(cursor.getString(1));
-        movie.setPoster_path(cursor.getString(2));
-        movie.setRelease_date(cursor.getString(3));
-        movie.setVote_average(cursor.getString(4));
-        movie.setOverview(cursor.getString(5));
-        movie.setBackdrop_path(cursor.getString(6));
+        movie.setId(cursor.getString(COLUMN_ID));
+        movie.setOriginal_title(cursor.getString(COLUMN_TITLE));
+        movie.setPoster_path(cursor.getString(COLUMN_POSTER));
+        movie.setRelease_date(cursor.getString(COLUMN_RELEASE_DATE));
+        movie.setVote_average(cursor.getString(COLUMN_AVERAGE_VOTE));
+        movie.setOverview(cursor.getString(COLUMN_OVERVIEW));
+        movie.setBackdrop_path(cursor.getString(COLUMN_BACKDROP));
 
         Uri.Builder uriImage = Uri.parse(Constants.MOVIE_IMAGE_POSTER_URL)
                 .buildUpon()
