@@ -5,13 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
-
     <android.support.design.widget.AppBarLayout
         android:id="@+id/ab_detail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:elevation="4dp">
+        app:elevation="@dimen/toolbar_elevation">
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/ct_detail"
@@ -23,7 +21,7 @@
             <ImageView
                 android:id="@+id/iv_detail_poster_back"
                 android:layout_width="match_parent"
-                android:layout_height="240dp"
+                android:layout_height="@dimen/poster_back_height"
                 android:scaleType="fitXY"
                 app:layout_collapseMode="parallax"
                 app:layout_collapseParallaxMultiplier="0.7" />
