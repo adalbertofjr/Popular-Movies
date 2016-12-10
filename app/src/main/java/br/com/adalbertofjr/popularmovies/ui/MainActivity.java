@@ -24,7 +24,6 @@ import br.com.adalbertofjr.popularmovies.ui.fragments.TopRatedMoviesFragment;
 
 public class MainActivity extends AppCompatActivity
         implements MoviesGridAdapter.OnMovieSelectedListener {
-
     private static final String URI_SELECTED_STATE = "uri_state";
     private static final String TAB_SELECTED_STATE = "tab_state";
     private boolean mTwoPane;
