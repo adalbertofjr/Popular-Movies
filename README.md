@@ -9,7 +9,7 @@ Muitos de nós podem fazer uma associação com a ação de relaxar no colchão 
 ## Imagens ##
 <img  src="https://raw.githubusercontent.com/adalbertofjr/Popular-Movies/dev-refatore/app-images/portrait_1.png" width="203" height="339" />
 <img  src="https://raw.githubusercontent.com/adalbertofjr/Popular-Movies/dev-refatore/app-images/portrait_4.png" width="203" height="339" />
-<img  src="https://raw.githubusercontent.com/adalbertofjr/Popular-Movies/dev-refatore/app-images/land_1.png" width="339" height="203" />  
+<img  src="https://raw.githubusercontent.com/adalbertofjr/Popular-Movies/dev-refatore/app-images/land_1.png" width="339" height="203" />
 
 
 ## Instalação ##
